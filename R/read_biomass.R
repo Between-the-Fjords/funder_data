@@ -63,3 +63,12 @@ violating(biomass, out) %>% View()
 # 2021 some sites missing
 
 biomass %>% filter(is.na(biomass), !year %in% c(2019, 2021)) %>% View()
+
+biomass %>%
+  mutate(treatment = factor(treatment, levels = c("B", "F", "G", "FB", "GB", "FG", "FGB"))) %>%
+  filter(year != 2019, removed_fg != "C") %>%
+  ggplot(aes(x = treatment, y = biomass, fill = removed_fg)) +
+  geom_col() +
+  facet_grid(year ~ site) +
+  theme_bw()
+
