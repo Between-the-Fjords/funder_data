@@ -1,22 +1,13 @@
 
-This is the git repository for the FunCaB and FUNDER projects and base
-for the data paper: xxx et al. (not written yet). FunCaB & FUNDER
+This is the git repository for the FUNDER project and base for the data
+paper: xxx et al. (not written yet).
 
 # INTRODUCTION
 
 …
 
-<div class="figure">
-
-<img src="Figures/Figure_1.jpg" alt="Figure 1. Climate, Functional groups and soil-foodweb." width="1203" />
-
-<p class="caption">
-
-Figure 1. Climate, Functional groups and soil-foodweb.
-
-</p>
-
-</div>
+![Figure 1. Climate, Functional groups and
+soil-foodweb.](Figures/Figure_1.jpg)
 
 The specific research questions of the projects are:
 
@@ -61,15 +52,15 @@ webpage: <https://betweenthefjords.w.uib.no/three-d/>
 ### Naming conventions used for the data
 
 | Data or file | Description of naming convention                                                                                                          |
-| :----------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| Readme files | Project\_Experiment\_Dataset\_Year\_Readme.extension                                                                                      |
+|:-------------|:------------------------------------------------------------------------------------------------------------------------------------------|
+| Readme files | Project_Experiment_Dataset_Year_Readme.extension                                                                                          |
 | species      | Vascular plant taxon names follow for Norway Lid & Lid(Lid J & Lid, 2010). The full taxa is written using genus and species with a blank. |
 | Project      | FunCaB or FUNDER                                                                                                                          |
-| Datasets     | Project\_Experiment\_Dataset\_Year: FunCaB\_plant\_community\_2019                                                                        |
+| Datasets     | Project_Experiment_Dataset_Year: FunCaB_plant_community_2019                                                                              |
 | siteID       | Name of the site; Vikesland, Alrust,…                                                                                                     |
 | blockID      | block number, numeric value                                                                                                               |
 | treatment    | Treatment of functional group removal indicating which groups have been removed; F = forbs, G = graminoids, B = Bryophytes                |
-| removal\_fg  | Functional group that has been removed; F = forbs, G = graminoids, B = Bryophytes                                                         |
+| removal_fg   | Functional group that has been removed; F = forbs, G = graminoids, B = Bryophytes                                                         |
 | responses    | response variable, e.g. cover, biomass, Reco, etc.                                                                                        |
 
 ## Data collection and measurements
@@ -77,31 +68,31 @@ webpage: <https://betweenthefjords.w.uib.no/three-d/>
 The following datasets were collected and are available :
 <https://osf.io/tx9r2/>
 
-| Variable                         | Time period | Level   | Data file                                      |
-| :------------------------------- | :---------- | :------ | :--------------------------------------------- |
-| **Site**                         |             |         |                                                |
-| ..                               | ..          | ..      | …                                              |
-| **Vegetation**                   |             |         |                                                |
-| Species cover                    | 2015 - 2019 | Plot    | …                                              |
-| Species presence                 | 2015 - 2019 | Subplot | …                                              |
-| Vegetation height                | 2015 - 2019 | Plot    | …                                              |
-| Functional group biomass         | 2015 - 2021 | Plot    | FunCaB\_Biomass\_22015-020.csv                 |
-| Reflectance                      | 2021        | Plot    | …                                              |
-| **C-flux**                       |             |         |                                                |
-| Ecosystem fluxes                 | 2015-2018   | Plot    | …                                              |
-| **Soil**                         |             |         |                                                |
-| Soil depth                       | 2019        | Plot    | THREE-D\_PlotLevel\_Depth\_2019.csv            |
-| Soil texture                     | 2019        | Site    | THREE-D\_Soil\_2019-2020.csv                   |
-| Bulk density                     | 2019        | Plot    | THREE-D\_Soil\_2019-2020.csv                   |
-| Soil pH                          | 2019        | Site    | THREE-D\_Soil\_2019-2020.csv                   |
-| Soil organic matter              | 2019        | Block   | THREE-D\_Soil\_2019-2020.csv                   |
-| Soil C and N stocks              | 2019 - 2020 | Site    | THREE-D\_Soil\_2019-2020.csv                   |
-| Soil nutrients                   | 2021        | Site    | xxx                                            |
-| Decomposition                    | 2021        | Plot    | xxx                                            |
-| **Climate**                      |             |         |                                                |
-| Air, ground and soil temperature | 2019 - 2020 | Plot    | THREE-D\_TomstLogger\_2019\_2020.csv           |
-| Soil moisture                    | 2019 - 2020 | Plot    | THREE-D\_TomstLogger\_2019\_2020.csv           |
-| Gridded climate                  | 2009 - 2019 | Site    | THREE\_D\_Gridded\_DailyClimate\_2009-2019.csv |
+| Variable                         | Time period | Level   | Data file                                   |
+|:---------------------------------|:------------|:--------|:--------------------------------------------|
+| **Site**                         |             |         |                                             |
+| ..                               | ..          | ..      | …                                           |
+| **Vegetation**                   |             |         |                                             |
+| Species cover                    | 2015 - 2019 | Plot    | …                                           |
+| Species presence                 | 2015 - 2019 | Subplot | …                                           |
+| Vegetation height                | 2015 - 2019 | Plot    | …                                           |
+| Functional group biomass         | 2015 - 2021 | Plot    | FunCaB_Biomass_22015-020.csv                |
+| Reflectance                      | 2021        | Plot    | …                                           |
+| **C-flux**                       |             |         |                                             |
+| Ecosystem fluxes                 | 2015-2018   | Plot    | …                                           |
+| **Soil**                         |             |         |                                             |
+| Soil depth                       | 2019        | Plot    | THREE-D_PlotLevel_Depth_2019.csv            |
+| Soil texture                     | 2019        | Site    | THREE-D_Soil_2019-2020.csv                  |
+| Bulk density                     | 2019        | Plot    | THREE-D_Soil_2019-2020.csv                  |
+| Soil pH                          | 2019        | Site    | THREE-D_Soil_2019-2020.csv                  |
+| Soil organic matter              | 2019        | Block   | THREE-D_Soil_2019-2020.csv                  |
+| Soil C and N stocks              | 2019 - 2020 | Site    | THREE-D_Soil_2019-2020.csv                  |
+| Soil nutrients                   | 2021        | Site    | xxx                                         |
+| Decomposition                    | 2021        | Plot    | xxx                                         |
+| **Climate**                      |             |         |                                             |
+| Air, ground and soil temperature | 2019 - 2020 | Plot    | THREE-D_TomstLogger_2019_2020.csv           |
+| Soil moisture                    | 2019 - 2020 | Plot    | THREE-D_TomstLogger_2019_2020.csv           |
+| Gridded climate                  | 2009 - 2019 | Site    | THREE_D\_Gridded_DailyClimate_2009-2019.csv |
 
 ### Plant species composition
 
@@ -138,8 +129,8 @@ species of vascular plant was classified by functional type (graminoid,
 forb, woody) and biogeographic affinity based on information given in
 Lid & Lid(2010). Specifically, species reported to be present in the
 Nemoral but lacking from the Low- Mid- or High Alpine are classified as
-“lowland”, species present in the Alpine but lacking from the Nemoral
-to South Boreal are classified as “alpine”, whereas all other species
+“lowland”, species present in the Alpine but lacking from the Nemoral to
+South Boreal are classified as “alpine”, whereas all other species
 (i.e., species that span the gradient from Nemoral to Alpine zones) are
 classified as “generalist”. Write something about China…
 
@@ -224,10 +215,10 @@ temperature (K) A: area of chamber frame base (m<sup>2</sup>)
 sites from 2009 - 2019 from The Norwegian Meteorological Institute (from
 Ole Einar Tveito, 16.12.2019). The climate variables are: - Mean daily
 temperature (°C, Temperature)  
-\- Relative air moisture (%, RelAirMoisture)  
-\- Mean wind (meter / second, Wind)  
-\- Mean cloud cover (in 8 parts, no dimension, CloudCover)  
-\- Precipitation (mm, Precipitation)
+- Relative air moisture (%, RelAirMoisture)  
+- Mean wind (meter / second, Wind)  
+- Mean cloud cover (in 8 parts, no dimension, CloudCover)  
+- Precipitation (mm, Precipitation)
 
 ### Data dictionary
 

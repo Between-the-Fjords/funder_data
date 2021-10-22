@@ -31,8 +31,8 @@ theme_set(theme_bw(base_size = 12))
 
 ```
 
-This is the git repository for the FunCaB and FUNDER projects and base for the data paper:
-xxx et al. (not written yet). FunCaB & FUNDER
+This is the git repository for the FUNDER project and base for the data paper:
+xxx et al. (not written yet).
 
 
 # INTRODUCTION
