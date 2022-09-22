@@ -46,7 +46,7 @@ To achieve this, we use a powerful macroecological experimental approach to quan
 This will allow us to gain a holistic understanding of ecosystem responses to climate change, including non-additive effects, context-dependencies across landscapes, compensatory effects and climate mismatches that may lead to disruption of biotic interactions.
 
 
-```{r proposal_figure, fig.cap= "Figure 1. Climate, Functional groups and soil-foodweb."}
+```{r proposal_figure, fig.cap= "Climate, Functional groups and soil-foodweb."}
 knitr::include_graphics("Figures/Figure_1.jpg")
 ```
 
@@ -60,16 +60,17 @@ Our objectives are to
 
 # METHODS
 
-## Research site
+## Study site
 
+Our study is conducted across the twelve calcareous grassland experimental sites in the Vestland Climate Grid (VCG), in south-western Norway. 
+The VCG sites were chosen to fit within a climate grid reflecting a crossed design encompassing the major bioclimatic variation in Norway, identified using a combination of topographic maps, geological maps (NGU) and interpolated maps of summer temperature and annual precipitation normals 1960-1990 (100 m resolution gridded data, met.no; see 29 and references therein). 
+The twelve sites are arranged across three temperature levels (alpine, sub-alpine, boreal) replicated across each of four levels of precipitation selected to reflect a difference in mean growing season temperature of ca. 2°C (i.e., the four warmest months of the year) between temperature levels (6.5°C, 8.5°C, 10.5°C) and a difference in mean annual precipitation of 700 mm between precipitation levels (700 mm, 1400 mm, 2100 mm, 2800 mm). 
+The final sites were selected, ensuring that other factors such as grazing regime and history, bedrock, vegetation type and structure, slope and exposure were kept as constant as possible among the selected sites30.
+Geographical distance between sites is on average 15 km and ranges from 175 km to 650 m. 
 
-
-```{r exp_design, eval = FALSE, fig.cap= "Figure 2: ..."}
-knitr::include_graphics('Pics/ExperimentalDesign.jpg')
+```{r exp_design, eval = FALSE, fig.cap= "Sites and experimental design"}
+knitr::include_graphics('Figures/Experiment.jpg')
 ```
-
-
-
 
 
 ## Functional group removal experiment (FunCaB)
