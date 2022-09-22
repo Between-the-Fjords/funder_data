@@ -72,21 +72,19 @@ knitr::include_graphics('Pics/ExperimentalDesign.jpg')
 
 
 
-## Experimental design and treatments (FunCaB)
+## Functional group removal experiment (FunCaB)
 
+The functional group removal experiment was designed to examine the impact of aboveground interactions among the major plant functional group, graminoids, forbs and bryophytes, on the performance and functioning of other components of the vegetation and ecosystem. 
+The experiment consists of eight 25×25 cm plots per site and block, with a fully factorial combination of removals of three plant functional groups, with treatments randomized within each block (Figure 1c). 
+The functional groups are abbreviated as follows: G = graminoids (including grasses, sedges and rushes), F = forbs (including herbaceous forbs, pteridophytes, dwarf-shrubs, and small individuals of trees and shrubs), B = Bryophytes (including mosses, liverworts, and hornworts). 
+Note that the species are coded by the functional group into which they were classified in the FunCaB taxon table. 
+The treatments were coded by functional group removed so that FGB = all plants removed, FB = only graminoids remaining, GB = only forbs remaining, GF = only bryophytes remaining, B = graminoids and forbs remaining, F = bryophytes and graminoids remaining, G = bryophytes and forbs remaining, and C = no removal controls. In 2016, four extra control (XC) plots were marked per site for aboveground biomass harvest and ecosystem carbon flux measurements. 
+This sampling regime gave a total of 384 plots, plus the additional 48 controls in 2016.
 
+Functional group removals were done once in 2015 (at peak growing season due to late snowmelt), twice per year in 2016 and 2017 (after the spring growth and at peak growing season) and annually from 2018 - 2022 (at peak growing season) as regrowth had declined (see below) and biannual removals were no longer necessary. 
+At each sampling, all above-ground biomass of the relevant plant functional group was removed from each plot as follows: For each plot, all the above-ground parts of the relevant functional group(s) were removed using scissors and tweezers to cut the plants at the ground layer. 
+Roots and other below-ground parts were not removed, and the non-target vegetation and litter were left intact. 
 
-
-
-### Field site maintenance
-To simulate the natural grazing regime at each site, and to avoid accumulation of biomass, all biomass within the fence was removed at the end of each field season.
-Note that the biomass removal, is not the same as the grazing treatment (see above) and biomass harvesting (see below).
-The grazing treatment is applied to each plot (50 x 50 cm) in early and peak season, while the biomass harvesting occurs at the end of the last field season (25 x 25cm plot).
-The site maintenance has to be done after biomass harvesting.
-
-Climate data was downloaded at start and the end of each field season.
- 
- 
 
 ## Data management
 
