@@ -37,219 +37,138 @@ xxx et al. (not written yet).
 
 # INTRODUCTION
 
-...
+Climate change alters plant and soil communities, as well as processes and interactions in the plant-soil food web. 
+These changes pose threats to biodiversity and key ecosystem functions, such as productivity and carbon and nutrient cycling. 
+To predict how biodiversity and ecosystem functioning will respond to future climatic changes, and how these changes will feed back to the climate system, profound knowledge of climate impacts on underlying ecological responses, processes, mechanisms, and interactions in the plant-soil food web is needed.
 
-```{r proposal_figure, fig.cap= "Figure 1. Climate, Functional groups and soil-foodweb."}
+FUNDER will assess and disentangle the direct effects of climate from the indirect effects, mediated through biotic interactions, on the diversity and whole-ecosystem  functioning of the plant−soil food web. 
+To achieve this, we use a powerful macroecological experimental approach to quantify the impacts of vegetation diversity on interactions and ecosystem functioning across factorial broad-scale temperature and precipitation gradients. 
+This will allow us to gain a holistic understanding of ecosystem responses to climate change, including non-additive effects, context-dependencies across landscapes, compensatory effects and climate mismatches that may lead to disruption of biotic interactions.
+
+
+```{r proposal_figure, fig.cap= "Climate, Functional groups and soil-foodweb."}
 knitr::include_graphics("Figures/Figure_1.jpg")
 ```
 
 
-The specific research questions of the projects are:
+Our objectives are to
 
-...
+* Disentangle direct and indirect climate impacts on plants (WP2), soil nematodes and microarthropods (WP3), and soil microbes (WP4), and ecosystem (WP1-4),
+* Understand landscape variation and whole-ecosystem consequences of indirect effects, and
+* Understand climate feedbacks of the plant-soil food web (WP5).
 
 
 # METHODS
 
-## Research site
+## Study site
 
+Our study is conducted across the twelve calcareous grassland experimental sites in the Vestland Climate Grid (VCG), in south-western Norway. 
+The VCG sites were chosen to fit within a climate grid reflecting a crossed design encompassing the major bioclimatic variation in Norway, identified using a combination of topographic maps, geological maps (NGU) and interpolated maps of summer temperature and annual precipitation normals 1960-1990 (100 m resolution gridded data, met.no; see 29 and references therein). 
+The twelve sites are arranged across three temperature levels (alpine, sub-alpine, boreal) replicated across each of four levels of precipitation selected to reflect a difference in mean growing season temperature of ca. 2°C (i.e., the four warmest months of the year) between temperature levels (6.5°C, 8.5°C, 10.5°C) and a difference in mean annual precipitation of 700 mm between precipitation levels (700 mm, 1400 mm, 2100 mm, 2800 mm). 
+The final sites were selected, ensuring that other factors such as grazing regime and history, bedrock, vegetation type and structure, slope and exposure were kept as constant as possible among the selected sites30.
+Geographical distance between sites is on average 15 km and ranges from 175 km to 650 m. 
 
-
-```{r exp_design, eval = FALSE, fig.cap= "Figure 2: ..."}
-knitr::include_graphics('Pics/ExperimentalDesign.jpg')
+```{r exp_design, eval = FALSE, fig.cap= "Sites and experimental design."}
+knitr::include_graphics("Figures/Experiment.jpg")
 ```
 
 
+## Functional group removal experiment (FunCaB)
 
+The functional group removal experiment was designed to examine the impact of aboveground interactions among the major plant functional group, graminoids, forbs and bryophytes, on the performance and functioning of other components of the vegetation and ecosystem. 
+The experiment consists of eight 25×25 cm plots per site and block, with a fully factorial combination of removals of three plant functional groups, with treatments randomized within each block (Figure 1c). 
+The functional groups are abbreviated as follows: G = graminoids (including grasses, sedges and rushes), F = forbs (including herbaceous forbs, pteridophytes, dwarf-shrubs, and small individuals of trees and shrubs), B = Bryophytes (including mosses, liverworts, and hornworts). 
+Note that the species are coded by the functional group into which they were classified in the FunCaB taxon table. 
+The treatments were coded by functional group removed so that FGB = all plants removed, FB = only graminoids remaining, GB = only forbs remaining, GF = only bryophytes remaining, B = graminoids and forbs remaining, F = bryophytes and graminoids remaining, G = bryophytes and forbs remaining, and C = no removal controls. In 2016, four extra control (XC) plots were marked per site for aboveground biomass harvest and ecosystem carbon flux measurements. 
+This sampling regime gave a total of 384 plots, plus the additional 48 controls in 2016.
 
+Functional group removals were done once in 2015 (at peak growing season due to late snowmelt), twice per year in 2016 and 2017 (after the spring growth and at peak growing season) and annually from 2018 - 2022 (at peak growing season) as regrowth had declined (see below) and biannual removals were no longer necessary. 
+At each sampling, all above-ground biomass of the relevant plant functional group was removed from each plot as follows: For each plot, all the above-ground parts of the relevant functional group(s) were removed using scissors and tweezers to cut the plants at the ground layer. 
+Roots and other below-ground parts were not removed, and the non-target vegetation and litter were left intact. 
 
-## Experimental design and treatments (FunCaB)
-
-
-
-
-
-### Field site maintenance
-To simulate the natural grazing regime at each site, and to avoid accumulation of biomass, all biomass within the fence was removed at the end of each field season.
-Note that the biomass removal, is not the same as the grazing treatment (see above) and biomass harvesting (see below).
-The grazing treatment is applied to each plot (50 x 50 cm) in early and peak season, while the biomass harvesting occurs at the end of the last field season (25 x 25cm plot).
-The site maintenance has to be done after biomass harvesting.
-
-Climate data was downloaded at start and the end of each field season.
- 
- 
 
 ## Data management
 
-### Location of data and supporting information 
+### Location of data, metadata and code
 
-**Project description**, **data dictionaries**, and the overview of all **data sets** are in this readme file you are reading, available on GitHub: https://github.com/Between-the-Fjords/funder_data
+The **project description**, an overview of all the **datasets**, and the **data dictionaries** are in this readme file, available on [GitHub](https://github.com/Between-the-Fjords/funder_data). 
 
-The **data** from the project is stored and available on OSF: https://osf.io/tx9r2/
+The raw and clean **datasets** from this project are stored and available on [OSF](https://osf.io/tx9r2/).
 
-All R code for the analyses from the Norwegian project is on GitHub: https://github.com/Between-the-Fjords/funder_data
-
-General information about the project are available on the project webpage:
-https://betweenthefjords.w.uib.no/three-d/
+All R code for the cleaning the raw data is available on [GitHub](https://github.com/Between-the-Fjords/funder_data).
 
 
 ### Naming conventions used for the data
 
-| Data or file  | Description of naming convention  |
-|:---|:---|
-| Readme files  | Project_Experiment_Dataset_Year_Readme.extension  |
-| species  | Vascular plant taxon names follow for Norway Lid & Lid(Lid J & Lid, 2010). The full taxa is written using genus and species with a blank. |
-| Project  | FunCaB or FUNDER  |
-| Datasets  | Project_Experiment_Dataset_Year: FunCaB_plant_community_2019  |
-| siteID  | Name of the site; Vikesland, Alrust,... |
-| blockID  | block number, numeric value  |
-| treatment  | Treatment of functional group removal indicating which groups have been removed; F = forbs, G = graminoids, B = Bryophytes |
-| removal_fg  | Functional group that has been removed; F = forbs, G = graminoids, B = Bryophytes  |
-| responses  | response variable, e.g. cover, biomass, Reco, etc. |
+| Files or variable  | Naming convention  | Example  |
+|:---|:---|:---|
+| Project  | Project name  |FUNDER or FunCaB |
+| Datasets  | Project_Status_(Experiment)_Response_Year(s).Extension | FUNDER_clean_microbial_community_2022-2023.csv |
+|  |  |  |
+| siteID  | Name of the site written out fully| Vikesland, Alrust |
+| blockID  | Block number as numeric value  | 1, 2, 3, 4 |
+| treatment  | Treatment of functional group removal indicating which groups have been removed | F = forbs, G = graminoids, B = Bryophytes |
+| removal_fg  | Functional group that has been removed (only for vegetation data) | F = forbs, G = graminoids, B = Bryophytes |
+| species  | Vascular plant taxon names follow for Norway Lid & Lid (Lid J & Lid, 2010). The full taxa is written using genus and species with a blank. | *Leontopodium nivale* |
+| responses  | Response variables | cover, biomass, Reco |
 
 
+## Overview of datasets
 
-## Data collection and measurements
+This is an overview over all the datasets.
+They are available on [OSF](https://osf.io/tx9r2/).
 
-The following datasets were collected and are available : https://osf.io/tx9r2/
-
-| Variable  | Time period  | Level | Data file  |
+| Response  | Time period  | Level | Project  |
 |:---|:---|:---|:---|
-| **Site** |  |  |  |
-| .. | ..  | ..  | ...  |
+| **Site level** |  |  |  |
+| Coordinates, elevation | - | Site | VCG |
+| Geology, Land-use history | - | Site | VCG |
+| |  |  |  |
 | **Vegetation** |  |  |  |
-| Species cover  | 2015 - 2019  | Plot  | ...  |
-| Species presence  | 2015 - 2019  | Subplot  | ...  |
-| Vegetation height  | 2015 - 2019  | Plot  | ...  |
-| Functional group biomass  | 2015 - 2021  | Plot  | FunCaB_Biomass_22015-020.csv  |
-| Reflectance  | 2021  | Plot  | ...  |
+| Vascular plant species cover  | 2015 - 2019, 2022  | Plot  | FunCaB  |
+| Vascular plant species presence  | 2015 - 2019, 2022  | Subplot  | FunCaB |
+| Vegetation height  | 2015 - 2019, 2022  | Plot  | FunCaB  |
+| Functional group biomass  | 2015 - 2022  | Plot  | FunCaB/FUNDER  |
+| Total biomass  | 2022  | Plot  | FUNDER  |
+| Reflectance  | 2021  | Plot  | FunCaB  |
+| |  |  |  |
+| Root biomass  | 2022  | Plot  | FUNDER  |
+| Root productivity  | 2022  | Plot  | FUNDER  |
+| Root traits  | 2022  | Plot  | FUNDER  |
+| |  |  |  |
+| Bryophyte composition  | 2022  | Plot  | FUNDER  |
+| Bryophyte presence?  | 2022  | Plot  | FUNDER  |
+| Bryophyte functional traits  | 2022  | Plot  | FUNDER  |
+| |  |  |  |
 | **C-flux** |  |  |  |
-| Ecosystem fluxes  | 2015-2018  | Plot  | ...  |
+| Ecosystem carbon fluxes  | 2015-2018, 2022  | Plot  | FunCaB/FUNDER  |
+| Litter bag decomposition  | 2022  | Plot  | FUNDER  |
+| Tea bag decomposition  | 2022  | Plot  | FUNDER  |
+| |  |  |  |
+| **Soil food web** |  |  |  |
+| Fungal functional groups and diversity  | 2022  | Plot  | FUNDER  |
+| Bacteria functional groups and diversity  | 2022  | Plot  | FUNDER  |
+| Mycelia production  | 2022  | Plot  | FUNDER  |
+| Mesofauna functional groups and diversity  | 2022  | Plot  | FUNDER  |
+| Mesofauna abundance and biomass  | 2022  | Plot  | FUNDER  |
+| |  |  |  |
 | **Soil** |  |  |  |
-| Soil depth  | 2019  | Plot  | THREE-D_PlotLevel_Depth_2019.csv  |
-| Soil texture  | 2019  | Site  | THREE-D_Soil_2019-2020.csv  |
-| Bulk density  | 2019  | Plot  | THREE-D_Soil_2019-2020.csv  |
-| Soil pH  | 2019  | Site  | THREE-D_Soil_2019-2020.csv  |
-| Soil organic matter  | 2019  | Block  | THREE-D_Soil_2019-2020.csv  |
-| Soil C and N stocks  | 2019 - 2020  | Site  | THREE-D_Soil_2019-2020.csv  |
-| Soil nutrients  | 2021  | Site  | xxx  |
-| Decomposition | 2021  | Plot  | xxx  |
+| C and N stocks  | 2022  | Plot  | FUNDER  |
+| Available nutrients  | 2022  | Plot  | FUNDER  |
+| Soil depth  | 2022  | Plot  | FUNDER  |
+| |  |  |  |
 | **Climate** |  |  |  |
-| Air, ground and soil temperature  | 2019 - 2020  | Plot  | THREE-D_TomstLogger_2019_2020.csv  |
-| Soil moisture  | 2019 - 2020  | Plot  | THREE-D_TomstLogger_2019_2020.csv  |
-| Gridded climate  | 2009 - 2019  | Site  | THREE_D_Gridded_DailyClimate_2009-2019.csv  |
+| Soil temperature and moisture  | 2022  | Plot  | FUNDER  |
+| Soil temperature and moisture  | 2015-2017  | Plot  | FunCaB  |
+| Climate | 2009-2022  | Site  | VCG  |
 
 
-
-### Plant species composition
-Plant species composition was recorded annually at peak growing season, in 2019 and 2021.
-In 2020, not all the plots were surveyed due to fieldwork restrictions related to the corona pandemic.
-Each 25 x 25 cm plots was divided into 25 subplots (Figure 3).
-The recording started in the upper left corner, and went row by row, from left to the right.
-In each subplot and for each species we recorded presence as sterile (1), dominant (D; covered more than 50% of the sub-plot), fertile (F; bud, flower, seeds), juvenile (J; not yet adult), or a seedling (S; cotyledons still attached; S).
-For each species, the highest level was recorded, i.e. if there was a seedling and an adult, the adult was recorded.
-So, the number of juveniles and seedlings were only consistently recorded if these were the only individuals present in the subplot of that species.
-We also noted the presence of seedlings in each subplot, but they were not identified to species.
-In addition, we recorded the percentage cover of vascular plants (only total), bryophytes, lichen, litter, bare ground and bare rock in each subplot.
-
-In 2020, species composition was recorded fully only for the control and warmed plots receiving no nitrogen (block 1, 4, and 10).
-For the rest of the plots, only percentage cover by functional group was recorded.
-
-In each 25 x 25 cm plot, the total percentage cover of each vascular plant species was estimated visually.
-At 4 points in the grid, average vegetation height and moss layer depth was measured using a ruler.
-For each turf, date, originSite, originBlockID, originPlotID, weather, scribe and recorder and remarks were noted down. A picture was taken from each plot.
-
-For the Norwegian data, the nomenclature follows Lid & Lid(2010).
-Each species of vascular plant was classified by functional type (graminoid, forb, woody) and biogeographic affinity based on information given in Lid & Lid(2010).
-Specifically, species reported to be present in the Nemoral but lacking from the Low- Mid- or High Alpine are classified as “lowland”, species present in the Alpine but lacking from the Nemoral to South Boreal are classified as “alpine”, whereas all other species (i.e., species that span the gradient from Nemoral to Alpine zones) are classified as “generalist”. 
-Write something about China…
-
-*Data handling:* After each field season the data was checked vizually by plotting the cover of each species per plot over time.
-This allowed to compare change in species composition over time and check for errors.
-Obvious errors in species identification was corrected after comparing these plots.
+## Methods
 
 
+## Data dictionary
 
 
-### Reflectance
-Reflectance (greenness) was measured several times during the season in each plot from 2020-2021 (2022).
-The greenseeker measures in an elliptical shape, and the light source and receiver should be located in the middle of the plot.
-The green seeker is placed 60 cm above the plot and parallel to the ground, using a ruler.
-Two measurements are done per plot perpendicular to each other to account for the elliptical shape.
-
-*Data handling:* The data was visually checked for unrealistic values, which were corrected or removed if there was a valid reason (e.g. shade or snow on the plot).
-Unrealistic values, where the comma was forgotten, were divided by 100.
-
-
-
-### Aboveground biomass
-
-Biomass was harvested 1-2 times per growing season....
-
-
-The biomass was then dried at 65°C for 72 hours and weighed.
-
-*Data handling:* The data was visually checked for unrealistic values, which were corrected or removed if there was a valid reason.
-
-
-### Decomposition
-
-
-
-
-### Ecosystem fluxes
-Net ecosystem exchange (NEE) and ecosystem respiration (ER) were measured on the field while gross ecosystem production (GEP) is calculated as GEP = NEE - ER.
-Carbon fluxes are measured with a closed loop chamber system connected to an infrared gaz analyser (INGRA; Li-840A, Li-cor).
-The plexiglas chamber (25x25x40 cm) is connected to the INGRA with plastic tubes (inlet and outlet, 3m long and 4mm diameter each).
-A filter prevents water droplets and small particules from entering the INGRA and an air pump ensures a flow of 1L/mn.
-The chamber is equiped with a fan to mix the air, a thermocouple (Pt1000, Delta-T) to measure air temperature and a PAR sensor.
-In 2020 the air temperature was measured with an iButton.
-Airtightness is ensured by laying a heavy chain on the "skirt" of the chamber (a piece of tarp taped to the lower part of the chamber).
-NEE is measured with a transparent chamber.
-ER is measured with a dark chamber, in our case the transparent chamber was covered with a thick dark tarp.
-The CO~2~ concentration was measured every seconds and logged in a datalogger (Squirrel 2010).
-The chamber was put on the plot during two minutes for each measurements and then aired during one minute.
-Since the logger was logging continuesly, the start and end time of each measurement was noted (it is necessary to precisely synchronise the logger clock with the watch used on the field and to regularly check it).
-The function `match.flux()` is matching the time in the logger file with the plot being measured at that time (using the time recorded on the field).
-It attributes the concentration of CO~2~ measured every seconds to the correct measurement.
-A linear regression is fitted to every measurements and the slope is used to calculated the flux.
-
-<img src="https://render.githubusercontent.com/render/math?math=flux=slope\times \frac{P\times V}{R\times T\times A}">
-
-where
-flux: the flux of CO~2~ at the surface of the plot (mmol/m^2^/h)
-slope: slope of linear regression fitting the CO~2~ concentration versus time (ppm^-1^)
-P: pressure, assumed 1 atm
-V: volume of the chamber and tubing (L)
-R: gas constant (0.082057 L\*atm\*K^-1^\*mol^-1^)
-T: chamber air temperature (K)
-A: area of chamber frame base (m^2^)
-
-
-
-### Soil
-
-
-
-
-#### Climate data
-
-**Climate stations**
-
-**iButtons**
-
-**Gridded climate data** Gridded data are daily climate values for three sites from 2009 - 2019 from The Norwegian Meteorological Institute (from Ole Einar Tveito, 16.12.2019).
-The climate variables are:
- - Mean daily temperature (°C, Temperature)  
- - Relative air moisture (%, RelAirMoisture)  
- - Mean wind (meter / second, Wind)  
- - Mean cloud cover (in 8 parts, no dimension, CloudCover)  
- - Precipitation (mm, Precipitation)
-
-
-### Data dictionary
-
-#### Biomass
 ```{r biomassdic, eval=FALSE}
  knitr::kable(biomass_dic)
 ```
