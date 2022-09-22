@@ -37,16 +37,25 @@ xxx et al. (not written yet).
 
 # INTRODUCTION
 
-...
+Climate change alters plant and soil communities, as well as processes and interactions in the plant-soil food web. 
+These changes pose threats to biodiversity and key ecosystem functions, such as productivity and carbon and nutrient cycling. 
+To predict how biodiversity and ecosystem functioning will respond to future climatic changes, and how these changes will feed back to the climate system, profound knowledge of climate impacts on underlying ecological responses, processes, mechanisms, and interactions in the plant-soil food web is needed.
+
+FUNDER will assess and disentangle the direct effects of climate from the indirect effects, mediated through biotic interactions, on the diversity and whole-ecosystem  functioning of the plant−soil food web. 
+To achieve this, we use a powerful macroecological experimental approach to quantify the impacts of vegetation diversity on interactions and ecosystem functioning across factorial broad-scale temperature and precipitation gradients. 
+This will allow us to gain a holistic understanding of ecosystem responses to climate change, including non-additive effects, context-dependencies across landscapes, compensatory effects and climate mismatches that may lead to disruption of biotic interactions.
+
 
 ```{r proposal_figure, fig.cap= "Figure 1. Climate, Functional groups and soil-foodweb."}
 knitr::include_graphics("Figures/Figure_1.jpg")
 ```
 
 
-The specific research questions of the projects are:
+Our objectives are to
 
-...
+* Disentangle direct and indirect climate impacts on plants (WP2), soil nematodes and microarthropods (WP3), and soil microbes (WP4), and ecosystem (WP1-4),
+* Understand landscape variation and whole-ecosystem consequences of indirect effects, and
+* Understand climate feedbacks of the plant-soil food web (WP5).
 
 
 # METHODS
