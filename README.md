@@ -96,13 +96,16 @@ cut the plants at the ground layer. Roots and other below-ground parts
 were not removed, and the non-target vegetation and litter were left
 intact.
 
-## Data management
+# DATA MANAGEMENT
 
-### Location of data, metadata and code
+## Location of data, metadata and code
 
 The **project description**, an overview of all the **datasets**, and
 the **data dictionaries** are in this readme file, available on
-[GitHub](https://github.com/Between-the-Fjords/funder_data).
+[GitHub](https://github.com/Between-the-Fjords/funder_data). The draft
+for the data paper is available
+[here](https://docs.google.com/document/d/1Pj1kq1sZVcJnLe_Vjtw6-ayrMut1l4DHElbS9cxnnOw/edit).
+(only available for authors)
 
 The raw and clean **datasets** from this project are stored and
 available on [OSF](https://osf.io/tx9r2/).
@@ -124,6 +127,59 @@ All R code for the cleaning the raw data is available on
 | species           | Vascular plant taxon names follow for Norway Lid & Lid (Lid J & Lid, 2010). The full taxa is written using genus and species with a blank. | *Leontopodium nivale*                          |
 | responses         | Response variables                                                                                                                         | cover, biomass, Reco                           |
 
+### Create metadata
+
+To create the metadata, a file includes all the sites, blocks and
+treatments run the following code. It will directly produce an excel
+file called: *Funder_2022_metadata.csv*.
+
+``` r
+# create metadata file
+source("R/create_metadata.R")
+```
+
+### Valid siteID
+
+Here is the list of valid siteIDs in VCG.
+
+| siteID          |
+|:----------------|
+| Fauske          |
+| Vikesland       |
+| Arhelleren      |
+| Ovstedalen      |
+| Alrust          |
+| Hogsete         |
+| Rambera         |
+| Veskre          |
+| Ulvehaugen      |
+| Lavisdalen      |
+| Gudmedalen      |
+| Skjelingahaugen |
+
+Below is code to clean the site names. On the left side are the *old
+names* (e.g. Gud) that you want to replace (change to what fits your
+data). And on the right side are *valid names*, which will replace the
+old names (don’t change!).
+
+``` r
+# code to clean site names
+dat |> 
+  mutate(siteID = recode(siteID, 
+         'Gud' = "Gudmedalen",
+         'Lad' = "Lavisdalen",
+         'Ram' = "Rambera",
+         'Ulv' = "Ulvehaugen",
+         'Skj' = "Skjelingahaugen",
+         'Alr' = "Alrust",
+         'Arh' = "Arhelleren",
+         'Fau' = "Fauske",
+         'Hog' = "Hogsete",
+         'Ovs' = "Ovstedalen",
+         'Vik' = "Vikesland",
+         'Ves' = "Veskre"))
+```
+
 ## Overview of datasets
 
 This is an overview over all the datasets. They are available on
@@ -135,7 +191,7 @@ This is an overview over all the datasets. They are available on
 | Coordinates, elevation                    | \-                | Site    | VCG           |
 | Geology, Land-use history                 | \-                | Site    | VCG           |
 |                                           |                   |         |               |
-| **Vegetation**                            |                   |         |               |
+| **1) Vegetation**                         |                   |         |               |
 | Vascular plant species cover              | 2015 - 2019, 2022 | Plot    | FunCaB        |
 | Vascular plant species presence           | 2015 - 2019, 2022 | Subplot | FunCaB        |
 | Vegetation height                         | 2015 - 2019, 2022 | Plot    | FunCaB        |
@@ -151,24 +207,27 @@ This is an overview over all the datasets. They are available on
 | Bryophyte presence?                       | 2022              | Plot    | FUNDER        |
 | Bryophyte functional traits               | 2022              | Plot    | FUNDER        |
 |                                           |                   |         |               |
-| **C-flux**                                |                   |         |               |
-| Ecosystem carbon fluxes                   | 2015-2018, 2022   | Plot    | FunCaB/FUNDER |
-| Litter bag decomposition                  | 2022              | Plot    | FUNDER        |
-| Tea bag decomposition                     | 2022              | Plot    | FUNDER        |
-|                                           |                   |         |               |
-| **Soil food web**                         |                   |         |               |
-| Fungal functional groups and diversity    | 2022              | Plot    | FUNDER        |
-| Bacteria functional groups and diversity  | 2022              | Plot    | FUNDER        |
+| **2) Mesofauna**                          |                   |         |               |
 | Mycelia production                        | 2022              | Plot    | FUNDER        |
 | Mesofauna functional groups and diversity | 2022              | Plot    | FUNDER        |
 | Mesofauna abundance and biomass           | 2022              | Plot    | FUNDER        |
 |                                           |                   |         |               |
-| **Soil**                                  |                   |         |               |
+| **3) Fungi**                              |                   |         |               |
+| Fungal functional groups and diversity    | 2022              | Plot    | FUNDER        |
+|                                           |                   |         |               |
+| **4) Bacteria**                           |                   |         |               |
+| Bacteria functional groups and diversity  | 2022              | Plot    | FUNDER        |
+| **5) Carbon cycling**                     |                   |         |               |
+| Ecosystem carbon fluxes                   | 2015-2018, 2022   | Plot    | FunCaB/FUNDER |
+| Litter bag decomposition                  | 2022              | Plot    | FUNDER        |
+| Tea bag decomposition                     | 2022              | Plot    | FUNDER        |
+|                                           |                   |         |               |
+| **6) Nutrient cycling**                   |                   |         |               |
 | C and N stocks                            | 2022              | Plot    | FUNDER        |
 | Available nutrients                       | 2022              | Plot    | FUNDER        |
 | Soil depth                                | 2022              | Plot    | FUNDER        |
 |                                           |                   |         |               |
-| **Climate**                               |                   |         |               |
+| **7) Climate**                            |                   |         |               |
 | Soil temperature and moisture             | 2022              | Plot    | FUNDER        |
 | Soil temperature and moisture             | 2015-2017         | Plot    | FunCaB        |
 | Climate                                   | 2009-2022         | Site    | VCG           |
@@ -176,3 +235,41 @@ This is an overview over all the datasets. They are available on
 ## Methods
 
 ## Data dictionary
+
+**How to make a data dictionary?**
+
+*Make data description table*
+
+Find the file *R/data_dic/data_description.xlsx*. Enter all the
+variables into that table, including variable name, description,
+unit/treatment level and how measured. If the variables are global for
+all of Funder, leave TableID blank (e.g. siteID). If the variable is
+unique for a specific dataset, create a TableID and use it consistently
+for one specific dataset. Make sure you have described all variables.
+
+*Make data dictionary*
+
+Find the file *R/data_dic/data_dic.R*. Add code to import the dataset,
+e.g. read_csv and give it a name. Then run the function make_data_dic()
+on your dataset. Check that the function produces the correct data
+dictionary.
+
+*Add data dictionary to readme file*
+
+Finally, add the data dictionary below to be displayed in this readme
+file. Add a title, and a code chunk using `kable()` to display the data
+dictionary.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+### 1 VEGETATION DATA
+
+## Biomass
+
+``` r
+ knitr::kable(biomass_dic)
+```
+
+------------------------------------------------------------------------
