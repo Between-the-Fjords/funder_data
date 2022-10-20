@@ -1,6 +1,7 @@
 #### LOAD PACKAGES ####
 
 library(tidyverse)
+library(usethis)
 library(lubridate)
 library(stringi)
 library(readxl)
@@ -9,6 +10,3 @@ library(writexl)
 library(dataDownloader)
 library(validate)
 
-
-# Stuff
-pn <- . %>% print(n = Inf)

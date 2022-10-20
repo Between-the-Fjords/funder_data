@@ -106,24 +106,13 @@ All R code for the cleaning the raw data is available on [GitHub](https://github
 | Project  | Project name  |FUNDER or FunCaB |
 | Datasets  | Project_Status_(Experiment)_Response_Year(s).Extension | FUNDER_clean_microbial_community_2022-2023.csv |
 |  |  |  |
-| siteID  | Name of the site written out fully| Vikesland, Alrust |
-| blockID  | Block number as numeric value  | 1, 2, 3, 4 |
-| treatment  | Treatment of functional group removal indicating which groups have been removed | F = forbs, G = graminoids, B = Bryophytes |
-| removal_fg  | Functional group that has been removed (only for vegetation data) | F = forbs, G = graminoids, B = Bryophytes |
+| siteID  | Unique site ID written out fully| Vikesland, Alrust |
+| blockID  | Unique block ID, with 3 first letters of siteID and a number (1-4) | Alr1 |
+| plotID  | Unique plot ID with blockID and treatment | Alr1FGB |
+| treatment  | Plant functional groups removed, where F = forbs, G = graminoids, B = bryophytes, C = control | FGB, FG, FB, GB, G, F, B, C |
+| removal_fg  | Removed functional group, where F = forbs, G = graminoids, B = bryophytes. | F, G, B |
 | species  | Vascular plant taxon names follow for Norway Lid & Lid (Lid J & Lid, 2010). The full taxa is written using genus and species with a blank. | *Leontopodium nivale* |
 | responses  | Response variables | cover, biomass, Reco |
-
-
-### Create metadata
-
-To create the metadata, a file includes all the sites, blocks and treatments run the following code.
-It will directly produce an excel file called: *Funder_2022_metadata.csv*.
-
-```{r metadata, eval=FALSE, echo=TRUE}
-# create metadata file
-source("R/create_metadata.R")
-
-```
 
 
 ### Valid siteID
@@ -152,19 +141,20 @@ And on the right side are *valid names*, which will replace the old names (don't
 ```{r clean-site, eval=FALSE, echo=TRUE}
 # code to clean site names
 dat |> 
-  mutate(siteID = recode(siteID, 
-         'Gud' = "Gudmedalen",
-         'Lad' = "Lavisdalen",
-         'Ram' = "Rambera",
-         'Ulv' = "Ulvehaugen",
-         'Skj' = "Skjelingahaugen",
-         'Alr' = "Alrust",
-         'Arh' = "Arhelleren",
-         'Fau' = "Fauske",
-         'Hog' = "Hogsete",
-         'Ovs' = "Ovstedalen",
-         'Vik' = "Vikesland",
-         'Ves' = "Veskre"))
+  mutate(siteID = recode(siteID,
+                         # old name (replace) = valid name (do not change)
+                         'Gud' = "Gudmedalen",
+                         'Lav' = "Lavisdalen",
+                         'Ram' = "Rambera",
+                         'Ulv' = "Ulvehaugen",
+                         'Skj' = "Skjelingahaugen",
+                         'Alr' = "Alrust",
+                         'Arh' = "Arhelleren",
+                         'Fau' = "Fauske",
+                         'Hog' = "Hogsete",
+                         'Ovs' = "Ovstedalen",
+                         'Vik' = "Vikesland",
+                         'Ves' = "Veskre"))
 ```
 
 
@@ -175,51 +165,51 @@ This is an overview over all the datasets.
 They are available on [OSF](https://osf.io/tx9r2/).
 
 | Response  | Time period  | Level | Project  | Filename  |
-|:---|:---|:---|:---|
-| **Site level** |  |  |  |
-| Coordinates, elevation | - | Site | VCG |
-| Geology, Land-use history | - | Site | VCG |
-| |  |  |  |
-| **1) Vegetation** |  |  |  |
-| Vascular plant species cover  | 2015 - 2019, 2022  | Plot  | FunCaB  |
-| Vascular plant species presence  | 2015 - 2019, 2022  | Subplot  | FunCaB |
-| Vegetation height  | 2015 - 2019, 2022  | Plot  | FunCaB  |
-| Functional group biomass  | 2015 - 2022  | Plot  | FunCaB/FUNDER  |
-| Total biomass  | 2022  | Plot  | FUNDER  |
-| Reflectance  | 2021  | Plot  | FunCaB  |
-| |  |  |  |
-| Root biomass  | 2022  | Plot  | FUNDER  |
-| Root productivity  | 2022  | Plot  | FUNDER  |
-| Root traits  | 2022  | Plot  | FUNDER  |
-| |  |  |  |
-| Bryophyte composition  | 2022  | Plot  | FUNDER  |
-| Bryophyte presence?  | 2022  | Plot  | FUNDER  |
-| Bryophyte functional traits  | 2022  | Plot  | FUNDER  |
-| |  |  |  |
-| **2) Mesofauna** |  |  |  |
-| Mycelia production  | 2022  | Plot  | FUNDER  |
-| Mesofauna functional groups and diversity  | 2022  | Plot  | FUNDER  |
-| Mesofauna abundance and biomass  | 2022  | Plot  | FUNDER  |
-| |  |  |  |
-| **3) Fungi** |  |  |  |
-| Fungal functional groups and diversity  | 2022  | Plot  | FUNDER  |
-| |  |  |  |
-| **4) Bacteria** |  |  |  |
-| Bacteria functional groups and diversity  | 2022  | Plot  | FUNDER  |
-| **5) Carbon cycling** |  |  |  |
-| Ecosystem carbon fluxes  | 2015-2018, 2022  | Plot  | FunCaB/FUNDER  |
-| Litter bag decomposition  | 2022  | Plot  | FUNDER  |
-| Tea bag decomposition  | 2022  | Plot  | FUNDER  |
-| |  |  |  |
-| **6) Nutrient cycling** |  |  |  |
-| C and N stocks  | 2022  | Plot  | FUNDER  |
-| Available nutrients  | 2022  | Plot  | FUNDER  |
-| Soil depth  | 2022  | Plot  | FUNDER  |
-| |  |  |  |
-| **7) Climate** |  |  |  |
-| Soil temperature and moisture  | 2022  | Plot  | FUNDER  |
-| Soil temperature and moisture  | 2015-2017  | Plot  | FunCaB  |
-| Climate | 2009-2022  | Site  | VCG  |
+|:---|:---|:---|:---|:---|
+| **Site level** |  |  |  |  |
+| Coordinates, elevation | - | Site | VCG |  e.g. VCG_clean_coordinates.csv |
+| Geology, Land-use history | - | Site | VCG |  |
+| |  |  |  |  |
+| **1) Vegetation** |  |  |  |  |
+| Vascular plant species cover  | 2015 - 2019, 2022  | Plot  | FunCaB  |  |
+| Vascular plant species presence  | 2015 - 2019, 2022  | Subplot  | FunCaB |  |
+| Vegetation height  | 2015 - 2019, 2022  | Plot  | FunCaB  |  |
+| Functional group biomass  | 2015 - 2022  | Plot  | FunCaB/FUNDER  |  |
+| Total biomass  | 2022  | Plot  | FUNDER  |  |
+| Reflectance  | 2021  | Plot  | FunCaB  |  |
+| |  |  |  |  |
+| Root biomass  | 2022  | Plot  | FUNDER  |  |
+| Root productivity  | 2022  | Plot  | FUNDER  |  |
+| Root traits  | 2022  | Plot  | FUNDER  |  |
+| |  |  |  |  |
+| Bryophyte composition  | 2022  | Plot  | FUNDER  |  |
+| Bryophyte presence?  | 2022  | Plot  | FUNDER  |  |
+| Bryophyte functional traits  | 2022  | Plot  | FUNDER  |  |
+| |  |  |  |  |
+| **2) Mesofauna** |  |  |  |  |
+| Mycelia production  | 2022  | Plot  | FUNDER  |  |
+| Mesofauna functional groups and diversity  | 2022  | Plot  | FUNDER  |  |
+| Mesofauna abundance and biomass  | 2022  | Plot  | FUNDER  |  |
+| |  |  |  |  |
+| **3) Fungi** |  |  |  |  |
+| Fungal functional groups and diversity  | 2022  | Plot  | FUNDER  |  |
+| |  |  |  |  |
+| **4) Bacteria** |  |  |  |  |
+| Bacteria functional groups and diversity  | 2022  | Plot  | FUNDER  |  |
+| **5) Carbon cycling** |  |  |  |  |
+| Ecosystem carbon fluxes  | 2015-2018, 2022  | Plot  | FunCaB/FUNDER  |  |
+| Litter bag decomposition  | 2022  | Plot  | FUNDER  |  |
+| Tea bag decomposition  | 2022  | Plot  | FUNDER  |  |
+| |  |  |  |  |
+| **6) Nutrient cycling** |  |  |  |  |
+| C and N stocks  | 2022  | Plot  | FUNDER  |  |
+| Available nutrients  | 2022  | Plot  | FUNDER  |  |
+| Soil depth  | 2022  | Plot  | FUNDER  |  |
+| |  |  |  |  |
+| **7) Climate** |  |  |  |  |
+| Soil temperature and moisture  | 2022  | Plot  | FUNDER  |  |
+| Soil temperature and moisture  | 2015-2017  | Plot  | FunCaB  |  |
+| Climate | 2009-2022  | Site  | VCG  |  |
 
 
 ## Methods
