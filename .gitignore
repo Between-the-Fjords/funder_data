@@ -62,6 +62,7 @@ vignettes/*.pdf
 *.RData.Tmp1
 *.rds
 *.bib
+!R/data_dic/data_description.xlsx
 
 #rasters & shapefiles
 *.bil

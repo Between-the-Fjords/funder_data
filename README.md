@@ -115,18 +115,18 @@ All R code for the cleaning the raw data is available on
 
 ### Naming conventions used for the data
 
-| Files or variable | Naming convention                                                                                                                          | Example                                        |
-|:------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------|
-| Project           | Project name                                                                                                                               | FUNDER or FunCaB                               |
-| Datasets          | Project_Status\_(Experiment)\_Response_Year(s).Extension                                                                                   | FUNDER_clean_microbial_community_2022-2023.csv |
-|                   |                                                                                                                                            |                                                |
-| siteID            | Unique site ID written out fully                                                                                                           | Vikesland, Alrust                              |
-| blockID           | Unique block ID, with 3 first letters of siteID and a number (1-4)                                                                         | Alr1                                           |
-| plotID            | Unique plot ID with blockID and treatment                                                                                                  | Alr1FGB                                        |
-| treatment         | Plant functional groups removed, where F = forbs, G = graminoids, B = bryophytes, C = control                                              | FGB, FG, FB, GB, G, F, B, C                    |
-| removal_fg        | Removed functional group, where F = forbs, G = graminoids, B = bryophytes.                                                                 | F, G, B                                        |
-| species           | Vascular plant taxon names follow for Norway Lid & Lid (Lid J & Lid, 2010). The full taxa is written using genus and species with a blank. | *Leontopodium nivale*                          |
-| responses         | Response variables                                                                                                                         | cover, biomass, Reco                           |
+| Files or variable | Naming convention                                                                                                                                                                                    | Example                                        |
+|:------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------|
+| Project           | Project name                                                                                                                                                                                         | FUNDER or FunCaB                               |
+| Datasets          | Project_Status\_(Experiment)\_Response_Year(s).Extension                                                                                                                                             | FUNDER_clean_microbial_community_2022-2023.csv |
+|                   |                                                                                                                                                                                                      |                                                |
+| siteID            | Unique site ID written out fully                                                                                                                                                                     | Vikesland, Alrust                              |
+| blockID           | Unique block ID, with 3 first letters of siteID and a number (1-4)                                                                                                                                   | Alr1                                           |
+| plotID            | Unique plot ID with blockID and treatment                                                                                                                                                            | Alr1FGB                                        |
+| treatment         | Plant functional groups removed, where F = forbs, G = graminoids, B = bryophytes, C = control                                                                                                        | FGB, GF, FB, GB, G, F, B, C                    |
+| removal_fg        | Removed functional group, where F = forbs, G = graminoids, B = bryophytes.                                                                                                                           | F, G, B                                        |
+| species           | Vascular plant taxon names follow for Norway Lid & Lid (Lid J & Lid, 2010). We use abbreviations for species names using the three first letter of the genus and species with a point in the middle. | *Leontopodium nivale* would be *Leo.niv*       |
+| responses         | Response variables                                                                                                                                                                                   | cover, biomass, Reco                           |
 
 ### Valid siteID
 
@@ -229,6 +229,20 @@ This is an overview over all the datasets. They are available on
 
 **How to make a data dictionary?**
 
+The R package **dataDocumentation** that will help you to make the data
+dictionary. You can install and load the package as follows:
+
+``` r
+# if needed install the remotes package
+install.packages("remotes")
+
+# then install the dataDocumentation package
+remotes::install_github("audhalbritter/dataDocumentation")
+
+# and load it
+library(dataDocumentation)
+```
+
 *Make data description table*
 
 Find the file *R/data_dic/data_description.xlsx*. Enter all the
@@ -240,16 +254,25 @@ for one specific dataset. Make sure you have described all variables.
 
 *Make data dictionary*
 
-Find the file *R/data_dic/data_dic.R*. Add code to import the dataset,
-e.g. read_csv and give it a name. Then run the function make_data_dic()
-on your dataset. Check that the function produces the correct data
-dictionary.
+Then run the function make_data_dic().
+
+``` r
+data_dic <- make_data_dictionary(data = biomass,
+                                 description_table = description_table,
+                                 table_ID = "biomass",
+                                 keep_table_ID = FALSE)
+```
+
+Check that the function produces the correct data dictionary.
 
 *Add data dictionary to readme file*
 
 Finally, add the data dictionary below to be displayed in this readme
 file. Add a title, and a code chunk using `kable()` to display the data
 dictionary.
+
+For more details go to the [dataDocumentation
+readme](https://github.com/audhalbritter/dataDocumentation) file.
 
 ------------------------------------------------------------------------
 
