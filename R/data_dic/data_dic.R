@@ -7,7 +7,14 @@ source(file = "R/load_packages.R")
 #source("R/data_dic/download_clean_data.R")
 
 # data dictionary function
-source("R/data_dic/make_data_dictionary.R")
+# if needed install the remotes package
+#install.packages("remotes")
+
+# then install the dataDocumentation package
+#remotes::install_github("audhalbritter/dataDocumentation")
+
+# and load it
+library(dataDocumentation)
 
 # read in data description table
 description_table <- read_excel("R/data_dic/data_description.xlsx")
