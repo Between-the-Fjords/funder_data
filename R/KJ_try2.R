@@ -1,3 +1,0 @@
-# Another try
-
-x <- "penguin"
