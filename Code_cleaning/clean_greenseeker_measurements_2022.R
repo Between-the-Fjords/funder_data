@@ -90,7 +90,7 @@ greenseeker_long[greenseeker_long$plotID == "Hog1GF" &
                    greenseeker_long$rep == "2", "record"] <- 0.48 #replace
 
 # Export cleaned dataset
-write_csv2(weather, file = "Clean_data/FUNDER_clean_greenseeker_measurements_2022.csv")
+write_csv2(greenseeker_long, file = "Clean_data/FUNDER_clean_greenseeker_measurements_2022.csv")
 
 ##################################################################
 
