@@ -46,7 +46,7 @@ greenseeker <- greenseeker |>
 # Dataset is split to clean each measurement event separately before being merged together again
 
 # First measurement (before cutting)
-green_first <- greenseeker |>
+green_before <- greenseeker |>
   select(!c(time_2, "1_after", "2_after")) |>
   pivot_longer(!c(date, siteID, blockID, plotID, treatment, time_1), names_to = "rep", values_to = "record") |>
   mutate(rep = recode(rep,
@@ -56,7 +56,7 @@ green_first <- greenseeker |>
   rename("time" = "time_1")
 
 # Second measurement (after cutting)
-green_second <- greenseeker |>
+green_after <- greenseeker |>
   select(!c(time_1, "1_before", "2_before")) |>
   pivot_longer(!c(date, siteID, blockID, plotID, treatment, time_2), names_to = "rep", values_to = "record") |>
   mutate(rep = recode(rep,
@@ -66,7 +66,7 @@ green_second <- greenseeker |>
   rename("time" = "time_2")
 
 # Bind df:s together
-greenseeker_long <- rbind(green_first, green_second)
+greenseeker_long <- rbind(green_before, green_after)
 
 # Change order of columns
 greenseeker_long <- greenseeker_long |>
