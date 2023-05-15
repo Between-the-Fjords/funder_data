@@ -45,28 +45,28 @@ greenseeker <- greenseeker |>
 # Measurements were done twice during the same day, once before noon ("first") and once in the afternoon ("second")
 # Dataset is split to clean each measurement event separately before being merged together again
 
-# First measurement
-green_first <- greenseeker |>
+# First measurement (before cutting)
+green_before <- greenseeker |>
   select(!c(time_2, "1_after", "2_after")) |>
   pivot_longer(!c(date, siteID, blockID, plotID, treatment, time_1), names_to = "rep", values_to = "record") |>
   mutate(rep = recode(rep,
                       "1_before" = "1",
                       "2_before" = "2")) |>
-  mutate(measurement = "first") |>
+  mutate(measurement = "before") |>
   rename("time" = "time_1")
 
-# Second measurement
-green_second <- greenseeker |>
+# Second measurement (after cutting)
+green_after <- greenseeker |>
   select(!c(time_1, "1_before", "2_before")) |>
   pivot_longer(!c(date, siteID, blockID, plotID, treatment, time_2), names_to = "rep", values_to = "record") |>
   mutate(rep = recode(rep,
                       "1_after" = "1",
                       "2_after" = "2")) |>
-  mutate(measurement = "second")|>
+  mutate(measurement = "after")|>
   rename("time" = "time_2")
 
 # Bind df:s together
-greenseeker_long <- rbind(green_first, green_second)
+greenseeker_long <- rbind(green_before, green_after)
 
 # Change order of columns
 greenseeker_long <- greenseeker_long |>
@@ -84,13 +84,13 @@ greenseeker_long$record <- as.numeric(greenseeker_long$record)
 
 greenseeker_long[greenseeker_long$plotID == "Hog3B" &
                    greenseeker_long$measurement == "second" &
-                   greenseeker_long$rep == "1", "record"] <- 100000 #replace
+                   greenseeker_long$rep == "1", "record"] <- 0.69 #replace
 greenseeker_long[greenseeker_long$plotID == "Hog1GF" &
                    greenseeker_long$measurement == "second" &
-                   greenseeker_long$rep == "2", "record"] <- 100000 #replace
+                   greenseeker_long$rep == "2", "record"] <- 0.48 #replace
 
-# Explort cleaned dataset
-write_csv2(weather, file = "Clean_data/FUNDER_clean_greenseeker_measurements_2022.csv")
+# Export cleaned dataset
+write_csv2(greenseeker_long, file = "Clean_data/FUNDER_clean_greenseeker_measurements_2022.csv")
 
 ##################################################################
 
