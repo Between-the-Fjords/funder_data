@@ -1,7 +1,7 @@
 #Read climate data
 
 source("R/load_packages.R")
-source("R/Soil_moisture_correction.R")
+source("R/functions/Soil_moisture_correction.R")
 library(tidylog)
 
 #Metadata for TOMST climate data
@@ -22,6 +22,7 @@ mutate(Date_in=dmy(Date_in)) %>%
         treatment=="B?"~"C",
         treatment=="F?"~"FGB",
         treatment=="FG"~"GF",
+        loggerID=="95221003"~"GB",
         TRUE~treatment
       )
     ) %>%
@@ -71,17 +72,24 @@ filter(date_time < Date_out, date_time > Date_in+1) %>%
  # select(date_time:air_temperature, soilmoisture, loggerID:Remark)
 
  #Test to find out how to clean the data
-microclimate %>% filter(siteID=="Lavisdalen") %>%  ggplot(aes(x=date_time,y=soilmoisture,color=treatment))+geom_line()+
+microclimate %>% filter(siteID=="Skjelingahaugen") %>%  ggplot(aes(x=date_time,y=soilmoisture,color=treatment))+geom_line()+
   facet_wrap(vars(plotID))
 
+microclimate %>% filter(siteID %in% c("Skjelingahaugen","Ulvehaugen","Gudmedalen", "Lavisdalen"),treatment %in% c("FB","GB")) %>%  ggplot(aes(x=date_time,y=ground_temperature,color=siteID))+geom_line()+
+  facet_grid(treatment~siteID)
+
+microclimate %>% filter(siteID %in% c("Skjelingahaugen","Ulvehaugen","Gudmedalen", "Lavisdalen"),treatment %in% c("FB","GB")) |>
+  group_by(siteID,treatment) |>
+  summarise(mean(soilmoisture,na.rm=TRUE))
 
 #Test to find out how to clean the data
-  microclimate %>% filter(siteID=="Vikesland",date_time>"2022-06-24 00:15:00",date_time<"2022-06-30 00:15:00") %>%  ggplot(aes(x=date_time,y=soilmoisture,color=treatment))+geom_line()+
+  microclimate %>% filter(siteID=="Vikesland",date_time>"2022-06-01 00:15:00",date_time<"2022-09-07 01:15:00") %>%  ggplot(aes(x=date_time,y=soil_temperature,color=treatment))+geom_line()+
 
 facet_wrap(~plotID)
-microclimate %>% filter(siteID=="Alrust") %>% group_by(loggerID,plotID) %>% summarise(mean=mean(soil_temperature),var=var(ground_temperature))
 
-#soil moisture: Skj4FB varies a lot -> send an email to tomst@tomst.com (min 0.1), Vik4C and Vik4FB have been moved for several days because of the goats?, Gud min 0.1, Lav min 0.1, Ram min 0.1,  Ulv min 0.1 max 0.45, Alr min 0 and max 0.4, Arh min 0.1, Fau min 0 max 0.4, Hog min 0.1, Ovs min 0.1, Vik min 0 and cut dates, Ves min 0.3
+  microclimate %>% filter(siteID=="Ar") %>% group_by(loggerID,plotID) %>% summarise(mean=mean(soil_temperature),var=var(ground_temperature))
+
+#soil moisture: Skj4FB varies a lot -> sent an email to tomst@tomst.com, nothing anormal with the logger (min 0.1), Vik4C and Vik4FB have been moved for several days because of the goats?, Gud min 0.1, Lav min 0.1, Ram min 0.1,  Ulv min 0.1 max 0.45, Alr min 0 and max 0.4, Arh min 0.1, Fau min 0 max 0.4, Hog min 0.1, Ovs min 0.1, Vik min 0 and cut dates, Ves min 0.3
 
 #Soil temperature Ves between 5 and 25, Alr max 30, lav max 20, Ulv4FGB very exposed (too many rocks), Ulv4GB max 20, Skj max 25, Alr 4FB more higher than the others(exposed ?)
 
@@ -93,7 +101,7 @@ microclimate %>% filter(siteID=="Alrust") %>% group_by(loggerID,plotID) %>% summ
 microclimate <- microclimate %>% mutate(soilmoisture = case_when(
 siteID %in% c("Lavisdalen","Gudmedalen","Rambera","Ulvehaugen", "Arhelleren", "Hogsete","Ovstedalen" )&
 soilmoisture<0.1~NA_real_,
-siteID %in% c("Alrust", "Fauske", "Vikesland")&
+siteID %in% c("Alrust", "Fauske", "Vikesland", "Skjelingahaugen")&
   soilmoisture<0~NA_real_,
 siteID == "Veskre" & soilmoisture<0.3~NA_real_,
 siteID == "Ulvehaugen" & soilmoisture>0.45~NA_real_,
@@ -101,6 +109,11 @@ siteID %in% c("Alrust", "Fauske")&
   soilmoisture>0.4~NA_real_,
 plotID == "Vik4C"&date_time>"2022-06-24 00:15:00"&date_time<"2022-06-30 00:15:00"~NA_real_,
 plotID == "Vik4FB"&date_time>"2022-07-03 00:15:00"&date_time<"2022-07-11 00:15:00"~NA_real_,
+siteID == "Fauske"&date_time>"2022-06-15 00:15:00"&date_time<"2022-07-22 00:15:00"& soilmoisture<0.075~NA_real_,
+plotID %in% c("Alr4FGB","Alr4GB")&date_time>"2022-06-15 00:15:00"&date_time<"2022-07-01 00:15:00"& soilmoisture<0.2~NA_real_,
+plotID == "Ulv4FGB"&date_time>"2022-07-13 00:15:00"&date_time<"2022-07-16 00:15:00"& soilmoisture<0.2~NA_real_,
+plotID %in% c("Arh4FB","Arh4GB")& soilmoisture<0.175~NA_real_,
+plotID =="Gud4GB"& soilmoisture<0.25~NA_real_,
 TRUE~soilmoisture
 ))
 
@@ -109,12 +122,15 @@ TRUE~soilmoisture
 microclimate <- microclimate %>% mutate(soil_temperature = case_when(
   plotID == "Vik4C"&date_time>"2022-06-24 00:15:00"&date_time<"2022-06-30 00:15:00"~NA_real_,
   plotID == "Vik4FB"&date_time>"2022-07-03 00:15:00"&date_time<"2022-07-11 00:15:00"~NA_real_,
+  siteID == "Vikesland"&date_time>"2022-08-22 00:15:00"~NA_real_,
   siteID == "Veskre" & soil_temperature>25~NA_real_,
   siteID == "Veskre"&soil_temperature<5~NA_real_,
   siteID == "Alrust"&soil_temperature>30~NA_real_,
   siteID == "Lavisdalen"&soil_temperature>20~NA_real_,
   plotID =="Ulv4GB"&soil_temperature>20~NA_real_,
   siteID == "Skjelingahaugen"&soil_temperature>25~NA_real_,
+  siteID == "Hogsete" & soil_temperature>27~NA_real_,
+  siteID == "Vikesland" & soil_temperature>26~NA_real_,
   TRUE~soil_temperature
 ))
 
@@ -141,7 +157,7 @@ microclimate %>% filter(plotID=="Vik4C") %>%  ggplot(aes(x=date_time,y=air_tempe
 microclimate <- microclimate %>% mutate(comments = case_when (
   plotID %in% c ("Ulv4FGB", "Alr4FB")~"very high variations of soil temperature maybe due to exposed logger to air",
   plotID %in% c ("Vik4C","Vik4FB")~"loggers out of the soil during few days",
-  plotID == "Skj4FB" ~ "Soil moisture logger problem?",
+  plotID %in% c ("Skj4FB","Skj4GB") ~ "FB and GB could have been mixed up, be careful with soil moisture",
   TRUE~NA_character_))
 
 #Reordering columns
@@ -151,7 +167,10 @@ mutate(X10=NULL) %>%
 relocate(soilmoisture, .before=shake)
 
 #Save
-write_csv2(microclimate, file="FUNDER_microclimate_2022_TOMST.csv")
+write_csv2(microclimate, file="clean_data/FUNDER_clean_microclimate_2022.csv")
+
+microclimate %>%  ggplot(aes(x=date_time,y=soil_temperature,color=treatment))+geom_line()+
+  facet_wrap(vars(siteID))
 
 #some data cleaning
 #sort the column (date time, site, block, plot, treatment, air, ground, soil, temperature, moisture) + write the csv + column units % for moisture and degrees celsius(check if Funcab data if table flipped), add column with comments
