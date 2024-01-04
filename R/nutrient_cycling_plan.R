@@ -118,6 +118,7 @@ nutrient_cycling_plan <- list(
   # ),
 
   # NOT FINISHED YET, NEEDS ALSO CNP DATA!!!
+  # NEED TO DECIDE HOW TO DEAL WITH RAM, WHERE SAMPLES ARE TAKEN DIFFERENTLY
   tar_target(
     name = cnp_clean,
     command = clean_cnp(cnp_depht_raw, cnp_ram_depht_raw, funder_meta)
