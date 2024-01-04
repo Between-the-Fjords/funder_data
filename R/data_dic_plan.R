@@ -26,6 +26,23 @@ data_dic_plan <- list(
                                    table_ID = NA_character_)
   ),
 
+
+  # biomass
+  tar_target(
+    name = biomass_dic,
+    command = make_data_dictionary(data = biomass_clean,
+                                   description_table = attribute_table,
+                                   table_ID = NA_character_)
+  ),
+
+  # microarthropods
+  tar_target(
+    name = microart_dic,
+    command = make_data_dictionary(data = microart_clean,
+                                   description_table = attribute_table,
+                                   table_ID = NA_character_)
+  ),
+
   # PRS
   tar_target(
     name = prs_dic,
@@ -79,7 +96,9 @@ data_dic_plan <- list(
   # merge data dictionaries
   tar_target(
     name = data_dic,
-    command = write_xlsx(list(ndvi = ndvi_dic,
+    command = write_xlsx(list(biomass = biomass_dic,
+                              ndvi = ndvi_dic,
+                              microarthropods = microart_dic,
                               prs = prs_dic,
                               loi = loi_dic,
                               slope = slope_dic,
