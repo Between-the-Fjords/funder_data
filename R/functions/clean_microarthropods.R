@@ -5,7 +5,9 @@ clean_microarthropods <- function(microart_raw, cnp_depht_raw){
   # get dates from soil coring
   dates <- cnp_depht_raw |>
     filter(block == 2) |>
-    distinct(siteID, date)
+    distinct(siteID, date) |>
+    bind_rows(tibble(siteID = "Ram",
+                     date = "2022-09-01"))
 
   microart_raw |>
     left_join(dates, by = "siteID") |>
