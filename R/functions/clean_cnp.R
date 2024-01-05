@@ -13,7 +13,8 @@ clean_cnp <- function(cnp_depth_raw, cnp_ram_depth_raw, funder_meta){
            block = paste0(substr(site, 1, 3), block),
            unit = "cm") |>
     rename(siteID = site, blockID = block, depth = depth_cm) |>
-    mutate(blockID = if_else(blockID == "Ram1_2", "Ram1", blockID))
+    mutate(blockID = if_else(blockID == "Ram1_2", "Ram1", blockID),
+           date = ymd("2022-09-1"))
 
 
   # Fix column names and variables in accordance with FUNDER naming convention
@@ -32,6 +33,8 @@ clean_cnp <- function(cnp_depth_raw, cnp_ram_depth_raw, funder_meta){
     select(-siteID) |>
     left_join(funder_meta) |>
     select(date, siteID, blockID, plotID, treatment, core_nr = core_no, depth = depth_cm, unit, comment) |>
+    # needs fixing!!!
+    filter(siteID == "Rambera")
     bind_rows(cnp_ram_depth)
 
 }

@@ -8,7 +8,7 @@ nutrient_cycling_plan <- list(
     command = create_funder_meta_data()
   ),
 
-  # reflectance
+  # prs
   tar_target(
     name = prs_download,
     command = get_file(node = "tx9r2",
@@ -90,6 +90,16 @@ nutrient_cycling_plan <- list(
     format = "file"
   ),
 
+  # sample fresh weight
+  tar_target(
+    name = cnp_weight_download,
+    command = get_file(node = "tx9r2",
+                       file = "FUNDER_raw_CNP_fresh_sample_weights_2022.xlsx",
+                       path = "raw_data",
+                       remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"),
+    format = "file"
+  ),
+
   tar_target(
     name = cnp_depht_raw,
     command = read_csv2(cnp_depth_download)
@@ -100,7 +110,15 @@ nutrient_cycling_plan <- list(
     command = read_csv2(cnp_ram_depth_download)
   ),
 
+  # !!!
+  # not sure if needed. Fresh weight of all soil samples, separate sheet for block 1-3 and 4
+  # tar_target(
+  #   name = cnp_weight_raw,
+  #   command = read_excel(cnp_weight_download)
+  # ),
+
   # NOT FINISHED YET, NEEDS ALSO CNP DATA!!!
+  # NEED TO DECIDE HOW TO DEAL WITH RAM, WHERE SAMPLES ARE TAKEN DIFFERENTLY
   tar_target(
     name = cnp_clean,
     command = clean_cnp(cnp_depht_raw, cnp_ram_depht_raw, funder_meta)

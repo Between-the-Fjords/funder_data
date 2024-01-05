@@ -7,14 +7,20 @@ source("R/load_packages.R")
 #Download data from OSF
 # run the code from L10-L13 if you need to download the data from OSF
 
-# get_file(node = "4c5v2",
-#          file = "FunCaB_raw_biomass_2015_2021.csv",
-#          path = "data/biomass",
-#          remote_path = "Vegetation data/Functional Group Biomass Removals")
+get_file(node = "4c5v2",
+         file = "FunCaB_raw_biomass_2015_2021.csv",
+         path = "raw_data/biomass",
+         remote_path = "Vegetation data/Functional Group Biomass Removals")
+
+# download 2022 data
+get_file(node = "tx9r2",
+         file = "FUNDER Forbs_Graminoids_Bryophytes.xlsx",
+         path = "raw_data/biomass",
+         remote_path = "1_Vegetation/Raw_data")
 
 
-
-path <- "data/biomass/FunCaB_raw_biomass.xlsx"
+### 2015 - 2021
+path <- "raw_data/biomass/FunCaB_raw_biomass.xlsx"
 
 biomass_raw <- path %>%
   excel_sheets() %>%
