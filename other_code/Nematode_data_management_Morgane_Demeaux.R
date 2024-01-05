@@ -1,63 +1,6 @@
-library(tidyverse)
-library(readxl)
-library(tidylog)
-#File with nematode counts
-nema<-read_excel("raw_data/Nematodes_families_FUNDER_2022_test.xlsx")
 
-#File containing information about the amount of soil used per sample
-weight<-read_csv2(file = "raw_data/FUNDER_raw_Nematode_sample_weight_2023.csv")
-
-#Rename columns, add metadata in both files
-
-nema <- nema |> mutate( plotID = str_replace_all(nema$PlotID, "-", "_"))
-
-nema <- nema |> separate(plotID, sep = "_", c("plotID","sample"))  %>%
-  select(-PlotID)
-
-
-nema <- nema |> dplyr::mutate(sample = replace_na(sample, "1"))
-
-nema<- nema |>  mutate ( siteID = substr (plotID,1,3) ,
-         blockID=substr (plotID,4,4),
-         treatment=substr (plotID,5,7)) %>%
-  mutate(plotID=str_to_lower(siteID)) %>%
-  mutate(plotID=str_to_title(plotID)) %>%
-  mutate(siteID = recode(plotID,
-                         # old name (replace) = valid name (do not change)
-                         'Gud' = "Gudmedalen",
-                         'Lav' = "Lavisdalen",
-                         'Ram' = "Rambera",
-                         'Ulv' = "Ulvehaugen",
-                         'Skj' = "Skjelingahaugen",
-                         'Alr' = "Alrust",
-                         'Arh' = "Arhelleren",
-                         'Fau' = "Fauske",
-                         'Hog' = "Hogsete",
-                         'Ovs' = "Ovstedalen",
-                         'Vik' = "Vikesland",
-                         'Ves' = "Veskre")) %>%
-  mutate(plotID=paste0(plotID,blockID,treatment))%>%
-  select(plotID:treatment, Abundance:Tripylidae)
-
-
-
-weight<- weight |> mutate ( siteID = substr (PlotID,1,3) ,
-                                                     blockID=substr (PlotID,4,4),
-                                                     treatment=substr (PlotID,5,7))
-
-  weight<- weight |> mutate(treatment=recode(treatment,
-                          'BF'='FB',
-                          'BG'= 'GB',
-                          'FG'='GF',
-                          'BFG'='FGB'
-  )) |>
-    mutate(plotID=paste0(siteID,blockID,treatment)) |>
-    select(-PlotID)
-
-
-#Sum of the 150 nematodes identified per plot depending on their family group
+Sum of the 150 nematodes identified per plot depending on their family group
 str(nema)
-
 nema$Unknown=as.numeric(nema$Unknown)
 nema$Unknown_Predator=as.numeric(nema$Unknown_Predator)
 nema$Unknown_bacterial_feeder=as.numeric(nema$Unknown_bacterial_feeder)
@@ -70,8 +13,6 @@ nema$Diphterophoridae=as.numeric(nema$Diphterophoridae)
 nema$Tylencholaimidae=as.numeric(nema$Tylencholaimidae)
 nema$Anguinidae=as.numeric(nema$Anguinidae)
 nema$Tripylidae=as.numeric(nema$Tripylidae)
-
-
 nema[is.na(nema)]<-0
 nemaclean<-nema %>% group_by(plotID, siteID, blockID,treatment,sample) %>%
   summarise(Abundance = mean (Abundance),
@@ -112,8 +53,7 @@ nemaclean<-nema %>% group_by(plotID, siteID, blockID,treatment,sample) %>%
             Anguinidae  = sum(Anguinidae),
             Tripylidae  = sum(Tripylidae))
 
-
-  #Dealing with the samples that were in 2 tubes: sum of their abundances
+#Dealing with the samples that were in 2 tubes: sum of their abundances
 nemaclean<-nemaclean %>% group_by(plotID, siteID, blockID,treatment) %>%
   summarise(Abundance = sum (Abundance),
             Unknown = sum(Unknown),
@@ -165,8 +105,7 @@ nemaclean<-nemaclean %>% left_join(weight,by=c("plotID"))
 nemaclean<-nemaclean %>% mutate(abundance_per_g=Abundance/dry_soil)
 
 
-# Number of nematodes by feeding groups
-
+Number of nematodes by feeding groups
 #File containing families group by feeding categories
 feed<-read_csv2(file = "raw_data/FUNDER_raw_Nematode_feeding_group_2023.csv")
 
