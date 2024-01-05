@@ -28,6 +28,8 @@ clean_nematode <- function(nematode_raw, nema_weight_raw, feeder_raw, cnp_depht_
                                          "predator" ~ "predaceous"))
 
   # File containing information about the amount of soil used per sample
+  # part of the soil is used to calculate soil moisture and convert fresh soil to dry soil (dry/fresh soil ratio)
+  # from this fresh soil for extraction can be converted to dry soil from extraction by multiplying by dry wet ratio
   weight <- nema_weight_raw |>
     clean_names() |>
     mutate(siteID = substr(plot_id, 1, 3),
@@ -59,7 +61,6 @@ clean_nematode <- function(nematode_raw, nema_weight_raw, feeder_raw, cnp_depht_
     rename(fresh_soil = fresh_soil_sample_weight_for_extraction_g,
            dry_soil = dry_soil_sample_weight_for_extraction_g) |>
     select(siteID:treatment,fresh_soil,dry_soil)
-
 
   # File with nematode counts
   nematodes <- nematode_raw |>
