@@ -34,8 +34,11 @@ clean_biomass <- function(biomass_raw){
                                     treatment == "G" & removed_fg %in% c("F", "B") ~ "leftover",
                                     treatment == "B" & removed_fg %in% c("F", "G") ~ "leftover",
                                     treatment == "F" & removed_fg %in% c("G", "B") ~ "leftover",
-                                    TRUE ~ NA_character_)) |>
-    select(siteID = site, blockID = block, treatment, removed_fg, biomass, no_treatment, comments)
+                                    TRUE ~ NA_character_),
+           year = 2022,
+           block = paste0(substr(site, 1, 3), block),
+           plotID = paste0(block, treatment)) |>
+    select(year, siteID = site, blockID = block, plotID, treatment, removed_fg, biomass, no_treatment, comments)
 }
 
 
