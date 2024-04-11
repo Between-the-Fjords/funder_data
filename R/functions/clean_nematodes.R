@@ -122,7 +122,8 @@ clean_nematode <- function(nematode_raw, nema_weight_raw, feeder_raw, cnp_depht_
     # calculate abundance per g soil = count / dry soil weight
     mutate(abundance_per_g = count / dry_soil) |>
     left_join(feeders, by = "family") |>
-    ungroup() |>
+    ungroup() %>%
+    funcabization(dat = ., convert_to = "FunCaB") |>
     select(sampling_date:treatment, functional_group, family, abundance_per_g, count, dry_soil, abundance, comment)
 
 }

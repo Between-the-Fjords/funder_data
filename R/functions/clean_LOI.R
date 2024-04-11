@@ -39,7 +39,7 @@ clean_loi <- function(loi_raw){
     pivot_longer(cols = c(organic_matter, incorganic_carbon), names_to = "variable", values_to = "value") |>
     mutate(unit = "proportion") |>
     # remove 4 rows that are NA for organic and inorganic C
-    drop_na(value)
-
+    drop_na(value) %>%
+    funcabization(dat = ., convert_to = "FunCaB")
 }
 

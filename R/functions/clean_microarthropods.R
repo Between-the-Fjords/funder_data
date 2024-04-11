@@ -31,7 +31,8 @@ clean_microarthropods <- function(microart_raw, cnp_depht_raw){
     rename(Mite_unknownjuvenile = Unknown_mite_juvenile) |>
     pivot_longer(cols = c(Mite_fungivorous:Mite_unknownjuvenile, Collembola_fungivorous, Collembola_predaceous), names_to = "name", values_to = "abundance") |>
     separate(col = name, into = c("microarthropods", "functional_group"), sep = "_") |>
-    mutate(microarthropods = tolower(microarthropods)) |>
+    mutate(microarthropods = tolower(microarthropods)) %>%
+    funcabization(dat = ., convert_to = "FunCaB") |>
     select(year, sampling_date = date, siteID, blockID, treatment, plotID, extraction_height, extraction_round, microarthropods, functional_group, abundance, observer, comments = Comments)
 
 }

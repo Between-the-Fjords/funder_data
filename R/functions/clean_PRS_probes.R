@@ -25,6 +25,7 @@ clean_prs <- function(prs_raw, prs_detection_limit, funder_meta){
 
     # remove values below detection limit
     filter(value > detection_limit) %>%
+    funcabization(dat = ., convert_to = "FunCaB") |>
     select(siteID, blockID, treatment, plotID, burial_length, elements, value, detection_limit, burial_date, retrieval_date, notes = Notes)
 
 }

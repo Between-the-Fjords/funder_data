@@ -134,7 +134,8 @@ clean_climate <- function(climate_ID_raw){
 
 
   #Soil temperature
-  microclimate <- microclimate %>% mutate(
+  microclimate <- microclimate %>%
+    mutate(
       soil_temperature = case_when(
         plotID == "Vik4C" &
           date_time > "2022-06-24 00:15:00" &
@@ -199,7 +200,8 @@ clean_climate <- function(climate_ID_raw){
     pivot_longer(cols = c(soil_temperature:air_temperature, soilmoisture), names_to = "variable", values_to = "value") |>
     # remove NAs in the data
     filter(!is.na(value)) |>
-    mutate(unit = if_else(variable == "soilmoisture", "percentage", "degree celsius")) |>
+    mutate(unit = if_else(variable == "soilmoisture", "percentage", "degree celsius")) %>%
+    funcabization(dat = ., convert_to = "FunCaB") |>
     select(date_time, siteID:treatment, loggerID, variable, value, unit, comments)
 
 }

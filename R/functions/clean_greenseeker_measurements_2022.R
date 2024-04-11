@@ -69,7 +69,8 @@ clean_greenseeker <- function(ndvi_raw){
   ndvi_clean |>
     select(-comment) |>
     left_join(weather_comments, by = c("siteID", "measurement")) |>
-    rename(weather = comment)
+    rename(weather = comment) %>%
+    funcabization(dat = ., convert_to = "FunCaB")
 
 }
 

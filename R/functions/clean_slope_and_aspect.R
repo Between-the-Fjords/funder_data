@@ -24,6 +24,7 @@ clean_slope <- function(slope_raw){
     # Remove 3 rows with na in data (Fau2GB, Skj4C and Ulv1B)
     filter(slope != "na") |>
     pivot_longer(cols = c(slope, aspect), names_to = "variable", values_to = "value") |>
-    relocate(comment, .after = value)
+    relocate(comment, .after = value) %>%
+    funcabization(dat = ., convert_to = "FunCaB")
 
 }
