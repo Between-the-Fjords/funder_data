@@ -79,6 +79,21 @@ vegetation_plan <- list(
     name = biomass_output,
     command = save_csv(file = biomass_clean, name = "FUNDER_clean_biomass_2022.csv"),
     format = "file"
+  ),
+
+  tar_target(
+    name = community_download,
+    command = get_file(node = "tx9r2",
+                       file = "FUNDER_vascular_community_2022.csv",
+                       path = "raw_data",
+                       remote_path = "1_Vegetation/Raw_data"),
+    format = "file"
+  ),
+
+  tar_target(
+    name = community_raw,
+    command = read_csv(community_download)
   )
+
 
 )
