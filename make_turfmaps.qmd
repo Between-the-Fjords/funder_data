@@ -1,0 +1,48 @@
+---
+title: "Check community"
+output: pdf
+---
+
+```{r}
+#| label: set-up
+#| echo: false
+#| warning: false
+
+library(tidyverse)
+
+make_plots <- function(dat){
+
+    ggplot(dat, aes(x = factor(year), y = species, fill = cover)) +
+    geom_tile() +
+    scale_fill_distiller(type = "seq", palette = "Greens", direction = 1) +
+    labs(x = "", y = "", title = dat$title) +
+    facet_wrap(~ functional_group, scales = "free_y") +
+    theme_bw()
+  
+}
+
+community <- read_csv("community_2015-2022.csv")
+
+```
+
+## Community composition
+
+```{r}
+#| label: biomass-check
+#| echo: false
+#| results: asis
+
+
+community |>
+  arrange(siteID, blockID, treatment) |> 
+  group_by(plotID) |>
+  nest() |> 
+  mutate(turfmaps = map(.x = data, .f = make_plots)) |> 
+  select(plotID, turfmaps) |> 
+  pwalk(.f = function(plotID, turfmaps, ...){
+  #cat(plotID)
+  print(turfmaps)
+  cat("\n")
+})
+  
+```
