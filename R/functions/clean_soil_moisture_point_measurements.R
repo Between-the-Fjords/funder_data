@@ -32,7 +32,8 @@ clean_sm <- function(sm_raw){
     # remove 165 rows where value is NA, because too dry/wet (below detection limit or above water table)
     # Non-existing plots: Fau2GB, Ulv1B
     # No measurements made in site Skjelingahaugen due to bad weather conditions
-    filter(!is.na(value))
+    filter(!is.na(value)) %>%
+    funcabization(dat = ., convert_to = "FunCaB")
 
   ### Check for duplicate rows
   #   distinct(plotID, measurement, .keep_all = TRUE) # no duplicates

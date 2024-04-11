@@ -28,7 +28,8 @@ clean_depth <- function(depth_raw){
     mutate(depth = as.numeric(gsub(",", ".", depth)),
            unit = "cm",
            measurement = as.numeric(str_remove(measurement, "depth"))) |>
-    filter(!is.na(depth)) |>
+    filter(!is.na(depth)) %>%
+    funcabization(dat = ., convert_to = "FunCaB") |>
     select(siteID, blockID, plotID, treatment, measurement, depth, unit)
 
 }
