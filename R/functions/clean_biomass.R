@@ -36,9 +36,10 @@ clean_biomass <- function(biomass_raw){
                                     treatment == "F" & removed_fg %in% c("G", "B") ~ "leftover",
                                     TRUE ~ NA_character_),
            year = 2022,
-           block = paste0(substr(site, 1, 3), block),
-           plotID = paste0(block, treatment)) |>
-    select(year, siteID = site, blockID = block, plotID, treatment, removed_fg, biomass, no_treatment, comments)
+           blockID = paste0(substr(site, 1, 3), block),
+           plotID = paste0(blockID, treatment)) %>%
+    funcabization(dat = ., convert_to = "FunCaB") |>
+    select(year, siteID = site, blockID, plotID, treatment, removed_fg, biomass, no_treatment, comments)
 }
 
 
