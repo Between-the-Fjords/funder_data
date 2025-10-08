@@ -2,6 +2,12 @@
 
 vegetation_plan <- list(
 
+  # meta
+  tar_target(
+    name = funder_meta,
+    command = dataDocumentation::create_funder_meta_data()
+  ),
+
   # reflectance
   tar_target(
     name = ndvi_download,
@@ -81,6 +87,7 @@ vegetation_plan <- list(
     format = "file"
   ),
 
+  # community
   tar_target(
     name = community_download,
     command = get_file(node = "tx9r2",
@@ -93,6 +100,37 @@ vegetation_plan <- list(
   tar_target(
     name = community_raw,
     command = read_csv(community_download)
+  ),
+
+  # bryophyte
+  # tar_target(
+  #   name = bryophyte_download,
+  #   command = get_file(node = "tx9r2",
+  #                      file = "FUNDER_bryophyte_community_2022.csv",
+  #                      path = "raw_data",
+  #                      remote_path = "1_Vegetation/Raw_data"),
+  #   format = "file"
+  # ),
+
+    tar_target(
+    name = bryophyte_raw,
+    command = read_csv("raw_data/FUNDER_raw_bryophyte_community_2022.csv")
+  ),
+
+      tar_target(
+    name = bryophyte_dictionary,
+    command = read_excel("raw_data/Bryophyte community voucher overview with protocol - FUNDER 2022.xlsx")
+  ),
+
+  tar_target(
+    name = bryophyte_structure,
+    command = clean_bryophyte_structure(bryophyte_raw, funder_meta)
+  ),
+
+  tar_target(
+    name = bryophyte_structure_output,
+    command = save_csv(file = bryophyte_structure, name = "FUNDER_clean_bryophyte_structure_2022.csv"),
+    format = "file"
   )
 
 
