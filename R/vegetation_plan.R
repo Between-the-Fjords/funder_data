@@ -2,12 +2,6 @@
 
 vegetation_plan <- list(
 
-  # meta
-  tar_target(
-    name = funder_meta,
-    command = dataDocumentation::create_funder_meta_data()
-  ),
-
   # reflectance
   tar_target(
     name = ndvi_download,

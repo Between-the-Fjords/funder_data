@@ -8,7 +8,7 @@ mesofauna_plan <- list(
     command = get_file(node = "tx9r2",
                        file = "FUNDER_raw_microarthropod_composition_2023.csv",
                        path = "raw_data",
-                       remote_path = "2_Mesofauna/Raw_data"),
+                       remote_path = "2_Micro_and_Mesofauna/Raw_data"),
     format = "file"
   ),
 
@@ -34,7 +34,7 @@ mesofauna_plan <- list(
     command = get_file(node = "tx9r2",
                        file = "FUNDER_raw_Nematode_feeding_group_2023.csv",
                        path = "raw_data",
-                       remote_path = "2_Mesofauna/Raw_data"),
+                       remote_path = "2_Micro_and_Mesofauna/Raw_data"),
     format = "file"
   ),
 
@@ -43,7 +43,7 @@ mesofauna_plan <- list(
     command = get_file(node = "tx9r2",
                        file = "FUNDER_raw_Nematode_sample_weight_2023.csv",
                        path = "raw_data",
-                       remote_path = "2_Mesofauna/Raw_data"),
+                       remote_path = "2_Micro_and_Mesofauna/Raw_data"),
     format = "file"
   ),
 
@@ -52,7 +52,7 @@ mesofauna_plan <- list(
     command = get_file(node = "tx9r2",
                        file = "FUNDER_raw_Nematodes_families_2023.xlsx",
                        path = "raw_data",
-                       remote_path = "2_Mesofauna/Raw_data"),
+                       remote_path = "2_Micro_and_Mesofauna/Raw_data"),
     format = "file"
   ),
 
