@@ -237,9 +237,62 @@ join_bryophyte_with_llm <- function(bryophyte_dictionary, bryophyte_llm_results)
       species_correction_Kristian_Hassel = stringr::str_squish(as.character(species_correction_Kristian_Hassel))
     )
   
+  # Manual fix for specific problematic entries that the LLM didn't parse correctly
+  # These are hardcoded fixes for entries where multiple species weren't properly separated
+  
+  # Fix 1: "Einerbjørnemose confirmed + Polytrichum alpinum"
+  lav704_base <- llm_parsed |>
+    dplyr::filter(stringr::str_detect(original_text, "Einerbjørnemose confirmed \\+ Polytrichum alpinum")) |>
+    dplyr::slice(1)
+  
+  lav704_fix <- dplyr::bind_rows(
+    lav704_base |> dplyr::mutate(scientificName = "", vernacularName = "Einerbjørnemose", confirmed = TRUE, comment = NA_character_),
+    lav704_base |> dplyr::mutate(scientificName = "Polytrichum alpinum", vernacularName = "", confirmed = TRUE, comment = NA_character_)
+  )
+  
+  # Fix 2: "Beitegråmose / Racomitrium elongatum + Ribbesigd / Dicranum scoparium + Grynskjeggmose / Barbilophozia hatcheri + Furumose / Pleurozium schreberi"
+  ulv823_base <- llm_parsed |>
+    dplyr::filter(stringr::str_detect(original_text, "Beitegråmose.*Racomitrium elongatum.*Ribbesigd")) |>
+    dplyr::slice(1)
+  
+  ulv823_fix <- dplyr::bind_rows(
+    ulv823_base |> dplyr::mutate(scientificName = "Racomitrium elongatum", vernacularName = "Beitegråmose", confirmed = NA, comment = NA_character_),
+    ulv823_base |> dplyr::mutate(scientificName = "Dicranum scoparium", vernacularName = "Ribbesigd", confirmed = NA, comment = NA_character_),
+    ulv823_base |> dplyr::mutate(scientificName = "Barbilophozia hatcheri", vernacularName = "Grynskjeggmose", confirmed = NA, comment = NA_character_),
+    ulv823_base |> dplyr::mutate(scientificName = "Pleurozium schreberi", vernacularName = "Furumose", confirmed = NA, comment = NA_character_)
+  )
+  
+  # Fix 3: "Ptychodium plicatum + Sumptvebladmose / Scaparia irrigua"
+  gud1223_base <- llm_parsed |>
+    dplyr::filter(stringr::str_detect(original_text, "Ptychodium plicatum.*Sumptvebladmose.*Scaparia irrigua")) |>
+    dplyr::slice(1)
+  
+  gud1223_fix <- dplyr::bind_rows(
+    gud1223_base |> dplyr::mutate(scientificName = "Ptychodium plicatum", vernacularName = "", confirmed = NA, comment = NA_character_),
+    gud1223_base |> dplyr::mutate(scientificName = "Scaparia irrigua", vernacularName = "Sumptvebladmose", confirmed = NA, comment = NA_character_)
+  )
+  
+  # Fix 4: "Bryum sp. - muligens en liten B. pseudotriquetrum" - add cf to indicate uncertainty
+  fau104_base <- llm_parsed |>
+    dplyr::filter(stringr::str_detect(original_text, "Bryum sp.*muligens.*B\\. pseudotriquetrum")) |>
+    dplyr::slice(1)
+  
+  fau104_fix <- fau104_base |>
+    dplyr::mutate(scientificName = "Bryum cf. pseudotriquetrum", vernacularName = "", confirmed = NA, comment = "muligens en liten B. pseudotriquetrum")
+  
+  # Remove the problematic entries from llm_parsed and add the fixes
+  llm_parsed_fixed <- llm_parsed |>
+    dplyr::filter(
+      !stringr::str_detect(original_text, "Einerbjørnemose confirmed \\+ Polytrichum alpinum"),
+      !stringr::str_detect(original_text, "Beitegråmose.*Racomitrium elongatum.*Ribbesigd"),
+      !stringr::str_detect(original_text, "Ptychodium plicatum.*Sumptvebladmose.*Scaparia irrigua"),
+      !stringr::str_detect(original_text, "Bryum sp.*muligens.*B\\. pseudotriquetrum")
+    ) |>
+    dplyr::bind_rows(lav704_fix, ulv823_fix, gud1223_fix, fau104_fix)
+  
   # Join parsed results with dictionary (many-to-many because multiple species per text)
   out <- dic |>
-    dplyr::left_join(llm_parsed, 
+    dplyr::left_join(llm_parsed_fixed, 
                      by = dplyr::join_by(species_correction_Kristian_Hassel == original_text),
                      relationship = "many-to-many")
 
@@ -249,19 +302,34 @@ join_bryophyte_with_llm <- function(bryophyte_dictionary, bryophyte_llm_results)
       check = dplyr::if_else(confirmed == TRUE, "confirmed", NA_character_),
       norwegian_name = vernacularName,
       species_llm = scientificName,
-      comment_llm = comment
+      comment_llm = comment,
+      # Merge species names: prefer checked LLM columns, fall back to original if empty
+      vernacular_final = dplyr::case_when(
+        !is.na(norwegian_name) & norwegian_name != "" & norwegian_name != "?" ~ norwegian_name,
+        !is.na(vernacular) & vernacular != "" & vernacular != "?" ~ vernacular,
+        TRUE ~ NA_character_
+      ),
+      scientific_final = dplyr::case_when(
+        !is.na(species_llm) & species_llm != "" ~ species_llm,
+        !is.na(scientific) & scientific != "" ~ scientific,
+        TRUE ~ NA_character_
+      )
     ) |>
-    dplyr::select(siteID:species_correction_Kristian_Hassel, json_response, check, norwegian_name, species_llm, comment_llm, confirmed, `level of certainty`:comments_data_entering)
+    dplyr::select(siteID, voucherID, vernacular_final, scientific_final, species_correction_Kristian_Hassel, json_response, check, norwegian_name, species_llm, comment_llm, confirmed, `level of certainty`:comments_data_entering, vernacularName, scientificName)
 }
 
+# Rhytidiadelphus (Hylocomiadelphus) triquetrus
 
-clean_bryophyte <- function(bryophyte_raw, bryophyte_dictionary, funder_meta){
+
+clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
 
     bryophyte <- bryophyte_raw |> 
     mutate(blockID = paste0(str_sub(siteID, 1, 3), blockID)) |>
     tidylog::left_join(funder_meta, by = c("siteID", "blockID", "treatment")) |>
     rename(date = `date (yyyy-mm-dd)`) |> 
     mutate(voucherID = str_replace_all(voucherID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")))
+
+    joined_bryophyte
 
       
 
@@ -271,14 +339,10 @@ clean_bryophyte <- function(bryophyte_raw, bryophyte_dictionary, funder_meta){
                    names_to = "subplot", values_to = "subplot_coverage") |>
       tidylog::left_join(bryo_dic, by = c("siteID", "voucherID"))
 
-# confirmed species
-      ddd |>
-      filter(species_correction_Kristian_Hassel.y == "Confirmed")
-
 
       ddd |>
       distinct(species, species_correction_Kristian_Hassel.x, vernacular, scientific, species_correction_Kristian_Hassel.y, `level of certainty`) |>
       filter(species_correction_Kristian_Hassel.y != "Confirmed", `level of certainty` == "1") |> write_csv("bryo_level_1.csv")
-    
+
 
 }
