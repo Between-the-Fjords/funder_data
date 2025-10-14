@@ -125,6 +125,32 @@ vegetation_plan <- list(
     name = bryophyte_structure_output,
     command = save_csv(file = bryophyte_structure, name = "FUNDER_clean_bryophyte_structure_2022.csv"),
     format = "file"
+  ),
+
+  # These targets require API key and model to be set in the environment
+  # # Call OpenAI API to parse species info from unique texts
+  # tar_target(
+  #   name = bryophyte_llm_results,
+  #   command = {
+  #     unique_texts <- bryophyte_dictionary$species_correction_Kristian_Hassel |> unique()
+  #     bryophyte_llm_results <- get_species_from_llm(unique_texts)
+  #   }
+  # ),
+
+  # tar_target(
+  #   name = llm_results_out,
+  #   command = write_excel_csv(bryophyte_llm_results, "raw_data/FUNDER_llm_results2.csv", na = ""),
+  #   format = "file"
+  # ),
+
+  tar_target(
+    name = bryophyte_llm_results2,
+    command = read_csv("raw_data/FUNDER_llm_results.csv")
+  ),
+
+  tar_target(
+    name = joined_bryophyte,
+    command = join_bryophyte_with_llm(bryophyte_dictionary, bryophyte_llm_results2)
   )
 
 

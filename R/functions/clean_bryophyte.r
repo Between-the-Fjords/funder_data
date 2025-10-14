@@ -23,6 +23,238 @@ bryophyte |>
 
 }
 
+
+# Step 1: Call OpenAI API to get raw JSON for unique texts
+# Returns a tibble with: original_text, json_response (one row per unique text)
+get_species_from_llm <- function(unique_texts,
+                                 model = Sys.getenv("OPENAI_MODEL", unset = "gpt-4o"),
+                                 api_key = "REDACTED"){
+
+  if (is.null(api_key) || identical(api_key, "")) {
+    stop("OPENAI_API_KEY is not set. Please set it in your .Renviron or via Sys.setenv().")
+  }
+
+  # Local helpers -------------------------------------------------------------
+  build_prompt <- function(cell_text){
+    txt <- cell_text
+    if (is.na(txt)) txt <- ""
+    txt <- as.character(txt)
+    paste0(
+      "You are extracting species information from bryophyte specimen data. ",
+      "Parse the text and return a JSON array with one object per species. ",
+      "Each object should have these fields: scientificName, vernacularName, confirmed (boolean), comment.\n\n",
+      "CRITICAL: If multiple species are mentioned (separated by + or &), you MUST create separate objects for each one.\n\n",
+      "Rules:\n",
+      "- Create a separate object for EACH species mentioned. Multiple species are often separated by + or &\n",
+      "- For each species, the vernacular (Norwegian) name and scientific (Latin) name are often separated by a forward slash (/)\n",
+      "- Always include scientificName (even if empty string). Always include vernacularName (even if empty string).\n",
+      "- If the text explicitly contains the word 'Confirmed' (case-insensitive), set confirmed to true for all species objects. This is important even if no other information is present.\n",
+      "- Optional field comment: include any additional information such as life stage (e.g., 'juvenile'), notes (e.g., 'Ingen mose'), codes in parentheses (e.g., '(GUD1221)'), or other descriptive text. If no additional information, omit this field.\n",
+      "- If the text is just 'Confirmed' with no species names, return one object with confirmed=true and empty strings for names.\n\n",
+      "Examples:\n",
+      "- 'Bryum sp.' → [{\"scientificName\":\"Bryum sp.\",\"vernacularName\":\"\"}]\n",
+      "- 'Pohlia sp.' → [{\"scientificName\":\"Pohlia sp.\",\"vernacularName\":\"\"}]\n",
+      "- 'mose / Bryum sp.' → [{\"scientificName\":\"Bryum sp.\",\"vernacularName\":\"mose\"}]\n",
+      "- 'Species A / Name A & Species B / Name B' → [{\"scientificName\":\"Species A\",\"vernacularName\":\"Name A\"},{\"scientificName\":\"Species B\",\"vernacularName\":\"Name B\"}]\n",
+      "- 'Confirmed - Name1 / Species1 & Name2 / Species2' → [{\"scientificName\":\"Species1\",\"vernacularName\":\"Name1\",\"confirmed\":true},{\"scientificName\":\"Species2\",\"vernacularName\":\"Name2\",\"confirmed\":true}]\n",
+      "- 'Confirmed' → [{\"scientificName\":\"\",\"vernacularName\":\"\",\"confirmed\":true}]\n\n",
+      "Text to parse: \"", txt, "\"\n\n",
+      "Return the JSON array:"
+    )
+  }
+
+  call_openai_json <- function(prompt_text){
+    req <- httr2::request("https://api.openai.com/v1/chat/completions") |>
+      httr2::req_headers(Authorization = paste("Bearer", api_key)) |>
+      httr2::req_body_json(list(
+        model = model,
+        temperature = 0,
+        response_format = list(type = "json_object"),
+        messages = list(
+          list(role = "system", content = "You are a precise information extraction assistant. Always return only valid JSON, no prose."),
+          list(role = "user", content = prompt_text)
+        )
+      ), auto_unbox = TRUE)
+
+    resp <- try(httr2::req_perform(req), silent = TRUE)
+    if (inherits(resp, "try-error")) {
+      cat("API request failed:", attr(resp, "condition")$message, "\n")
+      return("[]")
+    }
+
+    content <- try(httr2::resp_body_string(resp), silent = TRUE)
+    if (inherits(content, "try-error")) {
+      cat("Failed to get response body\n")
+      return("[]")
+    }
+
+    json_text <- try(jsonlite::fromJSON(content, simplifyVector = FALSE), silent = TRUE)
+    if (inherits(json_text, "try-error")) {
+      return("[]")
+    }
+
+    out <- try(json_text$choices[[1]]$message$content, silent = TRUE)
+    if (inherits(out, "try-error") || is.null(out)) {
+      return("[]")
+    }
+
+    # Strip code fences and extract JSON array
+    out <- gsub("```[a-zA-Z]*", "", out)
+    out <- gsub("```", "", out)
+    m <- regmatches(out, regexpr("\\[.*\\]", out, perl = TRUE))
+    if (length(m) == 1 && jsonlite::validate(m)) return(m)
+
+    # If a JSON object, try common array containers
+    if (jsonlite::validate(out)) {
+      obj <- try(jsonlite::fromJSON(out, simplifyVector = FALSE), silent = TRUE)
+      if (!inherits(obj, "try-error") && is.list(obj)) {
+        # If it's an empty object {}, return empty array
+        if (length(obj) == 0) return("[]")
+        
+        # If it's a single species object, wrap it in an array
+        if ("scientificName" %in% names(obj)) {
+          arr_txt <- jsonlite::toJSON(list(obj), auto_unbox = TRUE)
+          return(arr_txt)
+        }
+        
+        for (k in c("items","data","result","output")) {
+          if (!is.null(obj[[k]])) {
+            arr_txt <- jsonlite::toJSON(obj[[k]], auto_unbox = TRUE)
+            if (jsonlite::validate(arr_txt)) return(arr_txt)
+          }
+        }
+      }
+    }
+    "[]"
+  }
+
+  # Filter and process unique texts ----------------------------------
+  unique_texts <- unique_texts[!is.na(unique_texts) & trimws(unique_texts) != ""]
+  
+  cat("Processing", length(unique_texts), "unique texts\n")
+
+  # Call API for each unique text and return RAW JSON (one row per original text)
+  results_map <- purrr::map_dfr(unique_texts, function(tx){
+    prompt <- build_prompt(tx)
+    json_txt <- call_openai_json(prompt)
+    
+    tibble::tibble(
+      original_text = tx,
+      json_response = as.character(json_txt)
+    )
+  })
+  
+  return(results_map)
+}
+
+
+
+# Step 2: Parse JSON and join with original dictionary
+# Takes the dictionary and raw LLM JSON results, parses JSON into multiple rows, then joins
+join_bryophyte_with_llm <- function(bryophyte_dictionary, bryophyte_llm_results){
+  
+  # Helper to parse JSON array into tibble (returns multiple rows if multiple species)
+  parse_json_to_rows <- function(json_text){
+    items <- try(jsonlite::fromJSON(json_text, simplifyVector = TRUE), silent = TRUE)
+    if (inherits(items, "try-error") || is.null(items) || length(items) == 0) {
+      return(tibble::tibble(
+        scientificName = NA_character_,
+        vernacularName = NA_character_,
+        confirmed = NA,
+        comment = NA_character_
+      ))
+    }
+    
+    # Convert to tibble
+    if (is.list(items) && !is.data.frame(items)) {
+      df <- tibble::as_tibble(items)
+    } else if (is.data.frame(items)) {
+      df <- tibble::as_tibble(items)
+    } else {
+      return(tibble::tibble(
+        scientificName = NA_character_,
+        vernacularName = NA_character_,
+        confirmed = NA,
+        comment = NA_character_
+      ))
+    }
+    
+    if (nrow(df) == 0) {
+      return(tibble::tibble(
+        scientificName = NA_character_,
+        vernacularName = NA_character_,
+        confirmed = NA,
+        comment = NA_character_
+      ))
+    }
+    
+    # Ensure all columns exist
+    if (!"scientificName" %in% names(df)) df$scientificName <- NA_character_
+    if (!"vernacularName" %in% names(df)) df$vernacularName <- NA_character_
+    if (!"confirmed" %in% names(df)) df$confirmed <- NA
+    if (!"comment" %in% names(df)) df$comment <- NA_character_
+    
+    # Return only the columns we need with correct types
+    df |>
+      dplyr::select(scientificName, vernacularName, confirmed, comment) |>
+      dplyr::mutate(
+        scientificName = as.character(scientificName),
+        vernacularName = as.character(vernacularName),
+        confirmed = as.logical(confirmed),
+        comment = as.character(comment)
+      )
+  }
+  
+  # Parse JSON for each row (this expands rows with multiple species)
+  llm_parsed <- bryophyte_llm_results |>
+    dplyr::rowwise() |>
+    dplyr::mutate(parsed = list(parse_json_to_rows(json_response))) |>
+    dplyr::ungroup() |>
+    tidyr::unnest(parsed)
+  
+  # Prepare dictionary: clean IDs and site names
+  dic <- bryophyte_dictionary |>
+    dplyr::rename(siteID = dplyr::any_of(c("SITE", "siteID")),
+                  voucherID = dplyr::any_of(c("voucher ID", "voucherID"))) |>
+    dplyr::mutate(
+      voucherID = stringr::str_replace_all(voucherID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")),
+      siteID = stringr::str_replace_all(siteID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")),
+      siteID = dplyr::case_when(
+        siteID == "ARH" ~ "Arhelleren",
+        siteID == "FAU" ~ "Fauske",
+        siteID == "GUD" ~ "Gudmedalen",
+        siteID == "HOG" ~ "Hogsete",
+        siteID == "LAV" ~ "Lavisdalen",
+        siteID == "RAM" ~ "Rambera",
+        siteID == "SKJ" ~ "Skjelingahaugen",
+        siteID == "ULV" ~ "Ulvehaugen",
+        siteID == "VES" ~ "Veskre",
+        siteID == "VIK" ~ "Vikesland",
+        siteID == "OVS" ~ "Ovstedalen",
+        siteID == "ALR" ~ "Alrust",
+        TRUE ~ siteID
+      ),
+      species_correction_Kristian_Hassel = stringr::str_squish(as.character(species_correction_Kristian_Hassel))
+    )
+  
+  # Join parsed results with dictionary (many-to-many because multiple species per text)
+  out <- dic |>
+    dplyr::left_join(llm_parsed, 
+                     by = dplyr::join_by(species_correction_Kristian_Hassel == original_text),
+                     relationship = "many-to-many")
+
+  # Format output columns
+  out |>
+    dplyr::mutate(
+      check = dplyr::if_else(confirmed == TRUE, "confirmed", NA_character_),
+      norwegian_name = vernacularName,
+      species_llm = scientificName,
+      comment_llm = comment
+    ) |>
+    dplyr::select(siteID:species_correction_Kristian_Hassel, json_response, check, norwegian_name, species_llm, comment_llm, confirmed, `level of certainty`:comments_data_entering)
+}
+
+
 clean_bryophyte <- function(bryophyte_raw, bryophyte_dictionary, funder_meta){
 
     bryophyte <- bryophyte_raw |> 
@@ -31,55 +263,7 @@ clean_bryophyte <- function(bryophyte_raw, bryophyte_dictionary, funder_meta){
     rename(date = `date (yyyy-mm-dd)`) |> 
     mutate(voucherID = str_replace_all(voucherID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")))
 
-    bryo_dic <- bryophyte_dictionary |>
-      rename(siteID = SITE,
-             voucherID = `voucher ID`) |>
-      mutate(voucherID = str_replace_all(voucherID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")),
-             siteID = str_replace_all(siteID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")),
-             siteID = case_when(
-               siteID == "ARH" ~ "Arhelleren",
-               siteID == "FAU" ~ "Fauske",
-               siteID == "GUD" ~ "Gudmedalen",
-               siteID == "HOG" ~ "Hogsete",
-               siteID == "LAV" ~ "Lavisdalen",
-               siteID == "RAM" ~ "Rambera",
-               siteID == "SKJ" ~ "Skjelingahaugen",
-               siteID == "ULV" ~ "Ulvehaugen",
-               siteID == "VES" ~ "Veskre",
-               siteID == "VIK" ~ "Vikesland",
-               siteID == "OVS" ~ "Ovstedalen",
-               siteID == "ALR" ~ "Alrust",
-               TRUE ~ siteID
-             )) |>
-      # First, split multiple species into separate rows
-      separate_longer_delim(species_correction_Kristian_Hassel, delim = regex("[+&]")) |>
-      mutate(species_correction_Kristian_Hassel = str_trim(species_correction_Kristian_Hassel)) |>
-      mutate(
-        # Extract check status - handle both "Confirmed" and "Confirmed -" patterns
-        check = case_when(
-          str_detect(species_correction_Kristian_Hassel, "^Confirmed") ~ "Confirmed",
-          TRUE ~ NA_character_
-        ),
-        # Clean up the string by removing "Confirmed" and "Confirmed -" prefixes
-        temp_species_string = str_remove(species_correction_Kristian_Hassel, "^Confirmed:?\\s*-?\\s*"),
-        temp_species_string = str_trim(temp_species_string),
-        # Only extract names if there's actual content after removing "Confirmed"
-        norwegian_name = case_when(
-          !is.na(temp_species_string) & temp_species_string != "" & str_detect(temp_species_string, "/") ~ 
-            str_trim(str_extract(temp_species_string, "^[^/]+")),
-          TRUE ~ NA_character_
-        ),
-        species = case_when(
-          !is.na(temp_species_string) & temp_species_string != "" & str_detect(temp_species_string, "/") ~ 
-            str_trim(str_extract(temp_species_string, "[^/]+$")),
-          !is.na(temp_species_string) & temp_species_string != "" ~ temp_species_string,
-          TRUE ~ NA_character_
-        )
-      ) |>
-      select(-temp_species_string) |>
-      select(siteID:comments_data_entering, check, norwegian_name, species)
-
-      bryo_dic |> write_csv("bryo_dic.csv")
+      
 
     ddd <- bryophyte |>
       select(date:blockID, plotID, treatment:weather, comments) |>
