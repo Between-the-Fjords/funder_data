@@ -1,6 +1,6 @@
 ---
 title: "Check community"
-output: pdf
+format: pdf
 ---
 
 ```{r}
@@ -31,6 +31,9 @@ community <- read_csv("community_2015-2022.csv")
 #| label: biomass-check
 #| echo: false
 #| results: asis
+#| fig-show: asis      # don’t hold/pack plots together
+#| out.width: "100%"   # use full width so LaTeX won’t place two per line
+#| fig-align: center
 
 
 community |>
