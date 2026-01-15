@@ -409,25 +409,22 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
     #     by = c("siteID", "voucherID")
     #   )
     
+    # check voucherIDs with multiple species
+    # bryophyte_joined |> filter(n_species > 1)
 
     # cover data
-    bryophyte_joined |>
-    select(date:treatment, voucherID,
-           species = scientific_final, vernacular = vernacular_final, 
-           cover_percent, observer, weather, comments)
+    # bryophyte_joined |>
+    # select(date:treatment, voucherID,
+    #        species = scientific_final, vernacular = vernacular_final, 
+    #        cover_percent, observer, weather, comments)
 
-    # presence data
-    bryophyte_joined |>
-      select(date:treatment, voucherID,
-           species = scientific_final, vernacular = vernacular_final, 
-           `1`, `2`, `3`, `4`, `5`, observer, weather, comments) |>
-      pivot_longer(cols = c(`1`, `2`, `3`, `4`, `5`), 
-                   names_to = "subplot", values_to = "presence") |> 
-      filter(!is.na(presence))
-      
-    
-    
-    bryophyte_joined |> filter(n_species > 1)
-      
+    # # presence data
+    # bryophyte_joined |>
+    #   select(date:treatment, voucherID,
+    #        species = scientific_final, vernacular = vernacular_final, 
+    #        `1`, `2`, `3`, `4`, `5`, observer, weather, comments) |>
+    #   pivot_longer(cols = c(`1`, `2`, `3`, `4`, `5`), 
+    #                names_to = "subplot", values_to = "presence") |> 
+    #   filter(!is.na(presence))
 
 }
