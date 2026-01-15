@@ -151,7 +151,17 @@ vegetation_plan <- list(
   tar_target(
     name = joined_bryophyte,
     command = join_bryophyte_with_llm(bryophyte_dictionary, bryophyte_llm_results2)
-  )
+  ),
 
+  tar_target(
+    name = bryophyte_clean,
+    command = clean_bryophyte(bryophyte_raw, joined_bryophyte, funder_meta)
+  ),
+
+  tar_target(
+    name = bryophyte_output,
+    command = save_csv(file = bryophyte_clean, name = "FUNDER_clean_bryophyte_2022.csv"),
+    format = "file"
+  )
 
 )
