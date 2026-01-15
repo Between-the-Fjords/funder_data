@@ -319,7 +319,7 @@ join_bryophyte_with_llm <- function(bryophyte_dictionary, bryophyte_llm_results)
 }
 
 # Rhytidiadelphus (Hylocomiadelphus) triquetrus
-
+#joined_bryophyte |> filter(scientific_final == "Rhytidiadelphus (Hylocomiadelphus) triquetrus")
 
 clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
 
@@ -328,21 +328,106 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
     tidylog::left_join(funder_meta, by = c("siteID", "blockID", "treatment")) |>
     rename(date = `date (yyyy-mm-dd)`) |> 
     mutate(voucherID = str_replace_all(voucherID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")))
+    ### NEED TO FIX 4TH TREATMENT FOR VES2 !!!
 
-    joined_bryophyte
+    # check if all treatments are present in bryophyte
+    # Ves2 has only 3 treatments
+    # bryophyte |>
+    # distinct(siteID, blockID, plotID,treatment) |>
+    # group_by(siteID, blockID) |>
+    # count() |> filter(n < 4)
 
-      
+    bryo_dictionary <- joined_bryophyte |> 
+    # Apply vernacular_final changes
+    mutate(vernacular_final = case_when(
+      vernacular_final == "Bakkefrynse" ~ "Bakkefrynsemose",
+      vernacular_final == "Einerbjørnemose|Storbjørnemose" & scientific_final == "Polytrichum alpinum" ~ "Fjellbinnemose",
+      vernacular_final == "Einerbjørnemose" & scientific_final == "Polytrichum alpinum" ~ "Fjellbinnemose",
+      vernacular_final == "Heigråmose" & scientific_final == "Oncophorus integerrimus" ~ "Glattsprikemose",
+      vernacular_final == "Sumptveblad" ~ "Sumptvebladmose",
+      is.na(vernacular_final) & scientific_final == "Ptychodium plicatum" ~ "Storraspmose",
+      is.na(vernacular_final) & scientific_final == "Racomitrium canescens ssp. elongatum" ~ "YYY", ### need vernacular name
+      is.na(vernacular_final) & scientific_final == "Racomitrium canescens ssp. canescens" ~ "XXX", ### need vernacular name
+      scientific_final == "Bryum sp." ~ NA_character_,
+      TRUE ~ vernacular_final
+    )) |> 
+    # Apply scientific_final changes
+    mutate(scientific_final = case_when(
+      voucherID == "LAV704" & vernacular_final == "Einerbjørnemose" & is.na(scientific_final) ~ "Polytrichum juniperinum",
+      scientific_final == "R. lanuginosum" ~ "Racomitrium lanuginosum",
+      scientific_final == "Polytrichum alpinum" ~ "Polytrichastrum alpinum",
+      scientific_final == "Rhytidiadelphus triquetrus" ~ "Hylocomiadelphus triquetrus",
+      scientific_final == "Rhytidiadelphus (Hylocomiadelphus) triquetrus" ~ "Hylocomiadelphus triquetrus",
+      scientific_final == "Scaparia irrigua" ~ "Scapania irrigua",
+      scientific_final == "Ptychodium plicatum" ~ "Lescuraea plicata",
+      scientific_final == "Polia sp." ~ "Pohlia sp.",
+      TRUE ~ scientific_final
+    )) |>
+    # Set vernacular_final to NA for Pohlia sp. (after scientific_final changes)
+    mutate(vernacular_final = if_else(scientific_final == "Pohlia sp.", NA_character_, vernacular_final)) |>
+    # remove entries where species_correction_Kristian_Hassel is "Ingen mose!"
+    filter(species_correction_Kristian_Hassel != "Ingen mose!") |>
+    # remove rows where scientific_final is NA (no species found)
+    filter(!is.na(scientific_final))
 
-    ddd <- bryophyte |>
-      select(date:blockID, plotID, treatment:weather, comments) |>
+    # joined_bryophyte2 |> 
+    # distinct(vernacular_final, scientific_final, species_correction_Kristian_Hassel, comments_data_entering) |>
+    # arrange(vernacular_final) |> 
+    # writexl::write_xlsx("bryo_species_list2.xlsx")
+
+    
+    # Join bryophyte data with the species dictionary
+    # left_join will duplicate bryophyte rows when a voucherID has multiple species in bryo_dictionary
+    bryophyte_joined <- bryophyte |> 
+    select(date:blockID, plotID, treatment:weather, comments) |>
+      tidylog::left_join(
+        bryo_dictionary |>
+          select(siteID, voucherID, vernacular_final, scientific_final, comments_data_entering),
+        by = c("siteID", "voucherID")
+      ) |>
+      # Filter out rows where no match was found in bryo_dictionary (these would have NA in scientific_final)
+      # This handles cases where voucherID exists in bryophyte but not in bryo_dictionary
+      # 18 observations do not join because they are in the bryo_dictionary but not in the bryophyte data. This is ok.
+      tidylog::filter(!is.na(scientific_final)) |> 
+      # Add a column to count how many species each voucherID has (for splitting cover values later)
+      group_by(siteID, plotID, voucherID) |>
+      mutate(n_species = n()) |>
+      ungroup() |>
+      # Convert cover_percent to numeric, handling "<1" as 0.5
+      mutate(cover_percent = if_else(cover_percent == "<1", "0.5", as.character(cover_percent)),
+             cover_percent = as.numeric(cover_percent)) |>
+      # Split cover values when multiple species were observed for the same voucherID
+      # Divide cover by n_species to split it proportionally across all species
+      mutate(cover_percent = if_else(n_species > 1, cover_percent / n_species, cover_percent))
+    
+    # # Find observations in bryo_dictionary that don't have a match in bryophyte
+    # bryo_dictionary_only <- bryo_dictionary |>
+    #   select(siteID, voucherID, vernacular_final, scientific_final, comments_data_entering) |>
+    #   tidylog::anti_join(
+    #     bryophyte |>
+    #       select(siteID, voucherID),
+    #     by = c("siteID", "voucherID")
+    #   )
+    
+
+    # cover data
+    bryophyte_joined |>
+    select(date:treatment, voucherID,
+           species = scientific_final, vernacular = vernacular_final, 
+           cover_percent, observer, weather, comments)
+
+    # presence data
+    bryophyte_joined |>
+      select(date:treatment, voucherID,
+           species = scientific_final, vernacular = vernacular_final, 
+           `1`, `2`, `3`, `4`, `5`, observer, weather, comments) |>
       pivot_longer(cols = c(`1`, `2`, `3`, `4`, `5`), 
-                   names_to = "subplot", values_to = "subplot_coverage") |>
-      tidylog::left_join(bryo_dic, by = c("siteID", "voucherID"))
-
-
-      ddd |>
-      distinct(species, species_correction_Kristian_Hassel.x, vernacular, scientific, species_correction_Kristian_Hassel.y, `level of certainty`) |>
-      filter(species_correction_Kristian_Hassel.y != "Confirmed", `level of certainty` == "1") |> write_csv("bryo_level_1.csv")
-
+                   names_to = "subplot", values_to = "presence") |> 
+      filter(!is.na(presence))
+      
+    
+    
+    bryophyte_joined |> filter(n_species > 1)
+      
 
 }
