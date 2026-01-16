@@ -134,6 +134,29 @@ vegetation_plan <- list(
     name = community_2022_clean,
     command = clean_community_2022(community_2022_raw, fun_gr)
   ),
+  
+  # join 2015-2021 and 2022 community data
+  tar_target(
+    name = community_clean,
+    command = join_community(community_2015_2021_clean, community_2022_clean)
+  ),
+
+  # turf maps corrections
+  tar_target(
+    name = turf_map_corrections_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "Turf mat corrections Funder.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "1_Vegetation/Raw_data"
+    ),
+    format = "file"
+  ),
+
+  tar_target(
+    name = turf_map_corrections,
+    command = read_excel(turf_map_corrections_download)
+  ),
 
   # BRYOPHYTE
   # community data
