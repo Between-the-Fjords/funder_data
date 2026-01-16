@@ -66,11 +66,16 @@ clean_community_2022 <- function(community_2022_raw, fun_gr) {
     mutate(total_graminoids = if_else(treatment %in% c("FGB", "GB", "GF", "G"), NA_real_, total_graminoids)) |>
     filter(!(treatment %in% c("FGB", "GB", "GF", "G") & functional_group == "graminoid"))
 
-  # join 2015-2021 and 2022 community data
-  community <- bind_rows(comm15, cover) |>
-    filter(treatment != "XC")
-
 }
+
+  # join 2015-2021 and 2022 community data
+  join_community <- function(community_2015_2021_clean, community_2022_clean) {
+    community <- bind_rows(community_2015_2021_clean, community_2022_clean) |>
+    filter(treatment != "XC")
+}
+
+# apply turf map corrections
+
 
 # makeing turf maps
 # title <- community |>
