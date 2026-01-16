@@ -325,10 +325,35 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
 
     bryophyte <- bryophyte_raw |> 
     mutate(blockID = paste0(str_sub(siteID, 1, 3), blockID)) |>
+    # Fix: Change some F treatments to C for Veskre blockID 2
+    # This is needed because there are 2x F treatments and no C treatment
+    # Convert cover_percent to numeric, handling "<1" as 0.5
+    mutate(
+      cover_percent = if_else(cover_percent == "<1", "0.5", as.character(cover_percent)),
+      cover_percent = as.numeric(cover_percent),
+      treatment = case_when(
+        siteID == "Veskre" & blockID == "Ves2" & treatment == "F" & 
+        species == "Etasjemose" & cover_percent == 20 ~ "C",
+        siteID == "Veskre" & blockID == "Ves2" & treatment == "F" & 
+        species == "Engkransmose" & cover_percent == 2 ~ "C",
+        siteID == "Veskre" & blockID == "Ves2" & treatment == "F" & 
+        species == "Storkransmose" & cover_percent == 2 ~ "C",
+        TRUE ~ treatment
+      )
+    ) |>
     tidylog::left_join(funder_meta, by = c("siteID", "blockID", "treatment")) |>
     rename(date = `date (yyyy-mm-dd)`) |> 
-    mutate(voucherID = str_replace_all(voucherID, c("Å" = "A", "Ø" = "O", "Æ" = "AE")))
-    ### NEED TO FIX 4TH TREATMENT FOR VES2 !!!
+    mutate(voucherID = str_replace_all(voucherID, c("Å" = "A", "Ø" = "O", "Æ" = "AE"))) |>
+    # Remove incorrect rows that should not be in the data
+    # Handle case-insensitive matching and potential whitespace
+    tidylog::filter(!(plotID == "Gud4G" & str_to_lower(str_trim(species)) == "racomitrium ericoides")) |>
+    # Fill missing cover_percent values for specific plotID and species combinations
+    mutate(cover_percent = case_when(
+      is.na(cover_percent) & plotID == "Skj1C" & species == "Rose" ~ 0.5,
+      is.na(cover_percent) & plotID == "Gud1GF" & species == "\"Bronze\"" ~ 0.5,  # Update Bronze regardless of NA status (2 rows)
+      is.na(cover_percent) & plotID == "Arh3G" & species == "Storbjørnemose" ~ 0.5,
+      TRUE ~ cover_percent
+    ))
 
     # check if all treatments are present in bryophyte
     # Ves2 has only 3 treatments
@@ -346,8 +371,8 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
       vernacular_final == "Heigråmose" & scientific_final == "Oncophorus integerrimus" ~ "Glattsprikemose",
       vernacular_final == "Sumptveblad" ~ "Sumptvebladmose",
       is.na(vernacular_final) & scientific_final == "Ptychodium plicatum" ~ "Storraspmose",
-      is.na(vernacular_final) & scientific_final == "Racomitrium canescens ssp. elongatum" ~ "YYY", ### need vernacular name
-      is.na(vernacular_final) & scientific_final == "Racomitrium canescens ssp. canescens" ~ "XXX", ### need vernacular name
+      is.na(vernacular_final) & scientific_final == "Racomitrium canescens ssp. elongatum" ~ NA_character_, ### need vernacular name
+      is.na(vernacular_final) & scientific_final == "Racomitrium canescens ssp. canescens" ~ NA_character_, ### need vernacular name
       scientific_final == "Bryum sp." ~ NA_character_,
       TRUE ~ vernacular_final
     )) |> 
@@ -388,14 +413,11 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
       # Filter out rows where no match was found in bryo_dictionary (these would have NA in scientific_final)
       # This handles cases where voucherID exists in bryophyte but not in bryo_dictionary
       # 18 observations do not join because they are in the bryo_dictionary but not in the bryophyte data. This is ok.
-      tidylog::filter(!is.na(scientific_final)) |> 
+      tidylog::filter(!is.na(scientific_final)) |>
       # Add a column to count how many species each voucherID has (for splitting cover values later)
       group_by(siteID, plotID, voucherID) |>
       mutate(n_species = n()) |>
       ungroup() |>
-      # Convert cover_percent to numeric, handling "<1" as 0.5
-      mutate(cover_percent = if_else(cover_percent == "<1", "0.5", as.character(cover_percent)),
-             cover_percent = as.numeric(cover_percent)) |>
       # Split cover values when multiple species were observed for the same voucherID
       # Divide cover by n_species to split it proportionally across all species
       mutate(cover_percent = if_else(n_species > 1, cover_percent / n_species, cover_percent))
@@ -408,23 +430,5 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta){
     #       select(siteID, voucherID),
     #     by = c("siteID", "voucherID")
     #   )
-    
-    # check voucherIDs with multiple species
-    # bryophyte_joined |> filter(n_species > 1)
-
-    # cover data
-    # bryophyte_joined |>
-    # select(date:treatment, voucherID,
-    #        species = scientific_final, vernacular = vernacular_final, 
-    #        cover_percent, observer, weather, comments)
-
-    # # presence data
-    # bryophyte_joined |>
-    #   select(date:treatment, voucherID,
-    #        species = scientific_final, vernacular = vernacular_final, 
-    #        `1`, `2`, `3`, `4`, `5`, observer, weather, comments) |>
-    #   pivot_longer(cols = c(`1`, `2`, `3`, `4`, `5`), 
-    #                names_to = "subplot", values_to = "presence") |> 
-    #   filter(!is.na(presence))
 
 }
