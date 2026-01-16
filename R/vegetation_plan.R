@@ -1,7 +1,7 @@
 ### Clean vegetation data
 
 vegetation_plan <- list(
-  # reflectance
+  # REFLECTANCE
   tar_target(
     name = ndvi_download,
     command = get_file(
@@ -26,7 +26,7 @@ vegetation_plan <- list(
     format = "file"
   ),
 
-  # Root ingrowth cores
+  # ROOT INGROWTH CORES
   tar_target(
     name = ric_depth_download,
     command = get_file(
@@ -54,7 +54,7 @@ vegetation_plan <- list(
   #   format = "file"
   # )
 
-  # biomass
+  # BIOMASS
   tar_target(
     name = biomass_download,
     command = get_file(
@@ -79,8 +79,7 @@ vegetation_plan <- list(
     format = "file"
   ),
 
-  # community
-
+  # COMMUNITY
   # 2022 community data
   tar_target(
     name = community_download,
@@ -117,7 +116,13 @@ vegetation_plan <- list(
     command = read_csv(community_2015_2021_download)
   ),
 
-  # bryophyte
+  # clean 2015-2021 community data
+  tar_target(
+    name = community_2015_2021_clean,
+    command = clean_community(community_2015_2021_raw)
+  ),
+
+  # BRYOPHYTE
   # community data
   tar_target(
     name = bryophyte_download,
