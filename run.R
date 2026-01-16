@@ -16,12 +16,15 @@ targets::tar_make()
 # Loading individually works around this issue
 meta <- targets::tar_meta()
 targets_list <- meta$name[meta$type == "stem"]
-for(t in targets_list) {
-  tryCatch({
-    targets::tar_load(t, envir = .GlobalEnv)
-  }, error = function(e) {
-    warning("Failed to load target: ", t, " - ", e$message)
-  })
+for (t in targets_list) {
+    tryCatch(
+        {
+            targets::tar_load(t, envir = .GlobalEnv)
+        },
+        error = function(e) {
+            warning("Failed to load target: ", t, " - ", e$message)
+        }
+    )
 }
 # targets::tar_make_clustermq(workers = 2) # nolint
 # targets::tar_make_future(workers = 2) # nolint

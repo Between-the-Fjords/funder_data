@@ -1,5 +1,4 @@
-soil.moist <- function(rawsoilmoist, soil_temp, soilclass){
-
+soil.moist <- function(rawsoilmoist, soil_temp, soilclass) {
   # creating df with parameters for each soil type
   soilclass.df <- tibble(
     soil = c("sand", "loamy_sand_A", "loamy_sand_B", "sandy_loam_A", "sandy_loam_B", "loam", "silt_loam", "peat"),
@@ -11,27 +10,30 @@ soil.moist <- function(rawsoilmoist, soil_temp, soilclass){
     DilVol = rep(-59.72975311, 8) # a constant across all soil types, don't know exactly what this does
   )
 
-  #filtering soilclass.df based on which soilclass was entered in the function
+  # filtering soilclass.df based on which soilclass was entered in the function
   soilclass.df <- soilclass.df %>%
     filter(
       soil == soilclass
     )
 
-  #calculating the volumetric soil moisture with the parameters corresponding to the soil class and the raw soil moisture from the logger
-  volmoist = (soilclass.df$a * rawsoilmoist^2) + (soilclass.df$b * rawsoilmoist) + soilclass.df$c
+  # calculating the volumetric soil moisture with the parameters corresponding to the soil class and the raw soil moisture from the logger
+  volmoist <- (soilclass.df$a * rawsoilmoist^2) + (soilclass.df$b * rawsoilmoist) + soilclass.df$c
 
-  #temperature correction
+  # temperature correction
   temp_ref <- 24
   delta_air <- 1.91132689118083
   delta_water <- 0.64108
   delta_dil <- -1.270246891 # this is delta-water - delta_air
   # we don't know what this does or what the variables do, but the result is the same as in excel
-  temp_corr <- rawsoilmoist + ((temp_ref-soil_temp) * (delta_air + delta_dil * volmoist))
+  temp_corr <- rawsoilmoist + ((temp_ref - soil_temp) * (delta_air + delta_dil * volmoist))
   # volumetric soil moisture with temperatue correction
-  volmoistcorr <- with(soilclass.df,
-                       ifelse(rawsoilmoist>AirCalib,
-                              (temp_corr+AirPuls+DilVol*volmoist)^2*a+(temp_corr+AirPuls+DilVol*volmoist)*b+c,
-                              NA))
+  volmoistcorr <- with(
+    soilclass.df,
+    ifelse(rawsoilmoist > AirCalib,
+      (temp_corr + AirPuls + DilVol * volmoist)^2 * a + (temp_corr + AirPuls + DilVol * volmoist) * b + c,
+      NA
+    )
+  )
   return(volmoistcorr)
   # return(volmoist) #let's just use the soil moisture without temperature correction for now
 }
