@@ -82,7 +82,7 @@ vegetation_plan <- list(
   # COMMUNITY
   # 2022 community data
   tar_target(
-    name = community_download,
+    name = community_2022_download,
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_vascular_community_2022.csv",
@@ -94,8 +94,8 @@ vegetation_plan <- list(
 
   # import 2022community data
   tar_target(
-    name = community_raw,
-    command = read_csv(community_download)
+    name = community_2022_raw,
+    command = read_csv(community_2022_download)
   ),
 
   # 2015-2021 community data
@@ -119,7 +119,20 @@ vegetation_plan <- list(
   # clean 2015-2021 community data
   tar_target(
     name = community_2015_2021_clean,
-    command = clean_community(community_2015_2021_raw)
+    command = clean_community_2015_2021(community_2015_2021_raw)
+  ),
+
+  # functional group 2015-2021
+  tar_target(
+    name = fun_gr,
+    command = community_2015_2021_raw |>
+      distinct(species, functional_group)
+  ),
+
+    # clean 2022 community data
+  tar_target(
+    name = community_2022_clean,
+    command = clean_community_2022(community_2022_raw, fun_gr)
   ),
 
   # BRYOPHYTE
