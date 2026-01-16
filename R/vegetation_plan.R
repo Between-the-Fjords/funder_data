@@ -7,7 +7,7 @@ vegetation_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_greenseeker_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -32,7 +32,7 @@ vegetation_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_root_ingrowth_core_depths_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -60,7 +60,7 @@ vegetation_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER Forbs_Graminoids_Bryophytes.xlsx",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -80,39 +80,81 @@ vegetation_plan <- list(
   ),
 
   # community
+
+  # 2022 community data
   tar_target(
     name = community_download,
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_vascular_community_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
   ),
+
+  # import 2022community data
   tar_target(
     name = community_raw,
     command = read_csv(community_download)
   ),
 
-  # bryophyte
-  # tar_target(
-  #   name = bryophyte_download,
-  #   command = get_file(node = "tx9r2",
-  #                      file = "FUNDER_bryophyte_community_2022.csv",
-  #                      path = "raw_data",
-  #                      remote_path = "1_Vegetation/Raw_data"),
-  #   format = "file"
-  # ),
+  # 2015-2021 community data
+  tar_target(
+    name = community_2015_2021_download,
+    command = get_file(
+      node = "4c5v2",
+      file = "FunCaB_clean_composition_2015-2019.csv",
+      path = here::here("raw_data"),
+      remote_path = "3_Plant_composition"
+    ),
+    format = "file"
+  ),
 
+  # import 2015-2021 community data
+  tar_target(
+    name = community_2015_2021_raw,
+    command = read_csv(community_2015_2021_download)
+  ),
+
+  # bryophyte
+  # community data
+  tar_target(
+    name = bryophyte_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "FUNDER_raw_bryophyte_community_2022.csv",
+      path = here::here("raw_data"),
+      remote_path = "1_Vegetation/Raw_data"
+    ),
+    format = "file"
+  ),
+
+  # import bryophyte data
   tar_target(
     name = bryophyte_raw,
-    command = read_csv("raw_data/FUNDER_raw_bryophyte_community_2022.csv")
+    command = read_csv(bryophyte_download)
   ),
+
+  # bryophyte dictionary data
+  tar_target(
+    name = bryophyte_dic_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "Bryophyte community voucher overview with protocol - FUNDER 2022.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "1_Vegetation/Raw_data"
+    ),
+    format = "file"
+  ),
+
+  # import bryophyte dictionary
   tar_target(
     name = bryophyte_dictionary,
-    command = read_excel("raw_data/Bryophyte community voucher overview with protocol - FUNDER 2022.xlsx")
+    command = read_excel(bryophyte_dic_download)
   ),
+
+  # clean bryophyte structure
   tar_target(
     name = bryophyte_structure,
     command = clean_bryophyte_structure(bryophyte_raw, funder_meta)
@@ -123,6 +165,7 @@ vegetation_plan <- list(
     format = "file"
   ),
 
+  # clean bryophyte cover and presence data
   # These targets require API key and model to be set in the environment
   # # Call OpenAI API to parse species info from unique texts
   # tar_target(
@@ -139,9 +182,22 @@ vegetation_plan <- list(
   #   format = "file"
   # ),
 
+  # download LLM results
+  tar_target(
+    name = bryophyte_llm_results_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "FUNDER_llm_results.csv",
+      path = here::here("raw_data"),
+      remote_path = "1_Vegetation/Raw_data"
+    ),
+    format = "file"
+  ),
+
+  # import LLM results
   tar_target(
     name = bryophyte_llm_results2,
-    command = read_csv("raw_data/FUNDER_llm_results.csv")
+    command = read_csv(bryophyte_llm_results_download)
   ),
   tar_target(
     name = joined_bryophyte,
