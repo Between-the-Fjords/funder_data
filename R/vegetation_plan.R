@@ -158,9 +158,39 @@ vegetation_plan <- list(
     command = clean_bryophyte(bryophyte_raw, joined_bryophyte, funder_meta)
   ),
 
+  # cover data
   tar_target(
-    name = bryophyte_output,
-    command = save_csv(file = bryophyte_clean, name = "FUNDER_clean_bryophyte_2022.csv"),
+    name = bryophyte_cover,
+    command = bryophyte_clean |>
+    # remove rows where cover_percent is NA
+    filter(!is.na(cover_percent)) |>
+    select(date:treatment, voucherID,
+           species = scientific_final, vernacular_species = vernacular_final, 
+           cover_percent, observer, weather, comments)
+  ),
+
+  tar_target(
+    name = bryophyte_cover_output,
+    command = save_csv(file = bryophyte_cover, name = "FUNDER_clean_bryophyte_cover_2022.csv"),
+    format = "file"
+  ),
+
+  # presence data
+  tar_target(
+      name = bryophyte_presence,
+      command = bryophyte_clean |>
+      select(date:treatment, voucherID,
+           species = scientific_final, vernacular_species = vernacular_final, 
+           `1`, `2`, `3`, `4`, `5`, observer, weather, comments) |>
+      pivot_longer(cols = c(`1`, `2`, `3`, `4`, `5`), 
+                   names_to = "subplot", values_to = "presence") |> 
+      filter(!is.na(presence)) |>
+      select(date:vernacular_species, subplot, presence, observer, weather, comments)
+  ),
+
+tar_target(
+    name = bryophyte_presence_output,
+    command = save_csv(file = bryophyte_presence, name = "FUNDER_clean_bryophyte_presence_2022.csv"),
     format = "file"
   )
 
