@@ -202,7 +202,147 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
     ) |>
     # Remove rows where year_expanded is NA (these are "all" or "in general" cases that couldn't be parsed)
     filter(!is.na(year_expanded)) |>
-    select(siteID, blockID, plotID, treatment, year_original, year, year_expanded, from_species, to_species, comment, general_comment, comment_char)
+    # Parse from_species and to_species to extract cover percentages
+    mutate(
+      # Keep original columns for verification
+      from_species_original = from_species,
+      to_species_original = to_species,
+      # Parse from_species: extract "reduced to X%" → decrease_from_cover
+      # Allow case-insensitive matching and whitespace between number and %
+      decrease_from_cover = if_else(
+        str_detect(from_species, regex("reduced\\s+to\\s+\\d+\\s*%", ignore_case = TRUE)),
+        as.numeric(str_extract(from_species, "\\d+(?=\\s*%)")),
+        NA_real_
+      ),
+      # Clean from_species: remove "reduced to X%" pattern (case-insensitive, allow whitespace)
+      from_species = str_remove_all(from_species, regex("reduced\\s+to\\s+\\d+\\s*%", ignore_case = TRUE)) |> str_trim(),
+      
+      # Parse to_species: extract "decrease X%" or "reduced to X%" → decrease_to_cover (check this first)
+      # Allow whitespace between number and %
+      decrease_to_cover = if_else(
+        str_detect(to_species, regex("(?:decrease|reduced\\s+to)\\s+\\d+\\s*%", ignore_case = TRUE)),
+        as.numeric(str_extract(to_species, "\\d+(?=\\s*%)")),
+        NA_real_
+      ),
+      # Parse to_species: extract "+ X%" or "X%" → increase_to_cover (only if not a decrease or reduced)
+      # Allow whitespace between number and %
+      increase_to_cover = if_else(
+        str_detect(to_species, regex("(?:\\+\\s*)?\\d+\\s*%", ignore_case = FALSE)) & 
+        !str_detect(to_species, regex("(?:decrease|reduced)", ignore_case = TRUE)),
+        as.numeric(str_extract(to_species, "\\d+(?=\\s*%)")),
+        NA_real_
+      ),
+      # Clean to_species: remove "+ X%", "X%", "decrease X%", and "reduced to X%" patterns (allow whitespace)
+      to_species = str_remove_all(to_species, regex("(?:\\+\\s*)?\\d+\\s*%|(?:decrease|reduced\\s+to)\\s+\\d+\\s*%", ignore_case = TRUE)) |> str_trim()
+    ) |>
+    # Remove rows where all information columns are NA
+    filter(!(is.na(from_species_original) & is.na(to_species_original) & is.na(comment) & is.na(general_comment))) |>
+    # Fix typos and standardize species names in from_species
+    mutate(
+      from_species = str_trim(from_species),
+      # Fix specific typos first
+      from_species = str_replace_all(from_species, "ave flex", "ave fle"),
+      from_species = str_replace_all(from_species, "nar stri", "nar str"),
+      from_species = str_replace_all(from_species, "tarax", "tar sp"),
+      from_species = str_replace_all(from_species, "des cesp", "des ces"),
+      from_species = str_replace_all(from_species, "car atr og atro", "car atr og car atro"),
+      # Fix specific issues
+      from_species = str_replace_all(from_species, "gym  dry", "gym dry"),  # Fix double space
+      from_species = str_replace_all(from_species, "hypsp", "hyp sp"),  # Add space
+      # Handle multiple species separated by "og" (Norwegian for "and")
+      # Replace "og" with comma to separate species
+      from_species = str_replace_all(from_species, "\\s+og\\s+", ", "),
+      # Handle cases where species are listed without "og" (e.g., "vio pal vio bif")
+      from_species = str_replace_all(from_species, "vio pal vio bif", "vio pal, vio bif"),
+      # Normalize multiple spaces to single space
+      from_species = str_replace_all(from_species, "\\s+", " "),
+      # Format species names: split by comma, format each, then rejoin
+      from_species = map_chr(from_species, function(s) {
+        if (is.na(s) || s == "") return(s)
+        # Split by comma
+        species_list <- str_split(s, ",")[[1]] |> str_trim()
+        # Format each species: "ach mil" → "Ach.mil"
+        # Only first letter of entire species name is uppercase, rest lowercase
+        formatted <- map_chr(species_list, function(sp) {
+          if (is.na(sp) || sp == "") return(sp)
+          # Convert to lowercase first
+          sp_lower <- str_to_lower(sp)
+          # Split by space
+          parts <- str_split(sp_lower, "\\s+")[[1]] |> str_trim()
+          # Capitalize only first letter of first part
+          if (length(parts) > 0 && nchar(parts[1]) > 0) {
+            parts[1] <- paste0(str_to_upper(str_sub(parts[1], 1, 1)), str_sub(parts[1], 2))
+          }
+          # Join with dot
+          paste(parts, collapse = ".")
+        })
+        # Rejoin with comma and space
+        paste(formatted, collapse = ", ")
+      })
+    ) |>
+    # Fix typos and standardize species names in to_species
+    mutate(
+      to_species = str_trim(to_species),
+      # Handle "delete" - only modify comment if to_species contains "delete"
+      # If to_species has "delete": move it to comment, set to_species to NA
+      # If to_species doesn't have "delete": leave comment unchanged (can be NA, empty, or have content)
+      comment = if_else(
+        str_detect(to_species, regex("delete", ignore_case = TRUE)),
+        if_else(
+          is.na(comment) | comment == "",
+          "delete",
+          paste0(comment, "; delete")
+        ),
+        comment  # Keep original comment if no "delete" in to_species
+      ),
+      # Remove "delete" from to_species
+      to_species = str_remove_all(to_species, regex("delete", ignore_case = TRUE)) |> str_trim(),
+      # Set to NA if empty after removing delete (so "delete" becomes NA)
+      to_species = if_else(to_species == "", NA_character_, to_species),
+      # Handle multiple species separated by "og" (Norwegian for "and")
+      to_species = str_replace_all(to_species, "\\s+og\\s+", ", "),
+      # Fix specific typos
+      to_species = str_replace_all(to_species, "fes rubr", "fes rub"),
+      to_species = str_replace_all(to_species, "agr ca", "agr cap"),
+      to_species = str_replace_all(to_species, "agr capp", "agr cap"),  # Fix capp typo
+      to_species = str_replace_all(to_species, "phle alp", "phl alp"),
+      to_species = str_replace_all(to_species, "hievul", "hie vul"),
+      to_species = str_replace_all(to_species, "pimp sax", "pim sax"),
+      to_species = str_replace_all(to_species, "knau arv", "kna arv"),
+      to_species = str_replace_all(to_species, "ave flex", "ave fle"),
+      to_species = str_replace_all(to_species, "nar stri", "nar str"),
+      to_species = str_replace_all(to_species, "rub idea", "rub ida"),
+      to_species = str_replace_all(to_species, "ver chae", "rub cha"),
+      to_species = str_replace_all(to_species, "valeriana", "val sam"),
+      to_species = str_replace_all(to_species, "rubus idae", "rub ida"),
+      to_species = str_replace_all(to_species, regex("agr cap increased to", ignore_case = TRUE), "agr cap"),
+      # Normalize multiple spaces to single space
+      to_species = str_replace_all(to_species, "\\s+", " "),
+      # Format species names: split by comma, format each, then rejoin
+      to_species = map_chr(to_species, function(s) {
+        if (is.na(s) || s == "") return(NA_character_)
+        # Split by comma
+        species_list <- str_split(s, ",")[[1]] |> str_trim()
+        # Format each species: "agr cap" → "Agr.cap"
+        # Only first letter of entire species name is uppercase, rest lowercase
+        formatted <- map_chr(species_list, function(sp) {
+          if (is.na(sp) || sp == "") return(sp)
+          # Convert to lowercase first
+          sp_lower <- str_to_lower(sp)
+          # Split by space
+          parts <- str_split(sp_lower, "\\s+")[[1]] |> str_trim()
+          # Capitalize only first letter of first part
+          if (length(parts) > 0 && nchar(parts[1]) > 0) {
+            parts[1] <- paste0(str_to_upper(str_sub(parts[1], 1, 1)), str_sub(parts[1], 2))
+          }
+          # Join with dot
+          paste(parts, collapse = ".")
+        })
+        # Rejoin with comma and space
+        paste(formatted, collapse = ", ")
+      })
+    ) |>
+    select(siteID, blockID, plotID, treatment, year_original, year, year_expanded, from_species_original, from_species, to_species_original, to_species, decrease_from_cover, increase_to_cover, decrease_to_cover, comment, general_comment)
   
 
 
