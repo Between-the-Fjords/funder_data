@@ -163,10 +163,11 @@ vegetation_plan <- list(
     command = fix_turf_map_corrections(turf_map_corrections, funder_meta)
   ),
 
-  # tar_target(
-  #   name = community_clean_fixed,
-  #   command = apply_turf_map_corrections(community_clean, turf_map_corrections_fixed)
-  # ),
+  # apply turf map corrections to community data
+  tar_target(
+    name = community_clean_fixed,
+    command = apply_turf_map_corrections(community_clean, turf_map_corrections_fixed)
+  ),
 
   # BRYOPHYTE
   # community data
