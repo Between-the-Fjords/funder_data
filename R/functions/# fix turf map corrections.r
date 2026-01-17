@@ -283,17 +283,24 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
     # Fix typos and standardize species names in to_species
     mutate(
       to_species = str_trim(to_species),
-      # Handle "delete" - only modify comment if to_species contains "delete"
+      # Handle "delete" - preserve "delete" in comment if from_species is not NA
+      # If from_species is not NA and "delete" is in comment, keep both (don't modify comment)
       # If to_species has "delete": move it to comment, set to_species to NA
       # If to_species doesn't have "delete": leave comment unchanged (can be NA, empty, or have content)
       comment = if_else(
-        str_detect(to_species, regex("delete", ignore_case = TRUE)),
+        # If from_species is not NA and comment already has "delete", preserve it
+        !is.na(from_species) & str_detect(comment, regex("delete", ignore_case = TRUE)),
+        comment,  # Keep original comment with "delete"
+        # Otherwise, handle "delete" in to_species
         if_else(
-          is.na(comment) | comment == "",
-          "delete",
-          paste0(comment, "; delete")
-        ),
-        comment  # Keep original comment if no "delete" in to_species
+          str_detect(to_species, regex("delete", ignore_case = TRUE)),
+          if_else(
+            is.na(comment) | comment == "",
+            "delete",
+            paste0(comment, "; delete")
+          ),
+          comment  # Keep original comment if no "delete" in to_species
+        )
       ),
       # Remove "delete" from to_species
       to_species = str_remove_all(to_species, regex("delete", ignore_case = TRUE)) |> str_trim(),
