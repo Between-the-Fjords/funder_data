@@ -351,6 +351,35 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
         paste(formatted, collapse = ", ")
       })
     ) |>
+    # Mark merge cases (multiple species in from_species, single species in to_species)
+    mutate(
+      is_merge_case = !is.na(from_species) & !is.na(to_species) & str_detect(from_species, ",")
+    ) |>
+    # Expand rows with multiple species in from_species (when both from_species and to_species exist)
+    # This creates one row per species in from_species for Rule 1 (species name changes)
+    # We need to expand whenever from_species has a comma AND to_species exists (for Rule 1)
+    mutate(
+      # Split from_species by comma to get list of species
+      from_species_list = map(from_species, function(s) {
+        if (is.na(s) || s == "") return(character(0))
+        # Split by comma and trim
+        species_list <- str_split(s, ",")[[1]] |> str_trim()
+        # Filter out empty strings
+        species_list <- species_list[species_list != ""]
+        return(species_list)
+      })
+    ) |>
+    # Unnest to create one row per species in from_species
+    unnest(from_species_list, keep_empty = TRUE) |>
+    rename(from_species_expanded = from_species_list) |>
+    # Replace from_species with the expanded single species when both from_species and to_species exist
+    # This ensures Rule 1 can match on individual species
+    mutate(from_species = if_else(
+      !is.na(from_species_expanded) & !is.na(to_species), 
+      as.character(from_species_expanded), 
+      from_species
+    )) |>
+    select(-from_species_expanded) |>
     # Expand rows with multiple species in to_species (comma-separated)
     # Similar to year expansion - create one row per species
     mutate(
@@ -371,10 +400,10 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
     # Replace to_species with the expanded single species
     mutate(to_species = as.character(to_species_expanded)) |>
     select(-to_species_expanded) |>
-    select(siteID, blockID, plotID, treatment, year_original, year, year_expanded, from_species_original, from_species, to_species_original, to_species, decrease_from_cover, increase_to_cover, decrease_to_cover, comment, general_comment)
+    select(siteID, blockID, plotID, treatment, year_original, year, year_expanded, from_species_original, from_species, to_species_original, to_species, decrease_from_cover, increase_to_cover, decrease_to_cover, comment, general_comment, is_merge_case)
   
 
-
+  
   # Validate against funder_meta (if provided)
   # Check if plotID, blockID, treatment combinations exist in metadata
 #   if (!is.null(funder_meta)) {

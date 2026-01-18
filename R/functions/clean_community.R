@@ -102,20 +102,30 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
       tidylog::anti_join(deletions, by = c("siteID", "blockID", "plotID", "treatment", "year", "species"))
   }
   
+  # Initialize tracking column for merged species
+  community_corrected <- community_corrected |>
+    mutate(is_merged_species = FALSE)
+  
   # Rule 1: Change species name (both from_species and to_species exist)
   # year_expanded: Each year from the original year range gets its own row, so corrections apply to all years
-  species_changes <- turf_map_corrections_fixed |>
-    filter(!is.na(from_species) & !is.na(to_species)) |>
-    filter(!str_detect(comment, regex("delete", ignore_case = TRUE))) |>  # Exclude deletions
-    select(siteID, blockID, plotID, treatment, year = year_expanded, from_species, to_species) |>
+  species_changes <- turf_map_corrections_fixed |> 
+    filter(!is.na(from_species) & !is.na(to_species)) |> 
+    # Exclude deletions: handle NA comments properly (str_detect returns NA for NA values)
+    filter(!coalesce(str_detect(comment, regex("delete", ignore_case = TRUE)), FALSE)) |>  
+    select(siteID, blockID, plotID, treatment, year = year_expanded, from_species, to_species, is_merge_case) |>
     distinct()
   
   # Apply species name changes
   if (nrow(species_changes) > 0) {
     community_corrected <- community_corrected |>
       left_join(species_changes, by = c("siteID", "blockID", "plotID", "treatment", "year", "species" = "from_species")) |>
-      mutate(species = coalesce(to_species, species)) |>
-      select(-to_species)
+      mutate(
+        # Change species name if to_species is present (join matched)
+        species = if_else(!is.na(to_species), to_species, species),
+        # Track merge cases: mark rows where species name was changed from a merge case
+        is_merged_species = if_else(!is.na(to_species) & coalesce(is_merge_case, FALSE), TRUE, is_merged_species)
+      ) |>
+      select(-to_species, -is_merge_case)
   }
   
   # Rule 2: Adjust cover for to_species (increase or decrease)
