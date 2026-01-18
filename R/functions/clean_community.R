@@ -118,14 +118,27 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
   # Apply species name changes
   if (nrow(species_changes) > 0) {
     community_corrected <- community_corrected |>
+      # Store original species name before join (for comment tracking)
+      mutate(original_species = species) |>
       left_join(species_changes, by = c("siteID", "blockID", "plotID", "treatment", "year", "species" = "from_species")) |>
       mutate(
         # Change species name if to_species is present (join matched)
         species = if_else(!is.na(to_species), to_species, species),
         # Track merge cases: mark rows where species name was changed from a merge case
-        is_merged_species = if_else(!is.na(to_species) & coalesce(is_merge_case, FALSE), TRUE, is_merged_species)
+        is_merged_species = if_else(!is.na(to_species) & coalesce(is_merge_case, FALSE), TRUE, is_merged_species),
+        # Add comment tracking species name change (preserve existing comments)
+        # Use original_species (before change) and to_species (new name) for the comment
+        comments = if_else(
+          !is.na(to_species),
+          if_else(
+            is.na(comments) | comments == "",
+            paste0("Species name changed from ", original_species, " to ", to_species, " (turf map correction)"),
+            paste0(comments, "; Species name changed from ", original_species, " to ", to_species, " (turf map correction)")
+          ),
+          comments
+        )
       ) |>
-      select(-to_species, -is_merge_case)
+      select(-to_species, -is_merge_case, -original_species)
   }
   
   # Rule 2: Adjust cover for to_species (increase or decrease)
@@ -171,7 +184,8 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
   cover_adjustments_from <- turf_map_corrections_fixed |>
     filter(!is.na(from_species) & is.na(to_species)) |>
     filter(!is.na(decrease_from_cover)) |>  # Only if decrease_from_cover has a value
-    filter(!str_detect(comment, regex("delete", ignore_case = TRUE))) |>  # Exclude deletions
+    # Exclude deletions: handle NA comments properly (str_detect returns NA for NA values)
+    filter(!coalesce(str_detect(comment, regex("delete", ignore_case = TRUE)), FALSE)) |>
     select(siteID, blockID, plotID, treatment, year = year_expanded, from_species, decrease_from_cover) |>
     mutate(cover_adjustment = -decrease_from_cover) |>
     select(siteID, blockID, plotID, treatment, year, species = from_species, cover_adjustment) |>
@@ -186,7 +200,17 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
       left_join(cover_adjustments_from, by = c("siteID", "blockID", "plotID", "treatment", "year", "species")) |>
       mutate(
         cover_original = cover,
-        cover = if_else(!is.na(cover_adjustment), cover + cover_adjustment, cover)
+        cover = if_else(!is.na(cover_adjustment), cover + cover_adjustment, cover),
+        # Add comment tracking cover decrease (preserve existing comments)
+        comments = if_else(
+          !is.na(cover_adjustment),
+          if_else(
+            is.na(comments) | comments == "",
+            paste0("Cover decreased by ", abs(cover_adjustment), "% (from ", cover_original, " to ", cover, ") (turf map correction)"),
+            paste0(comments, "; Cover decreased by ", abs(cover_adjustment), "% (from ", cover_original, " to ", cover, ") (turf map correction)")
+          ),
+          comments
+        )
       )
     
     # Track cases where cover goes below 0

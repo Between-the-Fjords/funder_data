@@ -372,10 +372,10 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
     # Unnest to create one row per species in from_species
     unnest(from_species_list, keep_empty = TRUE) |>
     rename(from_species_expanded = from_species_list) |>
-    # Replace from_species with the expanded single species when both from_species and to_species exist
-    # This ensures Rule 1 can match on individual species
+    # Replace from_species with the expanded single species whenever it has multiple species (comma-separated)
+    # This ensures Rule 1 (name changes) and Rule 3 (cover decreases) can match on individual species
     mutate(from_species = if_else(
-      !is.na(from_species_expanded) & !is.na(to_species), 
+      !is.na(from_species_expanded), 
       as.character(from_species_expanded), 
       from_species
     )) |>
