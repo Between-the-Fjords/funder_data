@@ -141,6 +141,7 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
         "Ram" = "Rambera",
         "Ulv" = "Ulvehaugen",
         "Skj" = "Skjelingahaugen",
+        "Skjell" = "Skjelingahaugen",
         "Alr" = "Alrust",
         "Arh" = "Arhelleren",
         "Fau" = "Fauske",
@@ -289,7 +290,8 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
       # If to_species doesn't have "delete": leave comment unchanged (can be NA, empty, or have content)
       comment = if_else(
         # If from_species is not NA and comment already has "delete", preserve it
-        !is.na(from_species) & str_detect(comment, regex("delete", ignore_case = TRUE)),
+        # Handle NA comments properly with coalesce
+        !is.na(from_species) & coalesce(str_detect(comment, regex("delete", ignore_case = TRUE)), FALSE),
         comment,  # Keep original comment with "delete"
         # Otherwise, handle "delete" in to_species
         if_else(
@@ -349,6 +351,26 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
         paste(formatted, collapse = ", ")
       })
     ) |>
+    # Expand rows with multiple species in to_species (comma-separated)
+    # Similar to year expansion - create one row per species
+    mutate(
+      # Split to_species by comma to get list of species
+      to_species_list = map(to_species, function(s) {
+        if (is.na(s) || s == "") return(character(0))
+        # Split by comma and trim
+        species_list <- str_split(s, ",")[[1]] |> str_trim()
+        # Filter out empty strings
+        species_list <- species_list[species_list != ""]
+        return(species_list)
+      })
+    ) |>
+    # Unnest to create one row per species in to_species
+    # If to_species is NA or empty, keep_empty = TRUE will preserve the row with NA
+    unnest(to_species_list, keep_empty = TRUE) |>
+    rename(to_species_expanded = to_species_list) |>
+    # Replace to_species with the expanded single species
+    mutate(to_species = as.character(to_species_expanded)) |>
+    select(-to_species_expanded) |>
     select(siteID, blockID, plotID, treatment, year_original, year, year_expanded, from_species_original, from_species, to_species_original, to_species, decrease_from_cover, increase_to_cover, decrease_to_cover, comment, general_comment)
   
 
