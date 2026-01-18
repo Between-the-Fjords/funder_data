@@ -75,6 +75,142 @@ clean_community_2022 <- function(community_2022_raw, fun_gr) {
 }
 
 # apply turf map corrections
+apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fixed) {
+  
+  # Start with the community data and add change tracking column
+  community_corrected <- community_clean |>
+    mutate(change_type = NA_character_)
+  
+  # Rule 4: Handle deletions first (if "delete" in comment)
+  # Note: year_expanded contains individual years (one per row after unnest in fix_turf_map_corrections)
+  # So each year gets its own row, and the join by year applies corrections to all years in year_expanded
+  deletions <- turf_map_corrections_fixed |>
+    filter(str_detect(comment, regex("delete", ignore_case = TRUE))) |>
+    filter(!is.na(from_species) | !is.na(to_species)) |>
+    select(siteID, blockID, plotID, treatment, year_expanded, from_species, to_species) |>
+    # Create a species column (use to_species if from_species is NA, otherwise from_species)
+    mutate(species_to_delete = coalesce(from_species, to_species)) |>
+    # Rename year_expanded to year for joining with community_clean
+    select(siteID, blockID, plotID, treatment, year = year_expanded, species = species_to_delete)
+  
+  # Remove deleted species
+  if (nrow(deletions) > 0) {
+    community_corrected <- community_corrected |>
+      anti_join(deletions, by = c("siteID", "blockID", "plotID", "treatment", "year", "species"))
+  }
+  
+  # Rule 1: Change species name (both from_species and to_species exist)
+  # year_expanded: Each year from the original year range gets its own row, so corrections apply to all years
+  species_changes <- turf_map_corrections_fixed |>
+    filter(!is.na(from_species) & !is.na(to_species)) |>
+    filter(!str_detect(comment, regex("delete", ignore_case = TRUE))) |>  # Exclude deletions
+    select(siteID, blockID, plotID, treatment, year = year_expanded, from_species, to_species) |>
+    distinct()
+  
+  # Apply species name changes
+  if (nrow(species_changes) > 0) {
+    community_corrected <- community_corrected |>
+      left_join(species_changes, by = c("siteID", "blockID", "plotID", "treatment", "year", "species" = "from_species")) |>
+      mutate(
+        species = coalesce(to_species, species),
+        change_type = if_else(!is.na(to_species), "species_changed", change_type)
+      ) |>
+      select(-to_species)
+  }
+  
+  # Rule 2: Adjust cover for to_species (increase or decrease)
+  # year_expanded: Each year from the original year range gets its own row, so corrections apply to all years
+  cover_adjustments_to <- turf_map_corrections_fixed |>
+    filter(!is.na(to_species) & is.na(from_species)) |>
+    filter(!str_detect(comment, regex("delete", ignore_case = TRUE))) |>  # Exclude deletions
+    filter(!(is.na(increase_to_cover) & is.na(decrease_to_cover))) |>  # Both NA = skip
+    select(siteID, blockID, plotID, treatment, year = year_expanded, to_species, increase_to_cover, decrease_to_cover) |>
+    mutate(
+      cover_adjustment = if_else(!is.na(increase_to_cover), increase_to_cover,
+                                 if_else(!is.na(decrease_to_cover), -decrease_to_cover, 0)),
+      change_type = if_else(!is.na(increase_to_cover), "cover_increased",
+                           if_else(!is.na(decrease_to_cover), "cover_decreased", NA_character_))
+    ) |>
+    select(siteID, blockID, plotID, treatment, year, species = to_species, cover_adjustment, change_type) |>
+    distinct()
+  
+  # Track cases where cover would go below 0
+  negative_cover_cases_to <- NULL
+  
+  # Apply cover adjustments for to_species
+  if (nrow(cover_adjustments_to) > 0) {
+    community_corrected <- community_corrected |>
+      left_join(cover_adjustments_to, by = c("siteID", "blockID", "plotID", "treatment", "year", "species"), suffix = c("", "_new")) |>
+      mutate(
+        cover_original = cover,
+        cover = if_else(!is.na(cover_adjustment), cover + cover_adjustment, cover),
+        change_type = coalesce(change_type_new, change_type)
+      )
+    
+    # Track cases where cover goes below 0
+    negative_cover_cases_to <- community_corrected |>
+      filter(!is.na(cover_adjustment) & cover < 0) |>
+      select(siteID, blockID, plotID, treatment, year, species, cover_original, cover_adjustment, cover_new = cover) |>
+      mutate(rule = "Rule 2 (to_species cover adjustment)")
+    
+    # Set cover to 0 if it goes below 0 (temporary - user will review)
+    community_corrected <- community_corrected |>
+      mutate(cover = if_else(cover < 0, 0, cover)) |>
+      select(-cover_original, -cover_adjustment, -change_type_new)
+  }
+  
+  # Rule 3: Decrease cover from from_species (only if decrease_from_cover is not NA)
+  # year_expanded: Each year from the original year range gets its own row, so corrections apply to all years
+  cover_adjustments_from <- turf_map_corrections_fixed |>
+    filter(!is.na(from_species) & is.na(to_species)) |>
+    filter(!is.na(decrease_from_cover)) |>  # Only if decrease_from_cover has a value
+    filter(!str_detect(comment, regex("delete", ignore_case = TRUE))) |>  # Exclude deletions
+    select(siteID, blockID, plotID, treatment, year = year_expanded, from_species, decrease_from_cover) |>
+    mutate(cover_adjustment = -decrease_from_cover) |>
+    select(siteID, blockID, plotID, treatment, year, species = from_species, cover_adjustment) |>
+    distinct()
+  
+  # Track cases where cover would go below 0
+  negative_cover_cases_from <- NULL
+  
+  # Apply cover adjustments for from_species
+  if (nrow(cover_adjustments_from) > 0) {
+    community_corrected <- community_corrected |>
+      left_join(cover_adjustments_from, by = c("siteID", "blockID", "plotID", "treatment", "year", "species")) |>
+      mutate(
+        cover_original = cover,
+        cover = if_else(!is.na(cover_adjustment), cover + cover_adjustment, cover)
+      )
+    
+    # Track cases where cover goes below 0
+    negative_cover_cases_from <- community_corrected |>
+      filter(!is.na(cover_adjustment) & cover < 0) |>
+      select(siteID, blockID, plotID, treatment, year, species, cover_original, cover_adjustment, cover_new = cover) |>
+      mutate(rule = "Rule 3 (from_species cover decrease)")
+    
+    # Set cover to 0 if it goes below 0 (temporary - user will review)
+    community_corrected <- community_corrected |>
+      mutate(cover = if_else(cover < 0, 0, cover)) |>
+      select(-cover_original, -cover_adjustment)
+  }
+  
+  # Combine and report negative cover cases
+  negative_cover_cases <- bind_rows(
+    negative_cover_cases_to,
+    negative_cover_cases_from
+  )
+  
+  if (!is.null(negative_cover_cases) && nrow(negative_cover_cases) > 0) {
+    warning(
+      "Found ", nrow(negative_cover_cases), 
+      " cases where cover would go below 0 after adjustments. ",
+      "These have been set to 0. Use attr(result, 'negative_cover_cases') to review."
+    )
+    attr(community_corrected, "negative_cover_cases") <- negative_cover_cases
+  }
+  
+  return(community_corrected)
+}
 
 
 # makeing turf maps
