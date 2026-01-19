@@ -54,6 +54,22 @@ vegetation_plan <- list(
   #   format = "file"
   # )
 
+  # ROOT BIOMASS
+  tar_target(
+    name = root_biomass_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "FUNDER_raw_root_biomass_2021.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "1_Vegetation/Raw_data"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = root_biomass_raw,
+    command = read_excel(root_biomass_download)
+  ),
+
   # BIOMASS
   tar_target(
     name = biomass_download,
@@ -164,10 +180,10 @@ vegetation_plan <- list(
   ),
 
   # apply turf map corrections to community data
-  tar_target(
-    name = community_clean_fixed,
-    command = apply_turf_map_corrections(community_clean, turf_map_corrections_fixed, fun_gr)
-  ),
+  # tar_target(
+  #   name = community_clean_fixed,
+  #   command = apply_turf_map_corrections(community_clean, turf_map_corrections_fixed, fun_gr)
+  # ),
 
   # BRYOPHYTE
   # community data
