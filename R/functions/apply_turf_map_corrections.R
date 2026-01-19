@@ -1,4 +1,4 @@
-apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fixed) {
+apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fixed, fun_gr = NULL) {
   
   # Start with the community data
   community_corrected <- community_clean
@@ -261,6 +261,20 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
         )
       )) |>
       select(-ends_with("_tmpl"))
+  }
+  
+  # Fill missing functional_group values from fun_gr lookup
+  if (!is.null(fun_gr) && "functional_group" %in% names(community_corrected)) {
+    community_corrected <- community_corrected |>
+      left_join(fun_gr, by = "species", suffix = c("", "_lookup")) |>
+      mutate(
+        functional_group = if_else(
+          is.na(functional_group) | functional_group == "",
+          functional_group_lookup,
+          functional_group
+        )
+      ) |>
+      select(-functional_group_lookup)
   }
   
   if (!is.null(negative_cover_cases) && nrow(negative_cover_cases) > 0) {
