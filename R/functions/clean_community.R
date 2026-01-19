@@ -144,15 +144,34 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
   # Rule 2: Adjust cover for to_species (increase or decrease)
   # year_expanded: Each year from the original year range gets its own row, so corrections apply to all years
   cover_adjustments_to <- turf_map_corrections_fixed |>
-    filter(!is.na(to_species) & is.na(from_species)) |>
-    filter(!str_detect(comment, regex("delete", ignore_case = TRUE))) |>  # Exclude deletions
+    # Exclude deletions; keep rows with NA comments
+    filter(!coalesce(str_detect(comment, regex("delete", ignore_case = TRUE)), FALSE)) |>  # Exclude deletions
     filter(!(is.na(increase_to_cover) & is.na(decrease_to_cover))) |>  # Both NA = skip
-    select(siteID, blockID, plotID, treatment, year = year_expanded, to_species, increase_to_cover, decrease_to_cover) |>
     mutate(
-      cover_adjustment = if_else(!is.na(increase_to_cover), increase_to_cover,
-                                 if_else(!is.na(decrease_to_cover), -decrease_to_cover, 0))
+      # Determine which species to adjust:
+      # - Prefer to_species when present
+      # - Fall back to from_species when to_species is missing but we still have a decrease_to_cover
+      species_target = case_when(
+        !is.na(to_species) ~ to_species,
+        is.na(to_species) & !is.na(decrease_to_cover) & !is.na(from_species) ~ from_species,
+        TRUE ~ NA_character_
+      )
     ) |>
-    select(siteID, blockID, plotID, treatment, year, species = to_species, cover_adjustment) |>
+    # Drop rows where we still don't know which species to adjust
+    filter(!is.na(species_target)) |>
+    select(siteID, blockID, plotID, treatment, year = year_expanded,
+           species_target, increase_to_cover, decrease_to_cover) |>
+    mutate(
+      # Target value for decreases; additive adjustment for increases
+      cover_target = decrease_to_cover,
+      cover_adjustment = case_when(
+        !is.na(increase_to_cover) ~ increase_to_cover,
+        !is.na(decrease_to_cover) ~ -decrease_to_cover,
+        TRUE ~ NA_real_
+      )
+    ) |>
+    select(siteID, blockID, plotID, treatment, year,
+           species = species_target, cover_adjustment, cover_target) |>
     distinct()
   
   # Track cases where cover would go below 0
@@ -164,19 +183,36 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
       left_join(cover_adjustments_to, by = c("siteID", "blockID", "plotID", "treatment", "year", "species")) |>
       mutate(
         cover_original = cover,
-        cover = if_else(!is.na(cover_adjustment), cover + cover_adjustment, cover)
+        cover = case_when(
+          !is.na(cover_target) ~ cover_target,
+          !is.na(cover_adjustment) ~ cover + cover_adjustment,
+          TRUE ~ cover
+        ),
+        comments = case_when(
+          !is.na(cover_target) ~ if_else(
+            is.na(comments) | comments == "",
+            paste0("Cover set to ", cover_target, "% (from ", cover_original, "%) (turf map correction)"),
+            paste0(comments, "; Cover set to ", cover_target, "% (from ", cover_original, "%) (turf map correction)")
+          ),
+          !is.na(cover_adjustment) ~ if_else(
+            is.na(comments) | comments == "",
+            paste0("Cover adjusted by ", cover_adjustment, "% (from ", cover_original, "%) (turf map correction)"),
+            paste0(comments, "; Cover adjusted by ", cover_adjustment, "% (from ", cover_original, "%) (turf map correction)")
+          ),
+          TRUE ~ comments
+        )
       )
-    
+  
     # Track cases where cover goes below 0
     negative_cover_cases_to <- community_corrected |>
-      filter(!is.na(cover_adjustment) & cover < 0) |>
-      select(siteID, blockID, plotID, treatment, year, species, cover_original, cover_adjustment, cover_new = cover) |>
+      filter((!is.na(cover_adjustment) | !is.na(cover_target)) & cover < 0) |>
+      select(siteID, blockID, plotID, treatment, year, species, cover_original, cover_adjustment, cover_target, cover_new = cover) |>
       mutate(rule = "Rule 2 (to_species cover adjustment)")
     
     # Set cover to 0 if it goes below 0 (temporary - user will review)
     community_corrected <- community_corrected |>
       mutate(cover = if_else(cover < 0, 0, cover)) |>
-      select(-cover_original, -cover_adjustment)
+      select(-cover_original, -cover_adjustment, -cover_target)
   }
   
   # Rule 3: Decrease cover from from_species (only if decrease_from_cover is not NA)
@@ -187,8 +223,9 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
     # Exclude deletions: handle NA comments properly (str_detect returns NA for NA values)
     filter(!coalesce(str_detect(comment, regex("delete", ignore_case = TRUE)), FALSE)) |>
     select(siteID, blockID, plotID, treatment, year = year_expanded, from_species, decrease_from_cover) |>
-    mutate(cover_adjustment = -decrease_from_cover) |>
-    select(siteID, blockID, plotID, treatment, year, species = from_species, cover_adjustment) |>
+    # Set explicit target cover (not a delta)
+    mutate(cover_target = decrease_from_cover) |>
+    select(siteID, blockID, plotID, treatment, year, species = from_species, cover_target) |>
     distinct()
   
   # Track cases where cover would go below 0
@@ -200,14 +237,14 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
       left_join(cover_adjustments_from, by = c("siteID", "blockID", "plotID", "treatment", "year", "species")) |>
       mutate(
         cover_original = cover,
-        cover = if_else(!is.na(cover_adjustment), cover + cover_adjustment, cover),
-        # Add comment tracking cover decrease (preserve existing comments)
+        cover = if_else(!is.na(cover_target), cover_target, cover),
+        # Add comment tracking cover set action (preserve existing comments)
         comments = if_else(
-          !is.na(cover_adjustment),
+          !is.na(cover_target),
           if_else(
             is.na(comments) | comments == "",
-            paste0("Cover decreased by ", abs(cover_adjustment), "% (from ", cover_original, " to ", cover, ") (turf map correction)"),
-            paste0(comments, "; Cover decreased by ", abs(cover_adjustment), "% (from ", cover_original, " to ", cover, ") (turf map correction)")
+            paste0("Cover set to ", cover_target, "% (from ", cover_original, "%) (turf map correction)"),
+            paste0(comments, "; Cover set to ", cover_target, "% (from ", cover_original, "%) (turf map correction)")
           ),
           comments
         )
@@ -215,14 +252,14 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
     
     # Track cases where cover goes below 0
     negative_cover_cases_from <- community_corrected |>
-      filter(!is.na(cover_adjustment) & cover < 0) |>
-      select(siteID, blockID, plotID, treatment, year, species, cover_original, cover_adjustment, cover_new = cover) |>
-      mutate(rule = "Rule 3 (from_species cover decrease)")
+      filter(!is.na(cover_target) & cover < 0) |>
+      select(siteID, blockID, plotID, treatment, year, species, cover_original, cover_target, cover_new = cover) |>
+      mutate(rule = "Rule 3 (from_species cover set to target)")
     
     # Set cover to 0 if it goes below 0 (temporary - user will review)
     community_corrected <- community_corrected |>
       mutate(cover = if_else(cover < 0, 0, cover)) |>
-      select(-cover_original, -cover_adjustment)
+      select(-cover_original, -cover_target)
   }
   
   # Combine and report negative cover cases
