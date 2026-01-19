@@ -232,6 +232,36 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
     negative_cover_cases_to,
     negative_cover_cases_from
   )
+
+  # For rows added for increase_to_cover, rescue plot/year-level info
+  # from other species in the same siteID/blockID/plotID/treatment/year
+  plot_year_keys <- c("siteID", "blockID", "plotID", "treatment", "year")
+  fill_cols <- c(
+    "removal", "total_graminoids", "total_forbs", "total_bryophytes",
+    "vegetation_height", "moss_height", "litter", "sumcover", "recorder",
+    "turfID", "total_lichen", "total_rock", "total_soil", "weather"
+  )
+  
+  # Build a template of non-added rows with plot/year-level information
+  template_info <- community_corrected |>
+    filter(!is_added_increase_row) |>
+    group_by(across(all_of(plot_year_keys))) |>
+    summarise(across(all_of(fill_cols), ~ dplyr::first(na.omit(.x)), .names = "{.col}"), .groups = "drop")
+  
+  # Join template back and fill missing values for added rows only
+  if (nrow(template_info) > 0) {
+    community_corrected <- community_corrected |>
+      left_join(template_info, by = plot_year_keys, suffix = c("", "_tmpl")) |>
+      mutate(across(
+        all_of(fill_cols),
+        ~ if_else(
+          is_added_increase_row & (is.na(.x) | (.x == "")),
+          coalesce(get(paste0(cur_column(), "_tmpl")), .x),
+          .x
+        )
+      )) |>
+      select(-ends_with("_tmpl"))
+  }
   
   if (!is.null(negative_cover_cases) && nrow(negative_cover_cases) > 0) {
     warning(
