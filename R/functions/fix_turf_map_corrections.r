@@ -122,7 +122,7 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
   # Fix column names in turf_map_corrections
   turf_map_corrections_fixed <- turf_map_corrections |>
     slice(-1) |>
-    clean_names() |>
+    clean_names() |> 
     rename(
       siteID = site,
       plotID = plot
@@ -234,7 +234,17 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
         NA_real_
       ),
       # Clean to_species: remove "+ X%", "X%", "decrease X%", and "reduced to X%" patterns (allow whitespace)
-      to_species = str_remove_all(to_species, regex("(?:\\+\\s*)?\\d+\\s*%|(?:decrease|reduced\\s+to)\\s+\\d+\\s*%", ignore_case = TRUE)) |> str_trim()
+      to_species = str_remove_all(to_species, regex("(?:\\+\\s*)?\\d+\\s*%|(?:decrease|reduced\\s+to)\\s+\\d+\\s*%", ignore_case = TRUE)) |> str_trim(),
+      # Fix specific case: "vio pal vio bif" in from_species when to_species is empty/NA
+      # This is a mistake in the data entry - should be from_species = "vio pal", to_species = "vio bif"
+      # There is only one case with this pattern (Ulv3B)
+      to_species = if_else(
+        !is.na(from_species) & 
+        (is.na(to_species) | to_species == "") &
+        str_detect(from_species, "vio pal vio bif"),
+        "vio bif",
+        to_species
+      )
     ) |>
     # Remove rows where all information columns are NA
     filter(!(is.na(from_species_original) & is.na(to_species_original) & is.na(comment) & is.na(general_comment))) |>
@@ -242,6 +252,8 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
     mutate(
       from_species = str_trim(from_species),
       # Fix specific typos first
+      from_species = str_replace_all(from_species, "dac glo\\?", "dac glo"),  # Remove question mark
+      from_species = str_replace_all(from_species, "vio pal vio bif", "vio pal"),
       from_species = str_replace_all(from_species, "ave flex", "ave fle"),
       from_species = str_replace_all(from_species, "nar stri", "nar str"),
       from_species = str_replace_all(from_species, "tarax", "tar sp"),
@@ -253,8 +265,6 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
       # Handle multiple species separated by "og" (Norwegian for "and")
       # Replace "og" with comma to separate species
       from_species = str_replace_all(from_species, "\\s+og\\s+", ", "),
-      # Handle cases where species are listed without "og" (e.g., "vio pal vio bif")
-      from_species = str_replace_all(from_species, "vio pal vio bif", "vio pal, vio bif"),
       # Normalize multiple spaces to single space
       from_species = str_replace_all(from_species, "\\s+", " "),
       # Format species names: split by comma, format each, then rejoin
@@ -322,7 +332,7 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
       to_species = str_replace_all(to_species, "nar stri", "nar str"),
       to_species = str_replace_all(to_species, "rub idea", "rub ida"),
       to_species = str_replace_all(to_species, "ver chae", "rub cha"),
-      to_species = str_replace_all(to_species, "valeriana", "val sam"),
+      to_species = str_replace_all(to_species, regex("valeriana", ignore_case = TRUE), "val sam"),
       to_species = str_replace_all(to_species, "rubus idae", "rub ida"),
       to_species = str_replace_all(to_species, regex("agr cap increased to", ignore_case = TRUE), "agr cap"),
       # Normalize multiple spaces to single space
