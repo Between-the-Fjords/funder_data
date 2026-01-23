@@ -70,6 +70,12 @@ vegetation_plan <- list(
     command = read_excel(root_biomass_download)
   ),
 
+  # clean root biomass data
+  tar_target(
+    name = root_biomass_clean,
+    command = clean_root_biomass(root_biomass_raw, funder_meta)
+  ),
+
   # BIOMASS
   tar_target(
     name = biomass_download,
