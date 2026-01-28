@@ -410,7 +410,12 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
     # Replace to_species with the expanded single species
     mutate(to_species = as.character(to_species_expanded)) |>
     select(-to_species_expanded) |>
-    select(siteID, blockID, plotID, treatment, year_original, year, year_expanded, from_species_original, from_species, to_species_original, to_species, decrease_from_cover, increase_to_cover, decrease_to_cover, comment, general_comment, is_merge_case)
+    select(siteID, blockID, plotID, treatment, year_original, year, year_expanded, from_species_original, from_species, to_species_original, to_species, decrease_from_cover, increase_to_cover, decrease_to_cover, comment, general_comment, is_merge_case) |>
+    # Remove duplicates: when same plotID/year_expanded/to_species exists multiple times,
+    # remove the one with increase_to_cover == 6 (keep the one with 5% or without increase)
+    group_by(siteID, blockID, plotID, treatment, year_expanded, to_species) |>
+    tidylog::filter(n() == 1 | increase_to_cover != 6 | is.na(increase_to_cover)) |>
+    ungroup()
   
 
   

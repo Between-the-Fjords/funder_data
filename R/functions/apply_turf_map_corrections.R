@@ -21,6 +21,24 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
   
   # Remove deleted species
   if (nrow(deletions) > 0) {
+    # Check which deletions actually match existing species
+    deletion_matches <- community_corrected |>
+      semi_join(deletions, by = c("siteID", "blockID", "plotID", "treatment", "year", "species"))
+    
+    # Check for deletions that don't match any existing species
+    deletion_non_matches <- deletions |>
+      anti_join(community_corrected, by = c("siteID", "blockID", "plotID", "treatment", "year", "species"))
+    
+    if (nrow(deletion_non_matches) > 0) {
+      warning(
+        "Found ", nrow(deletion_non_matches), 
+        " deletion instruction(s) for species that don't exist in the data. ",
+        "These will be ignored. Use attr(result, 'deletion_non_matches') to review."
+      )
+      attr(community_corrected, "deletion_non_matches") <- deletion_non_matches
+    }
+    
+    # Remove deleted species (only affects species that actually exist)
     community_corrected <- community_corrected |>
       tidylog::anti_join(deletions, by = c("siteID", "blockID", "plotID", "treatment", "year", "species"))
   }
@@ -65,6 +83,55 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
         )
       ) |>
       select(-to_species, -is_merge_case, -original_species)
+    
+    # Merge duplicate species created by renaming
+    # (when species A is renamed to species B, but species B already exists)
+    key_cols <- c("siteID", "blockID", "plotID", "treatment", "year", "species")
+    
+    # Find duplicates
+    duplicate_keys <- community_corrected |>
+      group_by(across(all_of(key_cols))) |>
+      filter(n() > 1) |>
+      ungroup() |>
+      select(all_of(key_cols)) |>
+      distinct()
+    
+    if (nrow(duplicate_keys) > 0) {
+      message("Merging ", nrow(duplicate_keys), " duplicate species groups created by renaming")
+      
+      # Separate duplicates from non-duplicates
+      duplicates <- community_corrected |>
+        semi_join(duplicate_keys, by = key_cols)
+      
+      non_duplicates <- community_corrected |>
+        anti_join(duplicate_keys, by = key_cols)
+      
+      # Merge duplicates: sum cover, combine comments, take first value of other columns
+      # Get all column names except the ones we handle specially
+      other_cols <- setdiff(names(community_corrected), c(key_cols, "cover", "comments", "is_merged_species"))
+      
+      merged_duplicates <- duplicates |>
+        group_by(across(all_of(key_cols))) |>
+        summarise(
+          cover = sum(cover, na.rm = TRUE),
+          # Combine unique non-NA comments, then add merge note
+          comments = {
+            unique_comments <- unique(na.omit(comments))
+            unique_comments <- unique_comments[unique_comments != ""]
+            combined <- if (length(unique_comments) > 0) paste(unique_comments, collapse = "; ") else ""
+            # Add merge note
+            merge_note <- "Species merged (duplicate after renaming, covers summed)"
+            if (combined != "") paste0(combined, "; ", merge_note) else merge_note
+          },
+          is_merged_species = TRUE,
+          # Take first non-NA value for all other columns
+          across(all_of(other_cols), ~ first(na.omit(.x))),
+          .groups = "drop"
+        )
+      
+      # Recombine
+      community_corrected <- bind_rows(non_duplicates, merged_duplicates)
+    }
   }
   
   # Rule 2: Adjust cover for to_species (increase or decrease)
