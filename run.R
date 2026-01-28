@@ -26,5 +26,20 @@ for (t in targets_list) {
         }
     )
 }
-# targets::tar_make_clustermq(workers = 2) # nolint
-# targets::tar_make_future(workers = 2) # nolint
+
+# root biomass data outliers
+root_biomass_clean |> filter(!is.na(comments)) |> distinct(plotID, comments)
+
+# Create plots
+
+plot_results <- plot_root_biomass(root_biomass_clean)
+
+# View individual plots
+plot_results$plots$distribution
+plot_results$plots$treatment
+plot_results$plots$outliers_iqr
+plot_results$plots$all_sites
+plot_results$plots$temp_prec_treatment
+
+# View outlier data
+View(plot_results$outliers_iqr)
