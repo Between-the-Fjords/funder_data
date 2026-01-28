@@ -327,6 +327,7 @@ fix_turf_map_corrections <- function(turf_map_corrections, funder_meta = NULL) {
       to_species = str_replace_all(to_species, "phle alp", "phl alp"),
       to_species = str_replace_all(to_species, "hievul", "hie vul"),
       to_species = str_replace_all(to_species, "pimp sax", "pim sax"),
+      to_species = str_replace_all(to_species, "pin sax", "pim sax"),
       to_species = str_replace_all(to_species, "knau arv", "kna arv"),
       to_species = str_replace_all(to_species, "ave flex", "ave fle"),
       to_species = str_replace_all(to_species, "nar stri", "nar str"),

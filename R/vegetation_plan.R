@@ -145,10 +145,17 @@ vegetation_plan <- list(
   ),
 
   # functional group 2015-2021
+  # Add species new in 2022 that are missing functional groups
   tar_target(
     name = fun_gr,
     command = community_2015_2021_raw |>
-      distinct(species, functional_group)
+      distinct(species, functional_group) |>
+      bind_rows(
+        tibble(
+          species = c("NID.sp", "Ped.bor", "Phe.con", "Rub.cha", "Val.sam"),
+          functional_group = "forb"
+        )
+      )
   ),
 
     # clean 2022 community data
