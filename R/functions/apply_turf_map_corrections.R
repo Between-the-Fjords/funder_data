@@ -353,6 +353,18 @@ apply_turf_map_corrections <- function(community_clean, turf_map_corrections_fix
     attr(community_corrected, "negative_cover_cases") <- negative_cover_cases
   }
   
+  # Reorder columns
+  community_corrected <- community_corrected |>
+    select(
+      date,year, siteID, blockID, plotID, treatment, removal,
+      functional_group, species, cover,
+      total_graminoids, total_forbs, total_bryophytes, 
+      vegetation_height, moss_height, litter,
+      total_lichen, total_rock, total_soil,
+      sumcover, weather, recorder, turfID, 
+      comments, is_merged_species, is_added_increase_row
+    )
+  
   return(community_corrected)
 }
 

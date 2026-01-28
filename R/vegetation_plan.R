@@ -198,6 +198,13 @@ vegetation_plan <- list(
     command = apply_turf_map_corrections(community_clean, turf_map_corrections_fixed, fun_gr)
   ),
 
+  # community out
+  tar_target(
+    name = community_output,
+    command = save_csv(file = community_clean_fixed, name = "FUNDER_clean_community_2015-2022.csv"),
+    format = "file"
+  ),
+
   # BRYOPHYTE
   # community data
   tar_target(
