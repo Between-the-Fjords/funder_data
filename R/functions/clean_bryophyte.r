@@ -424,17 +424,33 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta) {
     # Add a column to count how many species each voucherID has (for splitting cover values later)
     group_by(siteID, plotID, voucherID) |>
     mutate(n_species = n()) |>
-    ungroup() |>
-    # Split cover values when multiple species were observed for the same voucherID
-    # Divide cover by n_species to split it proportionally across all species
+    ungroup()
+  
+  # Track species that were split (n_species > 1) before modifying cover
+  split_species_cases <- bryophyte_joined |>
+    filter(n_species > 1) |>
+    select(siteID, blockID, plotID, voucherID, vernacular_final, scientific_final, 
+           cover_percent_original = cover_percent, n_species) |>
+    mutate(cover_percent_split = cover_percent_original / n_species)
+  
+  if (nrow(split_species_cases) > 0) {
+    n_vouchers <- split_species_cases |> distinct(siteID, plotID, voucherID) |> nrow()
+    message(
+      "Found ", nrow(split_species_cases), " species rows from ", n_vouchers, 
+      " voucherIDs where cover was split among multiple species. ",
+      "Use attr(result, 'split_species_cases') to review."
+    )
+  }
+  
+  # Split cover values when multiple species were observed for the same voucherID
+  # Divide cover by n_species to split it proportionally across all species
+  bryophyte_joined <- bryophyte_joined |>
     mutate(cover_percent = if_else(n_species > 1, cover_percent / n_species, cover_percent))
 
-  # # Find observations in bryo_dictionary that don't have a match in bryophyte
-  # bryo_dictionary_only <- bryo_dictionary |>
-  #   select(siteID, voucherID, vernacular_final, scientific_final, comments_data_entering) |>
-  #   tidylog::anti_join(
-  #     bryophyte |>
-  #       select(siteID, voucherID),
-  #     by = c("siteID", "voucherID")
-  #   )
+  # Attach split species cases as attribute for review
+  if (nrow(split_species_cases) > 0) {
+    attr(bryophyte_joined, "split_species_cases") <- split_species_cases
+  }
+  
+  return(bryophyte_joined)
 }
