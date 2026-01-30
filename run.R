@@ -31,7 +31,6 @@ for (t in targets_list) {
 root_biomass_clean |> filter(!is.na(comments)) |> distinct(plotID, comments)
 
 # Create plots
-
 plot_results <- plot_root_biomass(root_biomass_clean)
 
 # View individual plots
@@ -43,3 +42,9 @@ plot_results$plots$temp_prec_treatment
 
 # View outlier data
 View(plot_results$outliers_iqr)
+
+
+# After running the target
+result <-tar_read(bryophyte_clean)  # or whatever the target name is
+split_cases <- attr(result, "split_species_cases")
+split_cases
