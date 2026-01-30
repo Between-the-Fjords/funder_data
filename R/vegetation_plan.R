@@ -26,56 +26,6 @@ vegetation_plan <- list(
     format = "file"
   ),
 
-  # ROOT INGROWTH CORES
-  tar_target(
-    name = ric_depth_download,
-    command = get_file(
-      node = "tx9r2",
-      file = "FUNDER_raw_root_ingrowth_core_depths_2022.csv",
-      path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
-    ),
-    format = "file"
-  ),
-  tar_target(
-    name = ric_depth_raw,
-    command = read_csv2(ric_depth_download)
-  ),
-
-  # NOT FINISHED YET, ALSO NEED RIC DATA !!!!
-  tar_target(
-    name = ric_depth_clean,
-    command = clean_ric_depth(ric_depth_raw)
-  ),
-
-  # tar_target(
-  #   name = ric_output,
-  #   command = save_csv(file = ric_depth_clean, name = "FUNDER_clean_root_ingrowth_core_depths_2022.csv"),
-  #   format = "file"
-  # )
-
-  # ROOT BIOMASS
-  tar_target(
-    name = root_biomass_download,
-    command = get_file(
-      node = "tx9r2",
-      file = "FUNDER_raw_root_biomass_2021.xlsx",
-      path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
-    ),
-    format = "file"
-  ),
-  tar_target(
-    name = root_biomass_raw,
-    command = read_excel(root_biomass_download)
-  ),
-
-  # clean root biomass data
-  tar_target(
-    name = root_biomass_clean,
-    command = clean_root_biomass(root_biomass_raw, funder_meta)
-  ),
-
   # BIOMASS
   tar_target(
     name = biomass_download,
