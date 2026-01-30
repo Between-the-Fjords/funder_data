@@ -18,14 +18,24 @@ Root trait data (`root_traits_clean`) are produced by several operators (winRhIZ
 **Variance decomposition.** For each trait we fit three linear models:
 
 - *Operator only:* `trait ~ operator` — how much variance operator explains alone.
-- *Site + treatment:* `trait ~ siteID + treatment` — how much variance site and treatment explain.
-- *Full:* `trait ~ siteID + treatment + operator` — total explained variance.
+- *Site × treatment:* `trait ~ siteID * treatment` — site, treatment, and their interaction (treatment nested within site).
+- *Full:* `trait ~ siteID * treatment + operator` — site × treatment plus additive operator (operator is not nested in site/treatment).
 
-We report R² for each model and the **partial R² for operator** (increase in R² when adding operator to site + treatment). If partial R² for operator is large, operator bias is substantial relative to ecological structure.
+We report R² for each model and the **partial R² for operator** (increase in R² when adding operator to site × treatment). If partial R² for operator is large, operator bias is substantial relative to ecological structure.
 
 **Operator effects.** From the full model we report the estimated effect of each operator relative to a reference level (first alphabetically). These are the systematic offsets we will remove in the correction.
 
-**Correction.** We define the corrected value as the **predicted value from the full model with operator set to the reference**. So for each row we ask: "What would the trait value be if this plot had been measured by the reference operator?" That predicted value is stored as `<trait>_corrected`. Rows with excluded operators (e.g. Peter) or without operator get `NA` in `*_corrected`. The pipeline target `root_traits_clean_corrected` applies this correction via `apply_operator_correction()` in `R/functions/correct_operator_bias.R`.
+**Correction.** We define the corrected value as the **predicted value from the full model (site × treatment + operator) with operator set to the reference**. So for each row we ask: "What would the trait value be if this plot had been measured by the reference operator?" That predicted value is stored as `<trait>_corrected`. Rows with excluded operators (e.g. Peter) or without operator get `NA` in `*_corrected`. The pipeline target `root_traits_clean_corrected` applies this correction via `apply_operator_correction()` in `R/functions/correct_operator_bias.R`.
+
+**How the correction is calculated (detail).**
+
+1. **Fit the model.** For each trait we fit the linear model `trait ~ siteID * treatment + operator` on the analysis data (rows with non-missing operator, excluding operators in `OPERATORS_EXCLUDE`). This model estimates the effect of site, treatment, their interaction, and operator (additive). The operator effect is the systematic offset of each operator relative to a reference level.
+
+2. **Choose the reference operator.** The reference operator is the level to which we "correct" all values — we answer: "What would the value be if the reference operator had measured this plot?" Here we use the first operator level alphabetically (e.g. "Lou"); you can pass a different `reference_operator` in `apply_operator_correction()`.
+
+3. **Predict with operator = reference.** For each row we keep the observed `siteID` and `treatment` (and thus the same site × treatment effect), but we **replace the operator with the reference operator** in the prediction. So we construct a "new" row: same site, same treatment, operator = reference. We then call `predict(model, newdata = that_row)`. That predicted value is the **corrected** value: it is the expected trait value for that plot if the reference operator had measured it. It removes the estimated operator offset (e.g. if operator "Lucas" had a +0.5 g effect, the corrected value is 0.5 g lower for Lucas rows).
+
+4. **Store.** The corrected value is written to `<trait>_corrected`. Rows that were not used in the model (no operator, or excluded operator) get `NA` in `*_corrected`.
 
 **Excluded operators.** Operators with very few observations (e.g. one) cannot contribute a meaningful operator effect and can distort estimates. We exclude them from fitting and from the analysis sample; here we exclude Peter (one observation).
 
@@ -33,7 +43,7 @@ We report R² for each model and the **partial R² for operator** (increase in R
 
 We use `root_traits_clean` from the targets pipeline. We restrict to rows with non-missing operator and exclude operators listed in `OPERATORS_EXCLUDE` (Peter). Treatment is ordered for plotting.
 
-```{r setup}
+```{r}
 #| label: setup
 #| message: false
 suppressPackageStartupMessages(library(tidyverse))
@@ -88,7 +98,8 @@ ref_operator <- if (run_operator_analysis) levels(dat$operator)[1] else NA_chara
 
 ### Operator sample sizes and coverage
 
-```{r operator-summary}
+```{r}
+#| label: operator-summary
 operator_summary <- dat %>%
   count(operator, name = "n_plots") %>%
   mutate(operator = as.character(operator))
@@ -108,15 +119,15 @@ knitr::kable(operator_by_treatment, caption = "Operator × treatment (counts).")
 
 ### Variance decomposition (R²)
 
-For each trait we compare how much variance is explained by operator alone, by site + treatment, and by the full model. The last column is the **partial R² for operator** (extra variance when adding operator to site + treatment).
+For each trait we compare how much variance is explained by operator alone, by site × treatment, and by the full model. The last column is the **partial R² for operator** (extra variance when adding operator to site × treatment).
 
-```{r variance-decomp}
+```{r}
 #| label: variance-decomp
 if (run_operator_analysis) {
   variance_decomp <- function(trait_name) {
     form_op   <- as.formula(paste(trait_name, "~ operator"))
-    form_st   <- as.formula(paste(trait_name, "~ siteID + treatment"))
-    form_full <- as.formula(paste(trait_name, "~ siteID + treatment + operator"))
+    form_st   <- as.formula(paste(trait_name, "~ siteID * treatment"))
+    form_full <- as.formula(paste(trait_name, "~ siteID * treatment + operator"))
     d <- dat %>% filter(!is.na(.data[[trait_name]]))
     if (nrow(d) < 10L) return(NULL)
     m_op   <- lm(form_op,   data = d)
@@ -143,13 +154,13 @@ if (run_operator_analysis) {
     var_table %>% rename(
       Trait = trait,
       `R² operator only` = R2_operator_only,
-      `R² site + treatment` = R2_site_treatment,
+      `R² site × treatment` = R2_site_treatment,
       `R² full` = R2_full,
       `Partial R² operator` = R2_partial_operator,
       `Partial R² operator (%)` = R2_partial_operator_pct
     ),
     digits = 3,
-    caption = "Variance decomposition (R²). Partial R² for operator = R2_full - R2_site_treatment; (%) = × 100."
+    caption = "Variance decomposition (R²). Models: site × treatment (nested); full = site × treatment + operator. Partial R² for operator = R2_full - R2_site_treatment; (%) = × 100."
   )
 } else {
   var_table <- tibble()
@@ -163,11 +174,11 @@ if (run_operator_analysis) {
 
 Estimated effect of each operator relative to the reference operator (`r ref_operator`). Positive = higher trait value than reference on average (after accounting for site and treatment).
 
-```{r operator-effects}
+```{r}
 #| label: operator-effects
 if (run_operator_analysis) {
   operator_effects <- function(trait_name) {
-    form <- as.formula(paste(trait_name, "~ siteID + treatment + operator"))
+    form <- as.formula(paste(trait_name, "~ siteID * treatment + operator"))
     d <- dat %>% filter(!is.na(.data[[trait_name]]))
     if (nrow(d) < 10L) return(NULL)
     m <- lm(form, data = d)
@@ -197,7 +208,7 @@ if (run_operator_analysis) {
 
 **Traits by operator.** Boxplots of key traits by operator. Systematic shifts between operators indicate measurable bias.
 
-```{r plot-by-operator}
+```{r}
 #| label: plot-by-operator
 #| fig-cap: "Root traits by operator (Peter excluded)."
 #| fig-height: 8
@@ -222,7 +233,7 @@ if (run_operator_analysis) {
 
 **Dry root biomass by treatment and operator.** If operator differences are visible within each treatment, bias is not confounded with treatment.
 
-```{r plot-treatment-operator}
+```{r}
 #| label: plot-treatment-operator
 #| fig-cap: "Dry root biomass by treatment and operator."
 #| fig-height: 5
@@ -239,7 +250,7 @@ if (run_operator_analysis) {
 
 **Dry root biomass by site and operator.** Similarly, operator differences within sites indicate operator bias rather than site structure.
 
-```{r plot-site-operator}
+```{r}
 #| label: plot-site-operator
 #| fig-cap: "Dry root biomass by site and operator."
 #| fig-height: 5
@@ -256,9 +267,9 @@ if (run_operator_analysis) {
 
 ### Correction: raw vs corrected
 
-We apply the correction (predicted value with operator = reference) and compare raw vs corrected dry root biomass. Points on the dashed line would be unchanged; systematic shifts off the line show the correction.
+We apply the correction as above: the full model is fitted, then for each row we predict using the same site and treatment but **operator set to the reference**; that prediction is the corrected value. The plot below compares raw vs corrected dry root biomass. Points on the dashed line would be unchanged; systematic shifts off the line show the correction (e.g. if an operator systematically over- or under-estimates, their points move toward the line after correction).
 
-```{r correction}
+```{r}
 #| label: correction
 if (run_operator_analysis) {
   apply_operator_correction_local <- function(data, trait_names, reference_operator = NULL) {
@@ -266,7 +277,7 @@ if (run_operator_analysis) {
     out <- data
     for (tr in trait_names) {
       if (!tr %in% names(data)) next
-      form <- as.formula(paste(tr, "~ siteID + treatment + operator"))
+      form <- as.formula(paste(tr, "~ siteID * treatment + operator"))
       d <- data %>% filter(!is.na(.data[[tr]]))
       if (nrow(d) < 10L) next
       m <- lm(form, data = d)
@@ -283,7 +294,7 @@ if (run_operator_analysis) {
 }
 ```
 
-```{r plot-raw-vs-corrected}
+```{r}
 #| label: plot-raw-vs-corrected
 #| fig-cap: "Raw vs operator-corrected dry root biomass. Corrected to reference operator."
 #| fig-height: 5
@@ -301,13 +312,50 @@ if (run_operator_analysis && "dry_root_biomass_g_corrected" %in% names(dat_corre
 }
 ```
 
+### Uncorrected vs corrected: treatment on x-axis
+
+For dry root biomass we apply the correction once per operator as reference (uncorrected + corrected with Lou, Lucas, etc.). Below, **treatment is on the x-axis** and dry root biomass on the y-axis. Each panel shows one correction type (Uncorrected, or Corrected with a given reference operator); within each panel, points/boxes are coloured by the operator who actually measured. If the correction reduces operator bias, the spread between operators within each treatment should be smaller in the corrected panels than in the Uncorrected panel.
+
+```{r}
+#| label: correction-by-reference
+#| fig-cap: "Dry root biomass by treatment: uncorrected and corrected by reference operator. Colour = operator who measured."
+#| fig-height: 8
+if (run_operator_analysis) {
+  trait_one <- "dry_root_biomass_g"
+  ref_operators <- levels(dat$operator)
+  # Uncorrected
+  long_correction <- dat %>%
+    filter(!is.na(.data[[trait_one]])) %>%
+    transmute(siteID, treatment, operator, value = .data[[trait_one]], correction_type = "Uncorrected")
+  # Corrected for each reference operator
+  for (ref_op in ref_operators) {
+    d_corr <- apply_operator_correction_local(dat, trait_one, reference_operator = ref_op)
+    idx <- which(!is.na(dat[[trait_one]]))
+    long_correction <- bind_rows(
+      long_correction,
+      d_corr %>% slice(idx) %>% transmute(siteID, treatment, operator, value = .data[[paste0(trait_one, "_corrected")]], correction_type = paste0("Corrected (reference: ", ref_op, ")"))
+    )
+  }
+  correction_order <- c("Uncorrected", paste0("Corrected (reference: ", ref_operators, ")"))
+  long_correction <- long_correction %>%
+    mutate(correction_type = factor(correction_type, levels = correction_order))
+  # Treatment on x-axis, dry mass on y-axis, faceted by correction type, coloured by operator
+  ggplot(long_correction, aes(x = treatment, y = value, fill = operator)) +
+    geom_boxplot(position = position_dodge(0.8), alpha = 0.8, outlier.alpha = 0.5) +
+    facet_wrap(vars(correction_type), ncol = 2) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(x = "Treatment", y = "Dry root biomass (g)", fill = "Operator who measured", title = "Treatment vs dry root biomass: uncorrected and corrected by reference operator")
+}
+```
+
 ## Discussion and recommendation
 
 **Reasoning.**
 
 - Operator bias is quantified by the partial R² for operator and by the operator-effect coefficients. If operator explains more variance than (or comparable to) site and treatment, correction is justified.
 - Excluding operators with a single observation (e.g. Peter) avoids estimating a non-existent operator effect from one plot.
-- The correction is model-based: we keep site and treatment structure and remove the operator offset by predicting under the reference operator. No single scalar "correction factor" is applied; the adjustment is row-specific.
+- The correction is model-based: we keep site × treatment structure (treatment nested in site) and remove the operator offset by predicting under the reference operator. No single scalar "correction factor" is applied; the adjustment is row-specific.
 
 **Recommendation.**
 

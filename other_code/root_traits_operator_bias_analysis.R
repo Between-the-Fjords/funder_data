@@ -85,14 +85,14 @@ if (!run_operator_analysis) {
 # ---- 2. Variance decomposition: how much is operator vs site vs treatment? ----
 # For each trait, fit:
 #   (a) trait ~ operator
-#   (b) trait ~ siteID + treatment
-#   (c) trait ~ siteID + treatment + operator
+#   (b) trait ~ siteID * treatment (treatment nested in site)
+#   (c) trait ~ siteID * treatment + operator (operator additive)
 # Compare R² and partial variance (Type II SS or drop1).
 
 variance_decomp <- function(trait_name) {
   form_op <- as.formula(paste(trait_name, "~ operator"))
-  form_st <- as.formula(paste(trait_name, "~ siteID + treatment"))
-  form_full <- as.formula(paste(trait_name, "~ siteID + treatment + operator"))
+  form_st <- as.formula(paste(trait_name, "~ siteID * treatment"))
+  form_full <- as.formula(paste(trait_name, "~ siteID * treatment + operator"))
 
   d <- dat %>% filter(!is.na(.data[[trait_name]]))
   if (nrow(d) < 10L) return(NULL)
@@ -174,13 +174,13 @@ plot_site_operator <- dat %>%
 print(plot_site_operator)
 
 # ---- 4. Operator effects (coefficients) ----
-# Fit trait ~ siteID + treatment + operator; report operator coefficients
+# Fit trait ~ siteID * treatment + operator; report operator coefficients
 # (effect of each operator relative to reference level)
 ref_operator <- levels(dat$operator)[1]
 message("\nReference operator for correction: ", ref_operator)
 
 operator_effects <- function(trait_name) {
-  form <- as.formula(paste(trait_name, "~ siteID + treatment + operator"))
+  form <- as.formula(paste(trait_name, "~ siteID * treatment + operator"))
   d <- dat %>% filter(!is.na(.data[[trait_name]]))
   if (nrow(d) < 10L) return(NULL)
   m <- lm(form, data = d)
@@ -202,7 +202,7 @@ print(effects_table, n = Inf)
 
 # ---- 5. Correction: remove operator effect, keep site + treatment ----
 # Corrected value = predicted value from full model with operator set to reference.
-# So: fit trait ~ siteID + treatment + operator; then
+# So: fit trait ~ siteID * treatment + operator; then
 #     corrected = predict(model, newdata = data with operator = ref_operator)
 
 apply_operator_correction <- function(data, trait_names, reference_operator = NULL) {
@@ -211,7 +211,7 @@ apply_operator_correction <- function(data, trait_names, reference_operator = NU
   fits <- list()
   for (tr in trait_names) {
     if (!tr %in% names(data)) next
-    form <- as.formula(paste(tr, "~ siteID + treatment + operator"))
+    form <- as.formula(paste(tr, "~ siteID * treatment + operator"))
     d <- data %>% filter(!is.na(.data[[tr]]))
     if (nrow(d) < 10L) next
     m <- lm(form, data = d)
@@ -253,7 +253,7 @@ message("\n--------- Recommendation ---------")
 if (run_operator_analysis) {
   message("1. Variance table (above) shows how much R² is due to operator vs site+treatment.")
   message("2. Corrected values: use data_corrected (columns <trait>_corrected).")
-  message("3. Correction = predicted value from lm(trait ~ siteID + treatment + operator) with operator set to reference.")
+  message("3. Correction = predicted value from lm(trait ~ siteID * treatment + operator) with operator set to reference.")
   message("4. For downstream analyses, use *_corrected columns when operator bias is a concern.")
   message("5. Reference operator used: ", ref_operator, " (change via reference_operator in apply_operator_correction() if needed).")
 } else {

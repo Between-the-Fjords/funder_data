@@ -1,9 +1,17 @@
 # Operator bias correction for root traits
 #
-# Corrected value = predicted value from lm(trait ~ siteID + treatment + operator)
-# with operator set to reference. Use *_corrected columns for analyses when
-# operator bias is a concern.
-# Operators with too few observations (e.g. one) can be excluded via exclude_operators.
+# How the correction works:
+# 1. Fit the model: trait ~ siteID * treatment + operator (treatment nested in site;
+#    operator additive). Fitting uses only rows with non-missing operator and not in
+#    exclude_operators.
+# 2. Reference operator: the level to which we "correct" (default: first level
+#    alphabetically among non-excluded operators). Pass reference_operator to change.
+# 3. For each row: keep observed siteID and treatment, but set operator = reference_operator.
+#    Predict from the fitted model with this newdata. That predicted value is the
+#    corrected value (expected trait if the reference operator had measured that plot).
+# 4. Store in <trait>_corrected. Rows without operator or in exclude_operators get NA.
+#
+# Use *_corrected columns for analyses when operator bias is a concern.
 
 TRAIT_COLS_ROOT <- c(
   "dry_root_biomass_g",
@@ -17,16 +25,20 @@ TRAIT_COLS_ROOT <- c(
 
 #' Apply operator bias correction to root traits
 #'
-#' Fits lm(trait ~ siteID + treatment + operator) and replaces each value with
-#' the predicted value as if measured by the reference operator (removes operator
-#' effect, keeps site + treatment). Operators with too few observations (e.g. one)
-#' should be excluded via exclude_operators so they do not distort the model.
+#' Fits the model \code{trait ~ siteID * treatment + operator} for each trait,
+#' then for each row predicts the trait value using the same site and treatment
+#' but with \code{operator} set to \code{reference_operator}. That predicted
+#' value is the corrected value (expected value if the reference operator had
+#' measured that plot). The operator effect is thus removed while keeping
+#' site × treatment structure.
 #'
 #' @param data Data frame with root_traits_clean structure (siteID, treatment, operator, trait columns).
 #' @param trait_names Character vector of trait column names; default is TRAIT_COLS_ROOT.
-#' @param reference_operator Reference operator level (e.g. "Lou"). Default: first level in data.
+#' @param reference_operator Operator level used for correction (e.g. "Lou"). The value
+#'   used for operator when predicting: all rows are predicted as if this operator
+#'   had measured them. Default: first level alphabetically among non-excluded operators.
 #' @param exclude_operators Character vector of operator names to exclude from fitting (e.g. "Peter" with one observation).
-#' @return Data frame with extra columns <trait>_corrected; attributes "operator_correction_models" and "reference_operator".
+#' @return Data frame with extra columns \code{<trait>_corrected}; attributes \code{operator_correction_models} and \code{reference_operator}.
 #' @export
 apply_operator_correction <- function(data,
                                      trait_names = TRAIT_COLS_ROOT,
@@ -47,7 +59,7 @@ apply_operator_correction <- function(data,
   fits <- list()
   for (tr in trait_names) {
     if (!tr %in% names(data)) next
-    form <- as.formula(paste(tr, "~ siteID + treatment + operator"))
+    form <- as.formula(paste(tr, "~ siteID * treatment + operator"))
     d_tr <- d %>% dplyr::filter(!is.na(.data[[tr]]))
     if (nrow(d_tr) < 10L) next
     m <- lm(form, data = d_tr)
