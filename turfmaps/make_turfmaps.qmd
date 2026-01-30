@@ -1,0 +1,55 @@
+---
+title: "Check community"
+format: pdf
+---
+
+```{r}
+#| label: set-up
+#| echo: false
+#| warning: false
+
+library(targets)
+library(tarchetypes)
+library(tidyverse)
+
+# Set path to targets store (in parent directory)
+tar_config_set(store = "../_targets")
+
+make_plots <- function(dat, plot_id){
+
+    ggplot(dat, aes(x = factor(year), y = species, fill = cover)) +
+    geom_tile() +
+    scale_fill_distiller(type = "seq", palette = "Greens", direction = 1) +
+    labs(x = "", y = "", title = plot_id) +
+    facet_wrap(~ functional_group, scales = "free_y") +
+    theme_bw()
+  
+}
+
+tar_load(community_clean_fixed)
+
+```
+
+## Community composition
+
+```{r}
+#| label: make-maps
+#| echo: false
+#| results: asis
+#| fig-show: asis      # don’t hold/pack plots together
+#| out.width: "100%"   # use full width so LaTeX won’t place two per line
+#| fig-align: center
+
+
+community_clean_fixed |>
+  arrange(siteID, blockID, treatment) |> 
+  group_by(plotID) |>
+  nest() |> 
+  mutate(turfmaps = map2(.x = data, .y = plotID, .f = make_plots)) |> 
+  select(plotID, turfmaps) |> 
+  pwalk(.f = function(plotID, turfmaps, ...){
+  print(turfmaps)
+  cat("\n")
+})
+  
+```
