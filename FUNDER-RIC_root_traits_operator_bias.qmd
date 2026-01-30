@@ -100,7 +100,7 @@ ref_operator <- if (run_operator_analysis) levels(dat$operator)[1] else NA_chara
 ### Operator sample sizes and coverage
 
 ```{r}
-#| label: operator-summary
+#| label: tbl-operator-summary
 operator_summary <- dat %>%
   count(operator, name = "n_plots") %>%
   mutate(operator = as.character(operator))
@@ -123,7 +123,7 @@ knitr::kable(operator_by_treatment, caption = "Operator × treatment (counts).")
 For each trait we compare how much variance is explained by operator alone, by site × treatment, and by the full model. The last column is the **partial R² for operator** (extra variance when adding operator to site × treatment).
 
 ```{r}
-#| label: variance-decomp
+#| label: tbl-variance-decomp
 if (run_operator_analysis) {
   variance_decomp <- function(trait_name) {
     form_op   <- as.formula(paste(trait_name, "~ operator"))
@@ -176,7 +176,7 @@ if (run_operator_analysis) {
 Estimated effect of each operator relative to the reference operator (`r ref_operator`). Positive = higher trait value than reference on average (after accounting for site and treatment).
 
 ```{r}
-#| label: operator-effects
+#| label: tbl-operator-effects
 if (run_operator_analysis) {
   operator_effects <- function(trait_name) {
     form <- as.formula(paste(trait_name, "~ siteID * treatment + operator"))
@@ -210,7 +210,7 @@ if (run_operator_analysis) {
 **Traits by operator.** Boxplots of key traits by operator. Systematic shifts between operators indicate measurable bias.
 
 ```{r}
-#| label: plot-by-operator
+#| label: fig-plot-by-operator
 #| fig-cap: "Root traits by operator (Peter excluded)."
 #| fig-height: 8
 if (run_operator_analysis) {
@@ -235,7 +235,7 @@ if (run_operator_analysis) {
 **Dry root biomass by treatment and operator.** If operator differences are visible within each treatment, bias is not confounded with treatment.
 
 ```{r}
-#| label: plot-treatment-operator
+#| label: fig-plot-treatment-operator
 #| fig-cap: "Dry root biomass by treatment and operator."
 #| fig-height: 5
 if (run_operator_analysis) {
@@ -252,7 +252,7 @@ if (run_operator_analysis) {
 **Dry root biomass by site and operator.** Similarly, operator differences within sites indicate operator bias rather than site structure.
 
 ```{r}
-#| label: plot-site-operator
+#| label: fig-plot-site-operator
 #| fig-cap: "Dry root biomass by site and operator."
 #| fig-height: 5
 if (run_operator_analysis) {
@@ -296,7 +296,7 @@ if (run_operator_analysis) {
 ```
 
 ```{r}
-#| label: plot-raw-vs-corrected
+#| label: fig-plot-raw-vs-corrected
 #| fig-cap: "Raw vs operator-corrected dry root biomass. Corrected to reference operator."
 #| fig-height: 5
 if (run_operator_analysis && "dry_root_biomass_g_corrected" %in% names(dat_corrected)) {
@@ -318,7 +318,7 @@ if (run_operator_analysis && "dry_root_biomass_g_corrected" %in% names(dat_corre
 For dry root biomass we apply the correction once per operator as reference (uncorrected + corrected with Lou, Lucas, etc.). Below, **treatment is on the x-axis** and dry root biomass on the y-axis. Each panel shows one correction type (Uncorrected, or Corrected with a given reference operator); within each panel, points/boxes are coloured by the operator who actually measured. If the correction reduces operator bias, the spread between operators within each treatment should be smaller in the corrected panels than in the Uncorrected panel.
 
 ```{r}
-#| label: correction-by-reference
+#| label: fig-correction-by-reference
 #| fig-cap: "Dry root biomass by treatment: uncorrected and corrected by reference operator. Colour = operator who measured."
 #| fig-height: 8
 if (run_operator_analysis) {
@@ -347,6 +347,59 @@ if (run_operator_analysis) {
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     labs(x = "Treatment", y = "Dry root biomass (g)", fill = "Operator who measured", title = "Treatment vs dry root biomass: uncorrected and corrected by reference operator")
+}
+```
+
+## Effect of correction on treatment analysis
+
+We fit the mixed model **dry root biomass ~ treatment + (1|siteID)** once with raw values and once with operator-corrected values (corrected to **Michaela** as reference operator), to see how the correction affects the treatment effect and model statistics.
+
+```{r}
+#| label: model-comparison
+if (run_operator_analysis && exists("apply_operator_correction_local")) {
+  suppressPackageStartupMessages({
+    library(lme4)
+    library(lmerTest)
+    library(emmeans)
+  })
+  ref_operator_analysis <- "Michaela"
+  dat_corrected_michaela <- apply_operator_correction_local(dat, "dry_root_biomass_g", reference_operator = ref_operator_analysis)
+  d_model <- dat_corrected_michaela %>%
+    filter(!is.na(dry_root_biomass_g), !is.na(dry_root_biomass_g_corrected))
+  m_raw       <- lmer(dry_root_biomass_g ~ treatment + (1|siteID), data = d_model)
+  m_corrected <- lmer(dry_root_biomass_g_corrected ~ treatment + (1|siteID), data = d_model)
+}
+```
+
+### Model: raw dry root biomass ~ treatment + (1|siteID)
+
+```{r}
+#| label: tbl-model-raw
+if (run_operator_analysis && exists("m_raw")) {
+  fix_raw <- as.data.frame(coef(summary(m_raw)))
+  fix_raw <- fix_raw %>% mutate(term = rownames(fix_raw), .before = 1)
+  emm_raw <- as.data.frame(emmeans::emmeans(m_raw, ~ treatment))
+  emm_raw <- emm_raw %>% select(treatment, emmean, SE, df, lower.CL, upper.CL)
+  re_raw <- as.data.frame(VarCorr(m_raw)) %>% select(grp, var1, vcov, sdcor)
+  knitr::kable(fix_raw, digits = 4, caption = "Fixed effects: raw dry root biomass", col.names = c("Term", "Estimate", "Std. Error", "df", "t value", "Pr(>|t|)"))
+  #knitr::kable(emm_raw, digits = 4, caption = "Estimated marginal means by treatment: raw model")
+}
+```
+
+### Model: corrected dry root biomass ~ treatment + (1|siteID)
+
+Corrected values use **Michaela** as the reference operator.
+
+```{r}
+#| label: tbl-model-corrected
+if (run_operator_analysis && exists("m_corrected")) {
+  fix_corr <- as.data.frame(coef(summary(m_corrected)))
+  fix_corr <- fix_corr %>% mutate(term = rownames(fix_corr), .before = 1)
+  emm_corr <- as.data.frame(emmeans::emmeans(m_corrected, ~ treatment))
+  emm_corr <- emm_corr %>% select(treatment, emmean, SE, df, lower.CL, upper.CL)
+  re_corr <- as.data.frame(VarCorr(m_corrected)) %>% select(grp, var1, vcov, sdcor)
+  knitr::kable(fix_corr, digits = 4, caption = "Fixed effects: corrected dry root biomass (reference: Michaela)", col.names = c("Term", "Estimate", "Std. Error", "df", "t value", "Pr(>|t|)"))
+  #knitr::kable(emm_corr, digits = 4, caption = "Estimated marginal means by treatment: corrected model")
 }
 ```
 
