@@ -4,7 +4,9 @@ format:
   html:
     toc: true
     toc-depth: 3
-    code-fold: false
+    code-fold: true
+execute:
+  message: false
 ---
 
 ## Aim
@@ -33,7 +35,8 @@ We use `root_traits_clean` from the targets pipeline. We restrict to rows with n
 
 ```{r setup}
 #| label: setup
-library(tidyverse)
+#| message: false
+suppressPackageStartupMessages(library(tidyverse))
 
 # Load root traits from pipeline (run after tar_make() and loading targets)
 if (!exists("root_traits_clean")) {
