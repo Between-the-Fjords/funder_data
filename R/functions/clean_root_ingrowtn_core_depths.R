@@ -26,9 +26,9 @@ clean_ric_depth <- function(ric_depth_raw) {
               # makes some NAs with were na before
               mutate(
                      depth = as.numeric(gsub(",", ".", RIC_cm)),
-                     unit = "cm"
+                     ric_depth_m = depth / 100
               ) |>
               # removes 5 rows
               filter(!is.na(depth)) |>
-              select(siteID = site, blockID, plotID, treatment, depth, unit, comment)
+              select(siteID = site, blockID, plotID, treatment, ric_depth_m, comment)
 }
