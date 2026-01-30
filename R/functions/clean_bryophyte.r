@@ -30,9 +30,9 @@ clean_bryophyte_structure <- function(bryophyte_raw, funder_meta) {
 # Returns a tibble with: original_text, json_response (one row per unique text)
 get_species_from_llm <- function(unique_texts,
                                  model = Sys.getenv("OPENAI_MODEL", unset = "gpt-4o"),
-                                 api_key = "REDACTED") {
+                                 api_key = Sys.getenv("OPENAI_API_KEY")) {
   if (is.null(api_key) || identical(api_key, "")) {
-    stop("OPENAI_API_KEY is not set. Please set it in your .Renviron or via Sys.setenv().")
+    stop("OPENAI_API_KEY is not set. Set it in .Renviron or via Sys.setenv('OPENAI_API_KEY', 'your-key').")
   }
 
   # Local helpers -------------------------------------------------------------
