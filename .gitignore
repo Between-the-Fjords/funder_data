@@ -46,6 +46,8 @@ vignettes/*.pdf
 .drake/
 
 #data
+raw_data/
+clean_data/
 *.xls
 *.csv
 *.Rdata
