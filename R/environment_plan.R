@@ -127,7 +127,7 @@ environmenet_plan <- list(
   # NGCD gridded climate data (1km resolution)
   tar_target(
     name = ngcd_coordinates,
-    command = read_csv("/Users/audhalbritter/Documents/Research/ThreeD/Data and Analysis/Three-D/data_cleaned/i_Three-D_clean_elevation_coordinates_2019.csv")
+    command = read_csv("raw_data/coordinates.csv")
   ),
   
   tar_target(

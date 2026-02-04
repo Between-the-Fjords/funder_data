@@ -116,9 +116,11 @@ extract_ngcd_for_sites <- function(nc_files, coordinates) {
   
   # Prepare coordinates
   coords_sf <- coordinates %>%
-    select(siteID = destSiteID,
-           longitude = longitude_E,
-           latitude = latitude_N) %>%
+    # Keep all original columns, just standardize lon/lat names
+    rename(
+      longitude = longitude_E,
+      latitude = latitude_N
+    ) %>%
     mutate(
       longitude = as.numeric(longitude),
       latitude = as.numeric(latitude)
@@ -281,7 +283,8 @@ extract_ngcd_for_sites <- function(nc_files, coordinates) {
           date = dates[layer_index],
           variable = var_name
         ) %>%
-        select(siteID, longitude, latitude, date, variable, value)
+        # Drop helper columns, keep all original coordinate/meta columns
+        select(-layer_index)
       
       all_data[[nc_file]] <- site_data
       
@@ -342,9 +345,9 @@ clean_ngcd <- function(ngcd_raw) {
       day = day(date),
       doy = yday(date)
     ) %>%
-    # Reorder columns
-    select(siteID, longitude, latitude, date, year, month, day, doy,
-           variable, value, unit) %>%
+    # Bring key columns to the front but keep all extra metadata columns
+    relocate(siteID, longitude, latitude, date, year, month, day, doy,
+             variable, value, unit, .before = 1) %>%
     arrange(siteID, date, variable)
   
   return(ngcd_clean)

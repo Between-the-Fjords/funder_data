@@ -42,12 +42,10 @@ cat("\n")
 # Load site coordinates
 # =============================================================================
 
-coordinates <- read_csv(
-  "/Users/audhalbritter/Documents/Research/ThreeD/Data and Analysis/Three-D/data_cleaned/i_Three-D_clean_elevation_coordinates_2019.csv"
-)
+coordinates <- read_csv("raw_data/coordinates.csv")
 
 cat("Sites to extract:\n")
-print(coordinates %>% select(destSiteID, latitude_N, longitude_E))
+print(coordinates %>% select(siteID, latitude_N, longitude_E))
 cat("\n")
 
 # =============================================================================
