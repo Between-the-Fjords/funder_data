@@ -30,13 +30,28 @@ We report R² for each model and the **partial R² for operator** (increase in R
 
 **How the correction is calculated (detail).**
 
+**Understanding the model structure.** The model `trait ~ siteID * treatment + operator` separates variance into three components:
+
+- **`siteID * treatment`**: This captures all ecological variation including:
+  - Main effect of each site (e.g., elevation, climate)
+  - Main effect of each treatment (e.g., grazing, fertilization)
+  - **Interaction between site and treatment** (treatment effects can differ by site)
+- **`+ operator`**: An additive operator effect—a systematic measurement offset for each operator that applies across all sites and treatments. This assumes the operator bias is constant regardless of which site or treatment is measured.
+- **Residual**: Unexplained variation (within-plot variability, random error)
+
+**Key assumption:** The operator effect is additive (not interacted with site or treatment). This means we assume each operator has a consistent measurement bias across all conditions. This is a reasonable assumption for measurement bias and avoids overparameterization (a full `site × treatment × operator` interaction would require operators to measure all site × treatment combinations, which is not the case).
+
+**Steps:**
+
 1. **Fit the model.** For each trait we fit the linear model `trait ~ siteID * treatment + operator` on the analysis data (rows with non-missing operator, excluding operators in `OPERATORS_EXCLUDE`). This model estimates the effect of site, treatment, their interaction, and operator (additive). The operator effect is the systematic offset of each operator relative to a reference level.
 
-2. **Choose the reference operator.** The reference operator is the level to which we "correct" all values — we answer: "What would the value be if the reference operator had measured this plot?" Here we use the first operator level alphabetically (e.g. "Lou"); you can pass a different `reference_operator` in `apply_operator_correction()`.
+2. **Choose the reference operator.** The reference operator is the level to which we "correct" all values — we answer: "What would the value be if the reference operator had measured this plot?" **Important:** The reference operator should ideally have measured all (or most) site × treatment combinations so that their effect is estimated from the full range of ecological conditions. For this analysis, **Michaela** is the best choice as she has the most complete coverage across treatments. In the code, you can pass a different `reference_operator` to `apply_operator_correction()`.
 
 3. **Predict with operator = reference.** For each row we keep the observed `siteID` and `treatment` (and thus the same site × treatment effect), but we **replace the operator with the reference operator** in the prediction. So we construct a "new" row: same site, same treatment, operator = reference. We then call `predict(model, newdata = that_row)`. That predicted value is the **corrected** value: it is the expected trait value for that plot if the reference operator had measured it. It removes the estimated operator offset (e.g. if operator "Lucas" had a +0.5 g effect, the corrected value is 0.5 g lower for Lucas rows).
 
 4. **Store.** The corrected value is written to `<trait>_corrected`. Rows that were not used in the model (no operator, or excluded operator) get `NA` in `*_corrected`.
+
+**Does the correction preserve site × treatment variation?** The `siteID * treatment` term captures all ecological variation between sites and treatments, including their interaction. The correction only removes the operator offset component while keeping the site × treatment structure completely intact. Think of it as "removing measurement bias while preserving the ecological signal." The corrected values maintain all differences between sites and treatments; only the systematic measurement differences between operators are removed.
 
 **Excluded operators.** Operators with very few observations (e.g. one) cannot contribute a meaningful operator effect and can distort estimates. We exclude them from fitting and from the analysis sample; here we exclude Peter (one observation).
 
@@ -92,7 +107,12 @@ dat <- root_traits_clean %>%
   )
 
 run_operator_analysis <- nlevels(dat$operator) >= 2L
-ref_operator <- if (run_operator_analysis) levels(dat$operator)[1] else NA_character_
+# Use Michaela as reference (most complete coverage); fallback to first alphabetically
+ref_operator <- if (run_operator_analysis) {
+  if ("Michaela" %in% levels(dat$operator)) "Michaela" else levels(dat$operator)[1]
+} else NA_character_
+# Set reference level so model coefficients are "effect vs reference"; reference operator then has no row in effects table
+dat <- dat %>% mutate(operator = relevel(operator, ref = ref_operator))
 ```
 
 ## Results
@@ -171,9 +191,231 @@ if (run_operator_analysis) {
 
 **Interpretation:** If `R2_partial_operator` is large for a trait, operator explains substantial variance beyond site and treatment, so correction is useful for that trait.
 
+### Measurement consistency: Michaela's variability across conditions
+
+To assess whether the reference operator (Michaela) measures consistently, we examine her measurement variability across treatments and sites. If Michaela's coefficient of variation (CV = SD/mean) is similar across conditions, she is a stable reference.
+
+**Michaela's variability by treatment:**
+
+```{r}
+#| label: tbl-operator-variability-by-treatment
+if (run_operator_analysis && "dry_root_biomass_g" %in% names(dat)) {
+  # Calculate summary statistics by operator and treatment
+  operator_variability <- dat %>%
+    filter(!is.na(dry_root_biomass_g)) %>%
+    group_by(operator, treatment) %>%
+    summarise(
+      n = n(),
+      mean = mean(dry_root_biomass_g),
+      sd = sd(dry_root_biomass_g),
+      cv = sd(dry_root_biomass_g) / mean(dry_root_biomass_g),
+      .groups = "drop"
+    ) %>%
+    filter(n >= 3)  # Only show combinations with at least 3 observations
+  
+  # Focus on Michaela
+  michaela_variability <- operator_variability %>%
+    filter(operator == ref_operator) %>%
+    select(treatment, n, mean, sd, cv)
+  
+  knitr::kable(
+    michaela_variability,
+    digits = 3,
+    caption = paste0(ref_operator, "'s measurement variability by treatment for dry root biomass.")
+  )
+}
+```
+
+**Michaela's variability by site:**
+
+```{r}
+#| label: tbl-operator-variability-by-site
+if (run_operator_analysis && "dry_root_biomass_g" %in% names(dat)) {
+  # Same analysis by site
+  operator_variability_site <- dat %>%
+    filter(!is.na(dry_root_biomass_g)) %>%
+    group_by(operator, siteID) %>%
+    summarise(
+      n = n(),
+      mean = mean(dry_root_biomass_g),
+      sd = sd(dry_root_biomass_g),
+      cv = sd(dry_root_biomass_g) / mean(dry_root_biomass_g),
+      .groups = "drop"
+    ) %>%
+    filter(n >= 3)
+  
+  michaela_variability_site <- operator_variability_site %>%
+    filter(operator == ref_operator) %>%
+    select(siteID, n, mean, sd, cv)
+  
+  knitr::kable(
+    michaela_variability_site,
+    digits = 3,
+    caption = paste0(ref_operator, "'s measurement variability by site for dry root biomass. If CV is similar across sites, measurement consistency is good.")
+  )
+}
+```
+
+**Interpretation:** Most of the CVs are ranging from 0.4-0.5 indicating moderate variability (typical for biological data). CVs of 0.6-0.8 suggest higher variability.
+
+
+### Testing for treatment × operator interaction
+
+The additive model assumes operator effects are constant across treatments. Here we test if operator effects vary by treatment, which would suggest treatment-specific measurement bias or confounding between operator and treatment.
+
+```{r}
+#| label: tbl-test-treatment-operator-interaction
+if (run_operator_analysis && "dry_root_biomass_g" %in% names(dat)) {
+  # Try to fit model with treatment × operator interaction
+  d <- dat %>% filter(!is.na(dry_root_biomass_g))
+  
+  # Additive model (current approach)
+  m_additive <- lm(dry_root_biomass_g ~ siteID * treatment + operator, data = d)
+  
+  # Model with treatment × operator interaction
+  m_interaction <- tryCatch(
+    lm(dry_root_biomass_g ~ siteID * treatment + treatment:operator, data = d),
+    error = function(e) NULL
+  )
+  
+  if (!is.null(m_interaction)) {
+    # Compare models
+    comparison <- tibble(
+      Model = c("Additive (site × treatment + operator)", 
+                "Interaction (site × treatment + treatment:operator)"),
+      AIC = c(AIC(m_additive), AIC(m_interaction)),
+      R_squared = c(summary(m_additive)$r.squared, summary(m_interaction)$r.squared)
+    ) %>%
+      mutate(delta_AIC = AIC - min(AIC))
+    
+    knitr::kable(
+      comparison,
+      digits = 2,
+      caption = "Comparing additive vs. treatment × operator interaction model. ΔAIC < -2 for interaction model suggests operator effects vary by treatment."
+    )
+  } else {
+    knitr::kable(
+      tibble(Message = "Interaction model failed to converge (likely due to sparse data in some treatment × operator combinations).")
+    )
+  }
+}
+```
+
+**Interpretation:** ΔAIC for the interaction model is > -2, suggesting that operator effects do not vary by treatment.
+
+### Alternative correction approach: subset-based comparison
+
+To address concerns about confounding, we implement an alternative approach that estimates operator effects only from treatments where each operator overlaps with Michaela, avoiding extrapolation.
+
+```{r}
+#| label: alternative-correction
+if (run_operator_analysis && "dry_root_biomass_g" %in% names(dat)) {
+  # Alternative approach: subset-based correction
+  # For each operator, calculate their effect relative to Michaela 
+  # only in treatments where they both measured
+  
+  apply_subset_correction <- function(data, trait_name, reference_operator) {
+    other_operators <- setdiff(levels(data$operator), reference_operator)
+    
+    # Start with reference operator's data (uncorrected)
+    corrected_data <- data %>%
+      filter(operator == reference_operator) %>%
+      mutate(!!paste0(trait_name, "_subset_corrected") := .data[[trait_name]])
+    
+    # For each other operator
+    operator_effects <- tibble(operator = character(), effect = numeric(), 
+                               treatments_used = character(), n = integer())
+    
+    for (op in other_operators) {
+      # Find treatments where both operator and reference measured
+      op_treatments <- data %>% 
+        filter(operator == op, !is.na(.data[[trait_name]])) %>% 
+        pull(treatment) %>% unique()
+      ref_treatments <- data %>% 
+        filter(operator == reference_operator, !is.na(.data[[trait_name]])) %>% 
+        pull(treatment) %>% unique()
+      shared_treatments <- intersect(op_treatments, ref_treatments)
+      
+      if (length(shared_treatments) == 0) next
+      
+      # Subset to shared treatments
+      subset_data <- data %>%
+        filter(treatment %in% shared_treatments, 
+               operator %in% c(op, reference_operator),
+               !is.na(.data[[trait_name]]))
+      
+      if (nrow(subset_data) < 5) next
+      
+      # Fit model in subset
+      subset_model <- lm(as.formula(paste(trait_name, "~ siteID * treatment + operator")), 
+                        data = subset_data)
+      
+      # Get operator effect
+      op_effect <- coef(subset_model)[paste0("operator", op)]
+      
+      # Store for comparison
+      operator_effects <- bind_rows(
+        operator_effects,
+        tibble(operator = op, 
+               effect = op_effect,
+               treatments_used = paste(shared_treatments, collapse = ", "),
+               n = nrow(subset_data %>% filter(operator == op)))
+      )
+      
+      # Apply correction to this operator's data
+      op_data <- data %>%
+        filter(operator == op, !is.na(.data[[trait_name]])) %>%
+        mutate(!!paste0(trait_name, "_subset_corrected") := .data[[trait_name]] - op_effect)
+      
+      corrected_data <- bind_rows(corrected_data, op_data)
+    }
+    
+    list(corrected_data = corrected_data, operator_effects = operator_effects)
+  }
+  
+  subset_result <- apply_subset_correction(dat, "dry_root_biomass_g", ref_operator)
+  dat_subset_corrected <- subset_result$corrected_data
+  
+  # Compare operator effects from both methods
+  # Calculate global method effects (same as the main operator effects table)
+  d_global <- dat %>% filter(!is.na(dry_root_biomass_g))
+  m_global <- lm(dry_root_biomass_g ~ siteID * treatment + operator, data = d_global)
+  co_global <- coef(m_global)
+  op_coefs_global <- co_global[grepl("^operator", names(co_global))]
+  
+  global_effects <- tibble(
+    operator = gsub("operator", "", names(op_coefs_global), fixed = TRUE),
+    global_effect = unname(op_coefs_global)
+  )
+  
+  # Subset method effects
+  subset_effects <- subset_result$operator_effects %>%
+    rename(subset_effect = effect)
+  
+  # Merge for comparison
+  effect_comparison <- full_join(global_effects, subset_effects, by = "operator") %>%
+    mutate(difference = subset_effect - global_effect)
+  
+  knitr::kable(
+    effect_comparison,
+    digits = 3,
+    caption = "Comparison of operator effects: Global model (all data) vs. Subset model (only shared treatments with Michaela). Large differences suggest confounding between operator and treatment."
+  )
+}
+```
+
+**Interpretation:** 
+
+- **Global effect**: Operator effect estimated from all data (current approach)
+- **Subset effect**: Operator effect estimated only from treatments where that operator and Michaela both measured
+- **Difference**: If large (e.g., > 0.3g), suggests the operator effect varies by treatment or is confounded with treatment patterns
+- **Treatments used**: Shows which treatments were used to estimate the subset effect
+
+If differences are small, the additive assumption is reasonable. If differences are large, the subset approach is more conservative and avoids extrapolation.
+
 ### Operator effects (coefficients vs reference)
 
-Estimated effect of each operator relative to the reference operator (`r ref_operator`). Positive = higher trait value than reference on average (after accounting for site and treatment).
+Estimated effect of each operator relative to the reference operator (`r ref_operator`) from the global model. Positive = higher trait value than reference on average (after accounting for site and treatment). The reference operator does not appear in the table because their effect is 0 by definition (they are the baseline).
 
 ```{r}
 #| label: tbl-operator-effects
@@ -315,29 +557,26 @@ if (run_operator_analysis && "dry_root_biomass_g_corrected" %in% names(dat_corre
 
 ### Uncorrected vs corrected: treatment on x-axis
 
-For dry root biomass we apply the correction once per operator as reference (uncorrected + corrected with Lou, Lucas, etc.). Below, **treatment is on the x-axis** and dry root biomass on the y-axis. Each panel shows one correction type (Uncorrected, or Corrected with a given reference operator); within each panel, points/boxes are coloured by the operator who actually measured. If the correction reduces operator bias, the spread between operators within each treatment should be smaller in the corrected panels than in the Uncorrected panel.
+For dry root biomass we compare uncorrected values to values corrected using Michaela as reference. Below, **treatment is on the x-axis** and dry root biomass on the y-axis. Each panel shows one correction type (Uncorrected or Corrected with Michaela as reference); within each panel, points/boxes are coloured by the operator who actually measured. If the correction reduces operator bias, the spread between operators within each treatment should be smaller in the corrected panel than in the uncorrected panel.
 
 ```{r}
 #| label: fig-correction-by-reference
-#| fig-cap: "Dry root biomass by treatment: uncorrected and corrected by reference operator. Colour = operator who measured."
-#| fig-height: 8
+#| fig-cap: "Dry root biomass by treatment: uncorrected and corrected to Michaela. Colour = operator who measured."
+#| fig-height: 5
 if (run_operator_analysis) {
   trait_one <- "dry_root_biomass_g"
-  ref_operators <- levels(dat$operator)
   # Uncorrected
   long_correction <- dat %>%
     filter(!is.na(.data[[trait_one]])) %>%
     transmute(siteID, treatment, operator, value = .data[[trait_one]], correction_type = "Uncorrected")
-  # Corrected for each reference operator
-  for (ref_op in ref_operators) {
-    d_corr <- apply_operator_correction_local(dat, trait_one, reference_operator = ref_op)
-    idx <- which(!is.na(dat[[trait_one]]))
-    long_correction <- bind_rows(
-      long_correction,
-      d_corr %>% slice(idx) %>% transmute(siteID, treatment, operator, value = .data[[paste0(trait_one, "_corrected")]], correction_type = paste0("Corrected (reference: ", ref_op, ")"))
-    )
-  }
-  correction_order <- c("Uncorrected", paste0("Corrected (reference: ", ref_operators, ")"))
+  # Corrected with Michaela as reference
+  d_corr <- apply_operator_correction_local(dat, trait_one, reference_operator = ref_operator)
+  idx <- which(!is.na(dat[[trait_one]]))
+  long_correction <- bind_rows(
+    long_correction,
+    d_corr %>% slice(idx) %>% transmute(siteID, treatment, operator, value = .data[[paste0(trait_one, "_corrected")]], correction_type = paste0("Corrected (reference: ", ref_operator, ")"))
+  )
+  correction_order <- c("Uncorrected", paste0("Corrected (reference: ", ref_operator, ")"))
   long_correction <- long_correction %>%
     mutate(correction_type = factor(correction_type, levels = correction_order))
   # Treatment on x-axis, dry mass on y-axis, faceted by correction type, coloured by operator
@@ -346,7 +585,7 @@ if (run_operator_analysis) {
     facet_wrap(vars(correction_type), ncol = 2) +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(x = "Treatment", y = "Dry root biomass (g)", fill = "Operator who measured", title = "Treatment vs dry root biomass: uncorrected and corrected by reference operator")
+    labs(x = "Treatment", y = "Dry root biomass (g)", fill = "Operator who measured", title = "Treatment vs dry root biomass: uncorrected and corrected to Michaela")
 }
 ```
 

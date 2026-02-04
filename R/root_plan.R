@@ -113,9 +113,10 @@ root_plan <- list(
   ),
 
   # Operator-bias corrected root traits (use *_corrected columns for analyses)
+  # Michaela is used as reference operator (most complete coverage across treatments)
   tar_target(
     name = root_traits_clean_corrected,
-    command = apply_operator_correction(root_traits_clean)
+    command = apply_operator_correction(root_traits_clean, reference_operator = "Michaela")
   ),
 
   # tar_target(
