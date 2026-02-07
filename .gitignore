@@ -85,6 +85,7 @@ vignettes/*.pdf
 # targets
 _targets_packages.R
 _targets
+living_filesystem
 _targets.R
 _targets.Rmd
 _targets_r
