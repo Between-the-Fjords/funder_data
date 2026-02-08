@@ -16,7 +16,7 @@ cat("=== Processing Manually Downloaded NGCD Files ===\n\n")
 
 cat("Checking for downloaded files...\n")
 
-# Look for zip files in raw_data/NGCD/
+# Look for zip or .nc files in raw_data/NGCD/
 if (!dir.exists("raw_data/NGCD")) {
   dir.create("raw_data/NGCD", recursive = TRUE)
   stop("Created raw_data/NGCD/ directory.\n",
@@ -24,17 +24,23 @@ if (!dir.exists("raw_data/NGCD")) {
        "See: other_code/download_ngcd_manual_guide.md")
 }
 
+# Prefer zip files; if none, use .nc files (already unzipped)
 nc_files <- list.files("raw_data/NGCD", pattern = "\\.zip$", full.names = TRUE)
-
 if (length(nc_files) == 0) {
-  stop("No .zip files found in raw_data/NGCD/\n",
-       "Please download files manually from CDS.\n",
+  nc_files <- list.files("raw_data/NGCD", pattern = "\\.nc$", full.names = TRUE, recursive = TRUE)
+}
+if (length(nc_files) == 0) {
+  stop("No .zip or .nc files found in raw_data/NGCD/\n",
+       "Please download from CDS or add unzipped .nc files.\n",
        "See: other_code/download_ngcd_manual_guide.md")
 }
 
-cat("Found", length(nc_files), "file(s):\n")
-for (f in nc_files) {
-  cat("  -", basename(f), "\n")
+cat("Found", length(nc_files), "file(s)\n")
+if (length(nc_files) <= 20) {
+  for (f in nc_files) cat("  -", basename(f), "\n")
+} else {
+  for (f in nc_files[1:5]) cat("  -", basename(f), "\n")
+  cat("  ... and", length(nc_files) - 5, "more\n")
 }
 cat("\n")
 

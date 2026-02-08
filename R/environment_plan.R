@@ -133,18 +133,23 @@ environmenet_plan <- list(
   tar_target(
     name = ngcd_download,
     command = {
-      # Check if NGCD data exists; user must download manually from CDS
-      if (!dir.exists("raw_data/NGCD") || length(list.files("raw_data/NGCD")) == 0) {
+      ngcd_path <- "raw_data/NGCD"
+      if (!dir.exists(ngcd_path)) {
         stop(
-          paste(
-            "NGCD data not found in 'raw_data/NGCD'.",
-            "Please download the NGCD zip files manually from the Copernicus CDS",
-            "into this folder (see 'other_code/download_ngcd_manual_guide.md')."
-          )
+          "NGCD data not found. Create 'raw_data/NGCD' and add zip files or ",
+          "unzipped .nc files (see other_code/download_ngcd_manual_guide.md)."
         )
       }
-      # Return list of downloaded files
-      list.files("raw_data/NGCD", pattern = "\\.zip$", full.names = TRUE)
+      # Prefer zip files; if none, use .nc files (already unzipped)
+      zips <- list.files(ngcd_path, pattern = "\\.zip$", full.names = TRUE)
+      if (length(zips) > 0) {
+        return(zips)
+      }
+      ncs <- list.files(ngcd_path, pattern = "\\.nc$", full.names = TRUE, recursive = TRUE)
+      if (length(ncs) == 0) {
+        stop("No .zip or .nc files found in 'raw_data/NGCD'.")
+      }
+      ncs
     },
     format = "file"
   ),
@@ -166,7 +171,7 @@ environmenet_plan <- list(
     name = ngcd_output,
     command = save_csv(
       file = ngcd_clean, 
-      name = "FUNDER_clean_NGCD_climate_2020_2024.csv"
+      name = "FUNDER_clean_NGCD_climate_2008_2025.csv"
     ),
     format = "file"
   )
