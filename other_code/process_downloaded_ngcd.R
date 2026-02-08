@@ -1,5 +1,6 @@
 # Process manually downloaded NGCD files
 # Use this if you downloaded files manually from the CDS website
+# Run with: source("other_code/process_downloaded_ngcd.R") from project root
 
 library(tidyverse)
 library(terra)
