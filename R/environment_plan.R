@@ -123,4 +123,41 @@ environmenet_plan <- list(
     command = save_csv(file = climate_clean, name = "FUNDER_clean_microclimate_2022.csv"),
     format = "file"
   )
+
+  # NGCD gridded climate data (1km resolution) – disabled by default (slow).
+  # To enable: uncomment the block below and run tar_make().
+  # Or process manually: source("R/functions/process_downloaded_ngcd.R")
+  #
+  # tar_target(
+  #   name = ngcd_coordinates,
+  #   command = read_csv("raw_data/coordinates.csv")
+  # ),
+  # tar_target(
+  #   name = ngcd_download,
+  #   command = {
+  #     ngcd_path <- "raw_data/NGCD"
+  #     if (!dir.exists(ngcd_path)) {
+  #       stop("NGCD data not found. Create 'raw_data/NGCD' and add zip or .nc files.")
+  #     }
+  #     zips <- list.files(ngcd_path, pattern = "\\.zip$", full.names = TRUE)
+  #     if (length(zips) > 0) return(zips)
+  #     ncs <- list.files(ngcd_path, pattern = "\\.nc$", full.names = TRUE, recursive = TRUE)
+  #     if (length(ncs) == 0) stop("No .zip or .nc files found in 'raw_data/NGCD'.")
+  #     ncs
+  #   },
+  #   format = "file"
+  # ),
+  # tar_target(
+  #   name = ngcd_extracted,
+  #   command = extract_ngcd_for_sites(nc_files = ngcd_download, coordinates = ngcd_coordinates)
+  # ),
+  # tar_target(
+  #   name = ngcd_clean,
+  #   command = clean_ngcd(ngcd_extracted)
+  # ),
+  # tar_target(
+  #   name = ngcd_output,
+  #   command = save_csv(file = ngcd_clean, name = "FUNDER_clean_NGCD_climate_2008_2025.csv"),
+  #   format = "file"
+  # )
 )

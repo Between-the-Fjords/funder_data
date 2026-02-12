@@ -1,0 +1,8 @@
+# Example .Renviron file
+# Copy this file to .Renviron and add your actual credentials
+# The .Renviron file is in .gitignore and will NOT be pushed to GitHub
+
+# Copernicus Climate Data Store API credentials
+# Get these from: https://cds.climate.copernicus.eu/user
+CDS_UID=your_uid_here
+CDS_API_KEY=your_api_key_here

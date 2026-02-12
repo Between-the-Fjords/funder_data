@@ -46,6 +46,8 @@ vignettes/*.pdf
 .drake/
 
 #data
+raw_data/
+clean_data/
 *.xls
 *.csv
 *.Rdata
@@ -85,6 +87,7 @@ vignettes/*.pdf
 # targets
 _targets_packages.R
 _targets
+living_filesystem
 _targets.R
 _targets.Rmd
 _targets_r

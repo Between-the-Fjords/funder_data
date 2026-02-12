@@ -24,5 +24,30 @@ mesofauna_plan <- list(
     name = microart_output,
     command = save_csv(file = microart_clean, name = "FUNDER_clean_microarthropod_composition_2022.csv"),
     format = "file"
+  ),
+
+  # nematode feeding group with Nemaplex c-p data
+  tar_target(
+    name = nematode_feeder_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "FUNDER_raw_Nematode_feeding_group_2023.csv",
+      path = "raw_data",
+      remote_path = "2_Micro_and_Mesofauna/Raw_data"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = nematode_feeder_cp,
+    command = add_nematode_cp(nematode_feeder_download)
+  ),
+  tar_target(
+    name = nematode_feeder_family,
+    command = select_nematode_family_row(nematode_feeder_cp)
+  ),
+  tar_target(
+    name = nematode_feeder_output,
+    command = save_csv(file = nematode_feeder_family, name = "FUNDER_nematode_feeding_group_nemaplex_2022.csv"),
+    format = "file"
   )
 )
