@@ -113,16 +113,28 @@ root_plan <- list(
   ),
 
   # Operator-bias corrected root traits (use *_corrected columns for analyses)
+  # Subset-based correction: Michaela as reference; each operator's effect estimated from shared treatments only
   tar_target(
     name = root_traits_clean_corrected,
-    command = apply_operator_correction(root_traits_clean)
+    command = apply_operator_correction(root_traits_clean, reference_operator = "Michaela")
   ),
 
-  # tar_target(
-  #   name = ric_output,
-  #   command = save_csv(file = ric_depth_clean, name = "FUNDER_clean_root_ingrowth_core_depths_2022.csv"),
-  #   format = "file"
-  # )
+  tar_target(
+    name = root_traits_clean_corrected_long,
+    command = root_traits_clean_corrected |>
+      mutate(year = 2022) |>
+      select(year, siteID, blockID, plotID, treatment, burial_date, retrieval_date, duration, dry_root_biomass_g_corrected, specific_root_length_m_per_g_corrected, root_tissue_density_g_per_m3_corrected, root_dry_matter_content_corrected, root_productivity_g_per_m3_per_year_corrected, operator, ric_volume_m3) |>
+      pivot_longer(cols = c(dry_root_biomass_g_corrected, specific_root_length_m_per_g_corrected, root_tissue_density_g_per_m3_corrected, root_dry_matter_content_corrected), names_to = "trait", values_to = "value") |>
+      mutate(trait = str_remove(trait, "_corrected")) %>%
+      dataDocumentation::funcabization(dat = ., convert_to = "FunCaB")
+  ),
+
+  tar_target(
+    name = root_traits_output,
+    command = save_csv(file = root_traits_clean_corrected_long, 
+    name = "FUNDER_clean_root_traits_corrected_2022.csv"),
+    format = "file"
+  ),
 
   # ROOT BIOMASS
   tar_target(
