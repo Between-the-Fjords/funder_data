@@ -93,7 +93,6 @@ slope_dic|stem|d4ef21f0689dec9b|6efbf02a50a68039|492299f00a517bfd|-774946938||t2
 slope_output|stem|d00b620ce2a754f5|841638917164e798|3592122de287d787|-1033985147|clean_data/FUNDER_clean_slope_and_aspect_2022.csv|t20490.4879525659s|s28553b|28553|file|local|vector|||0.038||
 loi_dic|stem|b8f14ee86e774daf|3a6d6cc3d29f67a8|4b395750c27e889c|784581279||t20490.487953135s|s457b|457|rds|local|vector|||0.023||
 loi_output|stem|a65d073900490e85|f9f85ce8325173f6|2b00ca6099bdfbb6|-356037199|clean_data/FUNDER_clean_LOI_2022.csv|t20490.4879536998s|s41183b|41183|file|local|vector|||0.033||
-root_traits_clean_corrected|stem|181767bae8599f17|4f2100eeeddf9974|a7f7b4ec34ce7373|-595581638||t20490.4879574885s|s3678578b|3678578|rds|local|vector|||0.099||
 community_clean|stem|c9e138b0017f2968|e4dff26e4bde9500|41b3c9e7fac3b7d3|-1332868576||t20490.4879613585s|s217050b|217050|rds|local|vector|||0.013||
 bryophyte_presence|stem|4e1ad5c9903ae20a|9c3473059b5e1530|4a1d050994d9d7f1|-2057427227||t20490.4879637584s|s8848b|8848|rds|local|vector|||0.042||
 bryophyte_cover|stem|66e67dfdcc36608a|7c00b7e25d0eca8e|4a1d050994d9d7f1|-1672751342||t20490.4879643282s|s6899b|6899|rds|local|vector|||0.017||
@@ -116,6 +115,7 @@ ngcd_download|stem|fec724c00dfdb157|a65fd47479b191da|2c530c1562a7fbd1|2102647270
 ngcd_extracted|stem|ed2caa1a5a270cd2|80da7e15333acbc1|6037d1f6cd12314d|1025819476||t20492.6558194323s|s951277b|951277|rds|local|vector|||884.09|Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). [extract] transforming vector data to the CRS of the raster. Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). [extract] transforming vector data to the CRS of the raster. Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). [extract] transforming vector data to the CRS of the raster. Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). [extract] transforming vector data to the CRS of the raster. Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1). Unhandled X/Y axis unit meters. SRS will ignore axis unit and be likely wrong. (GDAL error 1).|
 ngcd_clean|stem|943b41c276cd5a85|34883b3da29a13c1|df8e3a24cf93835b|-264769498||t20492.655844221s|s1227807b|1227807|rds|local|vector|||0.777||
 ngcd_output|stem|1a17569518a9a651|2059563ca6edae41|3b77e45953e357dd|-876321793|clean_data/FUNDER_clean_NGCD_climate_2008_2025.csv|t20492.6558581489s|s66977886b|66977886|file|local|vector|||0.571||
+root_traits_clean_corrected|stem|f5894a4f69f61c88|2bf47cf77faf069c|4039dfe94fc4f9f1|-595581638||t20497.3408632495s|s46551b|46551|rds|local|vector|||0.169||
 clean_depth|function|4c77f2ed026e6c54
 full_C_FGB_grid|object|160d945fb4c86ebe
 clean_lookup_text|function|21ccad910f8c264a
@@ -135,7 +135,7 @@ parse_years|function|573b278c5426d560
 sites_in_double_removal|object|60f7442c57491041
 TRAIT_COLS_ROOT|object|a6228b3e4712c26c
 double_removal_plotIDs|object|d2a94fc071f4cd3e
-.Random.seed|object|09e6f4d26aac0a74
+.Random.seed|object|7b9d860523e082f0
 clean_slope|function|859a0f088f0af82b
 check_duplicate_species|function|dba30402aab3ac48
 clean_C_FGB_traits|function|95b67e60bd92157e
@@ -183,6 +183,8 @@ n_expected_biomass|object|42efc20a5d07f525
 build_nemaplex_lookup|function|d8e46acb19588dbc
 clean_climate|function|577fdc8ed83522bf
 fix_turf_map_corrections|function|a8faf8ee553a9801
-apply_operator_correction|function|8aa4ab36a41d9ffe
+apply_operator_correction|function|27eb541ed257b20c
 add_nematode_cp|function|7bf6c7f56ebf9a29
 process_ngcd_climate|function|f0ed3071d829e3c7
+root_traits_clean_corrected_long|stem|cc92b236fa60cb09|377e1468106c9839|1af6db0b8e59dfa6|-1825842090||t20497.3652278129s|s20944b|20944|rds|local|vector|||0.044||
+root_traits_output|stem|6eabea686ebe2a60|eb294272abb6042a|a83f5d7cae619d0c|1077244903|clean_data/FUNDER_clean_root_traits_corrected_2022.csv|t20497.3652291386s|s202955b|202955|file|local|vector|||0.065||
