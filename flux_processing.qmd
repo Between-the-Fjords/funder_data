@@ -242,10 +242,10 @@ fluxes_funder <-  flux_calc(
   cols_ave = c("PAR")
   ) |>
   mutate(
-    type = str_replace_all(Cover, c("L" = "NEE", "D" = "ER"))
+    type = str_replace_all(Cover, c("L" = "NEE", "D" = "Reco"))
   ) |>
   filter(
-    type %in% c("NEE", "ER")
+    type %in% c("NEE", "Reco")
   )
 
 str(fluxes_funder)
@@ -260,7 +260,7 @@ str(fluxes_funder)
 fluxes_funder_gpp <- fluxes_funder |>
   arrange(f_fluxid) |>
   mutate(
-    .by = c(Site, Block, Treatment, Chamber, Cover, Date),
+    .by = c(Site, Block, Treatment, Chamber, Cover),
     replicate = row_number()
   ) |>
   flux_diff(
@@ -269,9 +269,16 @@ fluxes_funder_gpp <- fluxes_funder |>
   id_cols = c("Site", "Block", "Treatment", "Chamber", "Date", "replicate"),
   cols_keep = c("PAR_ave", "datetime"), # or "none" or "all"
   type_a = "NEE", # we want the difference between NEE
-  type_b = "ER", # and ER
+  type_b = "Reco", # and ER
   diff_name = "GPP" # the name of the calculated flux
 )
+
+```
+
+```{r}
+#| label: exporting
+
+write_csv(fluxes_funder_gpp, "fluxes_funder_2022_clean.csv")
 
 ```
 
