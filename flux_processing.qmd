@@ -278,7 +278,7 @@ fluxes_funder_gpp <- fluxes_funder |>
 ```{r}
 #| label: exporting
 
-write_csv(fluxes_funder_gpp, "fluxes_funder_2022_clean.csv")
+write_csv(fluxes_funder_gpp, "FUNDER_clean_cfluxes_2022.csv")
 
 ```
 
