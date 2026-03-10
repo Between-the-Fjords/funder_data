@@ -27,6 +27,7 @@ vegetation_plan <- list(
   ),
 
   # BIOMASS
+  # standing biomass
   tar_target(
     name = biomass_download,
     command = get_file(
@@ -47,7 +48,61 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = biomass_output,
-    command = save_csv(file = biomass_clean, name = "FUNDER_clean_biomass_2022.csv"),
+    command = save_csv(file = biomass_clean, name = "FUNDER_clean_standing_biomass_2022.csv"),
+    format = "file"
+  ),
+
+  # removal biomass 2022
+  tar_target(
+    name = biomass_22_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "FUNDER_biomass_removal_2022.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "1_Vegetation/Raw_data"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = biomass_22_raw,
+    command = {
+      nms <- names(read_excel(biomass_22_download, sheet = "2022", n_max = 0))
+      ct <- ifelse(nms == "Date", "date", "guess")
+      read_excel(biomass_22_download, sheet = "2022", col_types = ct)
+    }
+  ),
+  tar_target(
+    name = biomass_22_clean,
+    command = clean_biomass_22(biomass_22_raw)
+  ),
+  # removal biomass 2015-2021
+  tar_target(
+    name = biomass_removal_download,
+    command = get_file(
+      node = "4c5v2",
+      file = "FunCaB_clean_biomass_2015-2021.csv",
+      path = here::here("raw_data"),
+      remote_path = "1_Biomass_removal"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = biomass_removal_raw,
+    command = read_csv(biomass_removal_download)
+  ),
+
+  # merge removal biomass 2015-2021 and 2022
+  tar_target(
+    name = biomass_removal_clean,
+    command = bind_rows(
+      biomass_removal_raw |>
+        select(year, date, siteID, blockID, plotID, treatment, removed_fg, round, biomass, temperature_level, precipitation_level, functional_group, name, remark),
+      biomass_22_clean
+    )
+  ),
+  tar_target(
+    name = biomass_removal_output,
+    command = save_csv(file = biomass_removal_clean, name = "FUNDER_clean_biomass_removal_2015-2022.csv"),
     format = "file"
   ),
 
@@ -108,12 +163,12 @@ vegetation_plan <- list(
       )
   ),
 
-    # clean 2022 community data
+  # clean 2022 community data
   tar_target(
     name = community_2022_clean,
     command = clean_community_2022(community_2022_raw, fun_gr)
   ),
-  
+
   # join 2015-2021 and 2022 community data
   tar_target(
     name = community_clean,
@@ -131,12 +186,10 @@ vegetation_plan <- list(
     ),
     format = "file"
   ),
-
   tar_target(
     name = turf_map_corrections,
     command = read_excel(turf_map_corrections_download)
   ),
-
   tar_target(
     name = turf_map_corrections_fixed,
     command = fix_turf_map_corrections(turf_map_corrections, funder_meta)

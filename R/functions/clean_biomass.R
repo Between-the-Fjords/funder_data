@@ -2,7 +2,7 @@
 
 clean_biomass <- function(biomass_raw) {
   biomass_raw |>
-    clean_names() |>
+    janitor::clean_names() |>
     filter(!is.na(site)) |>
     mutate(site = recode(site,
       "GUD" = "Gudmedalen",
@@ -61,3 +61,84 @@ clean_biomass <- function(biomass_raw) {
 #   scale_fill_manual(values = c("darkgreen", "violet", "lightblue3")) +
 #   facet_wrap(~ siteID) +
 #   theme_bw()
+
+
+# clean biomass removal 2022
+
+clean_biomass_22 <- function(biomass_22_raw) {
+
+  biomass_22_raw |>
+    clean_names() |>
+    mutate(
+      site = recode(
+        site,
+        "GUD" = "Gudmedalen",
+        "LAV" = "Lavisdalen",
+        "RAM" = "Rambera",
+        "ULV" = "Ulvehaugen",
+        "SKJ" = "Skjelingahaugen",
+        "ALR" = "Alrust",
+        "ARH" = "Arhelleren",
+        "FAU" = "Fauske",
+        "HOG" = "Hogsete",
+        "OVS" = "Ovstedalen",
+        "VIK" = "Vikesland",
+        "VES" = "Veskre"
+      )
+    ) |>
+    mutate(
+      blockID = paste0(substr(site, 1, 3), block),
+      plotID = paste0(blockID, treatment),
+      date = as.Date(date),
+      temperature_level = dplyr::case_match(
+        site,
+        "Alrust"          ~ "sub-alpine",
+        "Arhelleren"      ~ "boreal",
+        "Fauske"          ~ "boreal",
+        "Gudmedalen"      ~ "alpine",
+        "Hogsete"         ~ "sub-alpine",
+        "Lavisdalen"      ~ "alpine",
+        "Ovstedalen"      ~ "boreal",
+        "Rambera"         ~ "sub-alpine",
+        "Skjelingahaugen" ~ "alpine",
+        "Ulvehaugen"      ~ "alpine",
+        "Veskre"          ~ "sub-alpine",
+        "Vikesland"       ~ "boreal",
+        .default = NA_character_
+      ),
+      precipitation_level = dplyr::case_match(
+        site,
+        "Alrust"          ~ 1,
+        "Arhelleren"      ~ 3,
+        "Fauske"          ~ 1,
+        "Gudmedalen"      ~ 3,
+        "Hogsete"         ~ 2,
+        "Lavisdalen"      ~ 2,
+        "Ovstedalen"      ~ 4,
+        "Rambera"         ~ 3,
+        "Skjelingahaugen" ~ 4,
+        "Ulvehaugen"      ~ 1,
+        "Veskre"          ~ 4,
+        "Vikesland"       ~ 2,
+        .default = NA_real_
+      )
+    ) %>%
+    funcabization(dat = ., convert_to = "FunCaB") |>
+    select(
+      year,
+      date,
+      siteID = site,
+      blockID,
+      plotID,
+      treatment,
+      removed_fg = removed_functional_group,
+      round,
+      biomass,
+      temperature_level,
+      precipitation_level,
+      name,
+      remark
+    )
+
+
+}
