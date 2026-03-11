@@ -25,7 +25,9 @@ clean_prs <- function(prs_raw, prs_detection_limit, funder_meta) {
     pivot_longer(cols = `NO3-N`:Cd, names_to = "elements", values_to = "value") %>%
     left_join(prs_detection_limit, by = "elements") %>%
     # remove values below detection limit
-    filter(value > detection_limit) %>%
+    filter(value > detection_limit) |>
+    # remove this plot, because it was clipped wrongly
+    filter(plotID != "Fau2GB") %>%
     funcabization(dat = ., convert_to = "FunCaB") |>
     select(siteID, blockID, treatment, plotID, burial_length, elements, value, detection_limit, burial_date, retrieval_date, notes = Notes)
 }
