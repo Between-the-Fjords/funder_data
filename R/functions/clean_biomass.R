@@ -32,18 +32,19 @@ clean_biomass <- function(biomass_raw) {
     mutate(
       no_treatment = case_when(
         removed_fg == "L" ~ "leftover",
-        treatment == "FB" & removed_fg == "G" ~ "leftover",
-        treatment == "GF" & removed_fg == "B" ~ "leftover",
-        treatment == "GB" & removed_fg == "F" ~ "leftover",
-        treatment == "G" & removed_fg %in% c("F", "B") ~ "leftover",
-        treatment == "B" & removed_fg %in% c("F", "G") ~ "leftover",
-        treatment == "F" & removed_fg %in% c("G", "B") ~ "leftover",
+        treatment == "FGB" & removed_fg %in% c("F", "G", "B") ~ "leftover",
+        treatment == "FB" & removed_fg %in% c("F", "B") ~ "leftover",
+        treatment == "GF" & removed_fg %in% c("F", "G") ~ "leftover",
+        treatment == "GB" & removed_fg %in% c("G", "B") ~ "leftover",
+        treatment == "G" & removed_fg == "G" ~ "leftover",
+        treatment == "B" & removed_fg == "B" ~ "leftover",
+        treatment == "F" & removed_fg == "F" ~ "leftover",
         TRUE ~ NA_character_
       ),
       year = 2022,
       blockID = paste0(substr(site, 1, 3), block),
       plotID = paste0(blockID, treatment)
-    ) %>%
+    ) %>% 
     funcabization(dat = ., convert_to = "FunCaB") |>
     select(year, siteID = site, blockID, plotID, treatment, removed_fg, biomass, no_treatment, comments)
 }
