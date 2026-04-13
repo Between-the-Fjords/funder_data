@@ -1,7 +1,6 @@
 ### Clean CO2 flux data
 
 flux_plan <- list(
-
   # Download and unzip site metadata
   tar_target(
     name = cflux_metadata_download,
@@ -63,7 +62,7 @@ flux_plan <- list(
       cflux_metadata_download
       cflux_conc_download
       cflux_temp_download
-      clean_cflux(output_dir = "raw_data", make_plots = FALSE)
+      clean_cflux(output_dir = "raw_data", make_plots = TRUE)
     }
   ),
 
@@ -76,6 +75,4 @@ flux_plan <- list(
     ),
     format = "file"
   )
-
 )
-

@@ -1,11 +1,11 @@
 clean_cflux <- function(output_dir = "raw_data",
                         make_plots = FALSE) {
-
   metadata_dir <- file.path(output_dir, "C-flux site metadata")
   conc_dir <- file.path(output_dir, "CO2_H20_PAR_Squirrel")
   temp_dir <- file.path(output_dir, "Temperature_iButton")
 
   # Metadata ---------------------------------------------------------------
+  # for fluxID 217, 266, 268, and 476 the last 40ish seconds were removed, because stoptime was probably recorded wrong. Big dip in the flux.
   cflux_funder_metadata <- fs::dir_ls(metadata_dir) |>
     map_dfr(
       read_excel,
@@ -50,7 +50,7 @@ clean_cflux <- function(output_dir = "raw_data",
     ) |>
     fill(H2O)
 
-    #conc_og |> filter(is.na(CO2)) |> count(source_file)
+  # conc_og |> filter(is.na(CO2)) |> count(source_file)
 
   # Temperature data -------------------------------------------------------
   temp_df <- fs::dir_ls(temp_dir) |>
@@ -83,6 +83,16 @@ clean_cflux <- function(output_dir = "raw_data",
     time_diff = 0
   )
 
+  # Manually fix bad data (1041 data much too low, probably loose cable issue)
+  conc_funder <- conc_funder |>
+    mutate(
+      CO2 = if_else(f_fluxid == 1041 &
+        as_hms(datetime) >= as_hms("15:17:19") &
+        as_hms(datetime) <= as_hms("15:18:44"),
+      NA_real_, CO2
+      )
+    )
+
   # wet air correction
   conc_funder_dry <- flux_drygas(conc_funder, CO2, H2O)
   # CO2 flux fitting
@@ -101,12 +111,9 @@ clean_cflux <- function(output_dir = "raw_data",
   flags_funder <- flux_quality(
     slopes_df = slopes_funder,
     f_conc = CO2,
-    force_discard = c(
-      # not zero, measurement interupted early but no note in metadata
-      202,
-      266,
-      917
-    ),
+    # force_discard = c(
+    # not zero, measurement interupted early but no note in metadata
+    # ),
     force_lm = c(
       # linear flux, exp model artificially steep
       479
@@ -132,10 +139,10 @@ clean_cflux <- function(output_dir = "raw_data",
   ) |>
     mutate(
       type = str_replace_all(Cover, c("L" = "NEE", "D" = "Reco"))
-    ) |>
-    filter(
-      type %in% c("NEE", "Reco")
-    )
+    ) #|>
+  # filter(
+  # type %in% c("NEE", "Reco")
+  # )
 
   # Create diagnostic plots (saved as PDF pages, like in the Qmd) ----------
   if (isTRUE(make_plots)) {
