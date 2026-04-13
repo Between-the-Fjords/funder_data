@@ -1,4 +1,5 @@
-clean_cflux <- function(output_dir = "raw_data", make_plots = FALSE) {
+clean_cflux <- function(output_dir = "raw_data",
+                        make_plots = FALSE) {
 
   metadata_dir <- file.path(output_dir, "C-flux site metadata")
   conc_dir <- file.path(output_dir, "CO2_H20_PAR_Squirrel")
@@ -84,7 +85,7 @@ clean_cflux <- function(output_dir = "raw_data", make_plots = FALSE) {
 
   # wet air correction
   conc_funder_dry <- flux_drygas(conc_funder, CO2, H2O)
-
+  # CO2 flux fitting
   slopes_funder <- flux_fitting(
     conc_df = conc_funder_dry,
     f_conc = CO2_dry,
@@ -144,11 +145,12 @@ clean_cflux <- function(output_dir = "raw_data", make_plots = FALSE) {
       f_datetime = datetime,
       output = "pdfpages",
       f_ylim_lower = 350,
-      f_plotname = "funder_fluxes"
+      f_plotname = "funder_fluxes_co2"
     )
   }
 
-  fluxes_funder |>
+  # CO2 flux_diff (GPP) ------------------
+  fluxes_co2 <- fluxes_funder |>
     arrange(f_fluxid) |>
     mutate(
       .by = c(Site, Block, Treatment, Chamber, Cover),
@@ -161,7 +163,42 @@ clean_cflux <- function(output_dir = "raw_data", make_plots = FALSE) {
       type_a = "NEE",
       type_b = "Reco",
       diff_name = "GPP"
-    ) |> 
-    tidylog::select(datetime, Site, Block, Treatment, replicate, type, f_flux, PAR_ave, chamber = Chamber)
-}
+    ) |>
+    mutate(gas = "co2")
 
+  # Standardize IDs, and output -----------------
+  fluxes_co2 |>
+    mutate(
+      siteID = recode(Site,
+        "GUD" = "Gudmedalen",
+        "LAV" = "Lavisdalen",
+        "RAM" = "Rambera",
+        "ULV" = "Ulvehaugen",
+        "SKJ" = "Skjelingahaugen",
+        "ALR" = "Alrust",
+        "ARH" = "Arhelleren",
+        "FAU" = "Fauske",
+        "HOG" = "Hogsete",
+        "OVS" = "Ovstedalen",
+        "VIK" = "Vikesland",
+        "VES" = "Veskre"
+      ),
+      blockID = paste0(substr(siteID, 1, 3), Block),
+      plotID = paste0(blockID, Treatment),
+      treatment = Treatment
+    ) |>
+    funcabization(convert_to = "FunCaB") |>
+    tidylog::select(
+      datetime,
+      siteID,
+      blockID,
+      plotID,
+      treatment,
+      replicate,
+      gas,
+      type,
+      f_flux,
+      PAR_ave,
+      chamber = Chamber
+    )
+}
