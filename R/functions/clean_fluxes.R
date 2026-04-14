@@ -152,6 +152,7 @@ clean_cflux <- function(output_dir = "raw_data",
       f_datetime = datetime,
       output = "pdfpages",
       f_ylim_lower = 350,
+      f_ylim_upper = 600,
       f_plotname = "funder_fluxes_co2"
     )
   }

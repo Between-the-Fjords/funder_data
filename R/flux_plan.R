@@ -62,7 +62,7 @@ flux_plan <- list(
       cflux_metadata_download
       cflux_conc_download
       cflux_temp_download
-      clean_cflux(output_dir = "raw_data", make_plots = TRUE)
+      clean_cflux(output_dir = "raw_data", make_plots = FALSE)
     }
   ),
 
