@@ -108,6 +108,9 @@ clean_cflux <- function(output_dir = "raw_data",
     end_cut = 0
   )
 
+  slopes_funder <- slopes_funder |>
+    mutate(ratio_threshold = if_else(f_fluxid == 1041, 0.2, 0.5))
+
   flags_funder <- flux_quality(
     slopes_df = slopes_funder,
     f_conc = CO2,
