@@ -108,6 +108,9 @@ clean_cflux <- function(output_dir = "raw_data",
     end_cut = 0
   )
 
+  slopes_funder <- slopes_funder |>
+    mutate(ratio_threshold = if_else(f_fluxid == 1041, 0.2, 0.5))
+
   flags_funder <- flux_quality(
     slopes_df = slopes_funder,
     f_conc = CO2,
@@ -116,7 +119,9 @@ clean_cflux <- function(output_dir = "raw_data",
     # ),
     force_lm = c(
       # linear flux, exp model artificially steep
-      479
+      479,
+      # very flat fluxes, forced to linear to avoid zero-flagging
+      519, 950, 964
     ),
     ambient_conc = 421,
     error = 100,
@@ -152,7 +157,7 @@ clean_cflux <- function(output_dir = "raw_data",
       f_datetime = datetime,
       output = "pdfpages",
       f_ylim_lower = 350,
-      f_ylim_upper = 600,
+      # f_ylim_upper = 600, # to better see the flat slopes
       f_plotname = "funder_fluxes_co2"
     )
   }

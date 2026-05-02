@@ -56,6 +56,7 @@ flux_plan <- list(
   ),
 
   # Process raw files into cleaned flux data with GPP
+  # make_plots = TRUE saves one PDF page per flux measurement
   tar_target(
     name = cflux_clean,
     command = {
