@@ -119,7 +119,9 @@ clean_cflux <- function(output_dir = "raw_data",
     # ),
     force_lm = c(
       # linear flux, exp model artificially steep
-      479
+      479,
+      # very flat fluxes, forced to linear to avoid zero-flagging
+      519, 950, 964
     ),
     ambient_conc = 421,
     error = 100,
@@ -155,7 +157,7 @@ clean_cflux <- function(output_dir = "raw_data",
       f_datetime = datetime,
       output = "pdfpages",
       f_ylim_lower = 350,
-      f_ylim_upper = 600,
+      # f_ylim_upper = 600, # to better see the flat slopes
       f_plotname = "funder_fluxes_co2"
     )
   }
