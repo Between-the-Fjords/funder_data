@@ -6,8 +6,8 @@ library(tarchetypes)
 source("R/functions/microbial_abundance_functions.R")
 
 tar_option_set(packages = c("dataDownloader", "dataDocumentation", "osfr",
-                            "limma",
-                            "xfun", "glue", "tidyverse", "janitor", "readxl"))
+                            "xfun", "glue", "tidyverse", "janitor", "readxl",
+                            "limma"))
 
 list(
 
