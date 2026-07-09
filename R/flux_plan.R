@@ -8,11 +8,11 @@ flux_plan <- list(
       path <- get_file(
         node = "tx9r2",
         file = "C-flux site metadata.zip",
-        path = "raw_data",
+        path = here::here("raw_data"),
         remote_path = "5_Carbon_and_nutrient_cycle/Raw_data/FUNDER_raw_cflux"
       )
-      if (!dir.exists(file.path("raw_data", "Cflux_site_metadata"))) {
-        unzip(zipfile = path, exdir = "raw_data")
+      if (!dir.exists(here::here("raw_data", "Cflux_site_metadata"))) {
+        unzip(zipfile = path, exdir = here::here("raw_data"))
       }
       path
     },
@@ -26,11 +26,11 @@ flux_plan <- list(
       path <- get_file(
         node = "tx9r2",
         file = "CO2_H20_PAR_Squirrel.zip",
-        path = "raw_data",
+        path = here::here("raw_data"),
         remote_path = "5_Carbon_and_nutrient_cycle/Raw_data/FUNDER_raw_cflux"
       )
-      if (!dir.exists(file.path("raw_data", "CO2_H20_PAR_Squirrel"))) {
-        unzip(zipfile = path, exdir = "raw_data")
+      if (!dir.exists(here::here("raw_data", "CO2_H20_PAR_Squirrel"))) {
+        unzip(zipfile = path, exdir = here::here("raw_data"))
       }
       path
     },
@@ -44,11 +44,11 @@ flux_plan <- list(
       path <- get_file(
         node = "tx9r2",
         file = "Temperature_iButton.zip",
-        path = "raw_data",
+        path = here::here("raw_data"),
         remote_path = "5_Carbon_and_nutrient_cycle/Raw_data/FUNDER_raw_cflux"
       )
-      if (!dir.exists(file.path("raw_data", "Temperature_iButton"))) {
-        unzip(zipfile = path, exdir = "raw_data")
+      if (!dir.exists(here::here("raw_data", "Temperature_iButton"))) {
+        unzip(zipfile = path, exdir = here::here("raw_data"))
       }
       path
     },
@@ -63,7 +63,7 @@ flux_plan <- list(
       cflux_metadata_download
       cflux_conc_download
       cflux_temp_download
-      clean_cflux(output_dir = "raw_data", make_plots = FALSE)
+      clean_cflux(output_dir = here::here("raw_data"), make_plots = FALSE)
     }
   ),
 

@@ -13,7 +13,7 @@ nutrient_cycling_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_PRS_2021.xlsx",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
     ),
     format = "file"
@@ -49,7 +49,7 @@ nutrient_cycling_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_LOI_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
     ),
     format = "file"
@@ -74,7 +74,7 @@ nutrient_cycling_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_CNP_core_depths_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
     ),
     format = "file"
@@ -84,7 +84,7 @@ nutrient_cycling_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_Rambera_CNP_core_depths_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
     ),
     format = "file"
@@ -96,7 +96,7 @@ nutrient_cycling_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_CNP_fresh_sample_weights_2022.xlsx",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
     ),
     format = "file"

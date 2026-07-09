@@ -48,7 +48,7 @@ clean_climate <- function(climate_ID_raw) {
 
   # List of all the files
   files <- dir(
-    path = "raw_data/FUNDER_raw_climate_TOMST",
+    path = here::here("raw_data", "FUNDER_raw_climate_TOMST"),
     pattern = "^data.*\\.csv$",
     recursive = TRUE,
     full.names = TRUE

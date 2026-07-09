@@ -19,15 +19,16 @@ download_ngcd <- function(years = 1961:2024,
                                        "minimum_temperature",
                                        "maximum_temperature", 
                                        "precipitation"),
-                          output_path = "raw_data/NGCD") {
+                          output_path = NULL) {
   
+  if (is.null(output_path)) output_path <- here::here("raw_data", "NGCD")
   # Create output directory if it doesn't exist
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
   }
   
   # Load credentials from .Renviron
-  renviron_path <- file.path(getwd(), ".Renviron")
+  renviron_path <- here::here(".Renviron")
   if (file.exists(renviron_path)) {
     readRenviron(renviron_path)
   }
@@ -367,11 +368,12 @@ process_ngcd_climate <- function(coordinates,
   
   # Step 1: Download data (if needed)
   cat("Step 1: Downloading data...\n")
-  if (force_download || !dir.exists("raw_data/NGCD")) {
+  if (force_download || !dir.exists(here::here("raw_data", "NGCD"))) {
     downloaded_files <- download_ngcd(years = years)
   } else {
     cat("Using existing downloaded files\n")
-    downloaded_files <- list.files("raw_data/NGCD", 
+    downloaded_files <- list.files(
+      here::here("raw_data", "NGCD"), 
                                    pattern = "\\.zip$", 
                                    full.names = TRUE)
   }

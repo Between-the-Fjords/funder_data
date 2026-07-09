@@ -1,5 +1,6 @@
-clean_cflux <- function(output_dir = "raw_data",
+clean_cflux <- function(output_dir = NULL,
                         make_plots = FALSE) {
+  if (is.null(output_dir)) output_dir <- here::here("raw_data")
   metadata_dir <- file.path(output_dir, "C-flux site metadata")
   conc_dir <- file.path(output_dir, "CO2_H20_PAR_Squirrel")
   temp_dir <- file.path(output_dir, "Temperature_iButton")
