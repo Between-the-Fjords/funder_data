@@ -14,7 +14,7 @@ clean_lookup_text <- function(x) {
 # Loaded from data/nemaplex_genus_lookup.csv when present (created by build_nemaplex_lookup)
 # Run build_nemaplex_lookup(save_path = "data/nemaplex_genus_lookup.csv") to refresh
 # ------------------------------------------------------------------------------
-NEMAPLEX_LOOKUP_PATH <- "data/nemaplex_genus_lookup.csv"
+NEMAPLEX_LOOKUP_PATH <- here::here("data", "nemaplex_genus_lookup.csv")
 NEMAPLEX_LOOKUP <- if (file.exists(NEMAPLEX_LOOKUP_PATH)) {
   readr::read_csv(NEMAPLEX_LOOKUP_PATH, show_col_types = FALSE) |>
     mutate(across(where(is.character), clean_lookup_text)) |>
