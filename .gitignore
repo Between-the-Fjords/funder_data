@@ -84,6 +84,15 @@ clean_data/
 
 *.DS_Store
 
+# renv: keep renv.lock and renv/activate.R; ignore local library
+renv/library/
+renv/staging/
+renv/local/
+renv/cellar/
+
+# quarto
+.quarto/
+
 # targets
 _targets_packages.R
 _targets
