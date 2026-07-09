@@ -7,7 +7,7 @@ data_dic_plan <- list(
   # attribute table
   tar_target(
     name = attribute_file,
-    command = "clean_data/data_description.xlsx",
+    command = here::here("clean_data", "data_description.xlsx"),
     format = "file"
   ),
 
@@ -104,7 +104,7 @@ data_dic_plan <- list(
                               slope = slope_dic,
                               depth = depth_dic,
                               sm = sm_dic),
-    path = "clean_data/FUNDER_data_dictionary.xlsx"),
+    path = here::here("clean_data", "FUNDER_data_dictionary.xlsx")),
     format = "file"
   )
 )
