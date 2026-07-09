@@ -87,7 +87,7 @@ root_plan <- list(
     )
   ),
 
-  # Standing root biomass from 2021 (separate dataset; joined in finish_roots)
+  # Standing root biomass from 2021 (g/m³; normalized to RIC core volume in finish_roots)
   tar_target(
     name = root_biomass_download,
     command = get_file(

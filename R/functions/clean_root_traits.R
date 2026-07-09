@@ -219,6 +219,12 @@ finish_roots <- function(biomass, traits) {
     add_ric_burial_dates() |>
     mutate(
       duration_years = duration / 365.25,
+      # 2021 standing biomass: normalize dry mass (g) to RIC core volume (g/m³)
+      root_biomass = if_else(
+        !is.na(root_biomass) & !is.na(ric_volume_m3) & ric_volume_m3 > 0,
+        root_biomass / ric_volume_m3,
+        NA_real_
+      ),
       root_productivity_g_per_m3_per_year = if_else(
         !is.na(dry_root_turnover_g) & !is.na(ric_volume_m3) & ric_volume_m3 > 0 &
           !is.na(duration_years) & duration_years > 0,

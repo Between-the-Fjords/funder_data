@@ -23,10 +23,9 @@ RIC_TRAIT_COLS <- c(
 )
 
 # Units for exported long-format trait column.
-# root_biomass: raw file has no unit column; values are dry mass per soil sample
-# (core/monolith), not normalized to area or volume — same order of magnitude as RIC turnover (g).
+# root_biomass: 2021 standing biomass from soil cores, normalized to RIC core volume (g/m³).
 ROOT_TRAIT_UNITS <- c(
-  root_biomass = "g",
+  root_biomass = "g/m3",
   dry_root_turnover_g = "g",
   root_length_m = "m",
   avg_root_diameter_m = "m",
@@ -157,7 +156,7 @@ apply_operator_correction <- function(data,
 
 #' Pivot root traits to long format with raw and operator-corrected values
 #'
-#' `root_biomass` (2021 standing biomass) is exported with `value` only;
+#' `root_biomass` (2021 standing biomass, g/m³) is exported with `value` only;
 #' `value_corrected` is NA because that dataset has no operator metadata.
 #'
 #' @param data Wide root traits table with optional `<trait>_corrected` columns.
