@@ -8,7 +8,7 @@ root_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_Root_Weight_2023_C_FGB.csv",
-      path = here::here("raw_data/roots"),
+      path = here::here("raw_data", "roots"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -20,7 +20,7 @@ root_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_root_weight_rest_2022.csv",
-      path = here::here("raw_data/roots"),
+      path = here::here("raw_data", "roots"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -40,7 +40,7 @@ root_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_Roots_Traits_2023_C_FGB.csv",
-      path = here::here("raw_data/roots"),
+      path = here::here("raw_data", "roots"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -52,7 +52,7 @@ root_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_ric_double-removal_root_traits_2024.txt",
-      path = here::here("raw_data/roots"),
+      path = here::here("raw_data", "roots"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -64,7 +64,7 @@ root_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_leo_and_miska_scan_results_all.txt",
-      path = here::here("raw_data/roots"),
+      path = here::here("raw_data", "roots"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"
@@ -93,7 +93,7 @@ root_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_root_biomass_2021.xlsx",
-      path = here::here("raw_data/roots"),
+      path = here::here("raw_data", "roots"),
       remote_path = "1_Vegetation/Raw_data"
     ),
     format = "file"

@@ -7,7 +7,7 @@ mesofauna_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_microarthropod_composition_2023.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "2_Micro_and_Mesofauna/Raw_data"
     ),
     format = "file"
@@ -32,7 +32,7 @@ mesofauna_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_Nematode_feeding_group_2023.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "2_Micro_and_Mesofauna/Raw_data"
     ),
     format = "file"
