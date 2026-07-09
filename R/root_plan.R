@@ -108,7 +108,8 @@ root_plan <- list(
     )
   ),
 
-  # Operator-bias corrected RIC traits (interaction model; Michaela reference).
+  # Operator-bias corrected RIC traits (interaction model; reference operator in pipeline).
+  # See FUNDER-RIC_root_traits_operator_bias.qmd and docs/operator_bias.html for method.
   # root_biomass (2021) is not corrected — it has no operator in the source data.
   tar_target(
     name = root_traits_corrected,
@@ -130,7 +131,7 @@ root_plan <- list(
     name = root_traits_output,
     command = save_csv(
       file = root_traits_long,
-      name = "FUNDER_clean_root_traits_2022.csv"
+      name = "FUNDER_clean_root_biomass_productivity_traits_2021-2022.csv"
     ),
     format = "file"
   )
