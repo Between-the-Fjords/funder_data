@@ -87,7 +87,7 @@ root_plan <- list(
     )
   ),
 
-  # Standing root biomass from 2021
+  # Standing root biomass from 2021 (separate dataset; joined in finish_roots)
   tar_target(
     name = root_biomass_download,
     command = get_file(
@@ -108,25 +108,21 @@ root_plan <- list(
     )
   ),
 
+  # Operator-bias corrected RIC traits (interaction model; Michaela reference).
+  # root_biomass (2021) is not corrected — it has no operator in the source data.
+  tar_target(
+    name = root_traits_corrected,
+    command = apply_operator_correction(
+      root_traits_clean,
+      trait_names = RIC_TRAIT_COLS,
+      reference_operator = "Michaela",
+      operator_model = "interaction"
+    )
+  ),
+
   tar_target(
     name = root_traits_long,
-    command = root_traits_clean |>
-      select(
-        year, siteID, blockID, plotID, treatment, burial_date, retrieval_date,
-        duration, operator, ric_volume_m3,
-        root_biomass, dry_root_turnover_g, avg_root_diameter_m,
-        specific_root_length_m_per_g, root_tissue_density_g_per_m3,
-        root_dry_matter_content, root_productivity_g_per_m3_per_year, root_length_m
-      ) |>
-      pivot_longer(
-        cols = c(
-          root_biomass, dry_root_turnover_g, avg_root_diameter_m,
-          specific_root_length_m_per_g, root_tissue_density_g_per_m3,
-          root_dry_matter_content, root_productivity_g_per_m3_per_year, root_length_m
-        ),
-        names_to = "trait",
-        values_to = "value"
-      ) |>
+    command = make_root_traits_long(root_traits_corrected) |>
       dataDocumentation::funcabization(convert_to = "FunCaB")
   ),
 

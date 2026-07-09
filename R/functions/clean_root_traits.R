@@ -104,7 +104,11 @@ clean_root_scan_data <- function(c_fgb, fb_gb_gf, f_g_b_block4) {
     select(plotID, root_length_m, avg_root_diameter_m)
 
   bind_rows(c_fgb_data, fb_gf_gb_data, f_g_b_block4_data) |>
-    distinct(plotID, .keep_all = TRUE)
+    distinct(plotID, .keep_all = TRUE) |>
+    mutate(
+      # Diameter 0 is not biologically possible; treat as failed measurement
+      avg_root_diameter_m = na_if(avg_root_diameter_m, 0)
+    )
 }
 
 # combine root_lab_data and root_scan_data and calculate root traits
@@ -114,9 +118,12 @@ clean_root_traits <- function(lab, scan) {
     left_join(scan, by = "plotID") |>
     mutate(
       specific_root_length_m_per_g = root_length_m / dry_root_biomass_g,
-      root_tissue_density_g_per_m3 = dry_root_biomass_g / ((avg_root_diameter_m / 2)^2 * pi * root_length_m),
+      root_tissue_density_g_per_m3 = if_else(
+        is.na(avg_root_diameter_m) | is.na(root_length_m) | root_length_m == 0,
+        NA_real_,
+        dry_root_biomass_g / ((avg_root_diameter_m / 2)^2 * pi * root_length_m)
+      ),
       root_dry_matter_content = dry_root_biomass_g / wet_root_biomass_g,
-      root_productivity_g_per_m3_per_year = dry_root_biomass_g / ric_volume_m3,
       dry_root_turnover_g = dry_root_biomass_g
     ) |>
     select(
@@ -130,7 +137,6 @@ clean_root_traits <- function(lab, scan) {
       dry_root_turnover_g,
       root_tissue_density_g_per_m3,
       root_dry_matter_content,
-      root_productivity_g_per_m3_per_year,
       specific_root_length_m_per_g,
       root_length_m
     )
@@ -191,7 +197,6 @@ finish_roots <- function(biomass, traits) {
   traits |>
     full_join(biomass_clean, by = "plotID") |>
     mutate(
-      year = 2022,
       siteID = substr(plotID, 1, 3),
       siteID = recode_values(
         siteID,
@@ -212,9 +217,19 @@ finish_roots <- function(biomass, traits) {
       treatment = substr(plotID, 5, 7)
     ) |>
     add_ric_burial_dates() |>
+    mutate(
+      duration_years = duration / 365.25,
+      root_productivity_g_per_m3_per_year = if_else(
+        !is.na(dry_root_turnover_g) & !is.na(ric_volume_m3) & ric_volume_m3 > 0 &
+          !is.na(duration_years) & duration_years > 0,
+        dry_root_turnover_g / ric_volume_m3 / duration_years,
+        NA_real_
+      )
+    ) |>
+    select(-duration_years) |>
     dataDocumentation::funcabization(convert_to = "FunCaB") |>
     relocate(
-      year, siteID, blockID, plotID, treatment, operator,
+      siteID, blockID, plotID, treatment, operator,
       burial_date, retrieval_date, duration,
       root_biomass, ric_length_m, ric_volume_m3, wet_root_biomass_g,
       avg_root_diameter_m, dry_root_turnover_g, root_tissue_density_g_per_m3,
