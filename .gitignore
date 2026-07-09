@@ -76,6 +76,8 @@ clean_data/
 #figures & output
 *.png
 *.html
+!docs/
+!docs/**
 *.pdf
 *.jpeg
 .my.cnf
@@ -101,3 +103,6 @@ _targets.R
 _targets.Rmd
 _targets_r
 _targets.yaml
+
+/.quarto/
+**/*.quarto_ipynb
