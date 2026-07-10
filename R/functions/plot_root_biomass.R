@@ -252,13 +252,13 @@ plot_root_biomass <- function(root_biomass_data) {
   }
   
   # Save specified plots
-  if (!dir.exists("Figures")) {
-    dir.create("Figures", recursive = TRUE)
+  if (!dir.exists(here::here("Figures"))) {
+    dir.create(here::here("Figures"), recursive = TRUE)
   }
   
   # Save treatment plot
   ggsave(
-    filename = "Figures/root_biomass_treatment.png",
+    filename = here::here("Figures", "root_biomass_treatment.png"),
     plot = plots$treatment,
     width = 10,
     height = 6,
@@ -267,7 +267,7 @@ plot_root_biomass <- function(root_biomass_data) {
   
   # Save site plot
   ggsave(
-    filename = "Figures/root_biomass_site.png",
+    filename = here::here("Figures", "root_biomass_site.png"),
     plot = plots$site,
     width = 14,
     height = 6,
@@ -276,7 +276,7 @@ plot_root_biomass <- function(root_biomass_data) {
   
   # Save temp_prec_treatment plot
   ggsave(
-    filename = "Figures/root_biomass_temp_prec_treatment.png",
+    filename = here::here("Figures", "root_biomass_temp_prec_treatment.png"),
     plot = plots$temp_prec_treatment,
     width = 16,
     height = 10,

@@ -7,7 +7,7 @@ environmenet_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_slope_and_aspect_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "6_Environment/Raw_data"
     ),
     format = "file"
@@ -34,7 +34,7 @@ environmenet_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_soil_depth_measurements_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "6_Environment/Raw_data"
     ),
     format = "file"
@@ -62,7 +62,7 @@ environmenet_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_soil_moisture_point_measurements_2022.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "6_Environment/Raw_data"
     ),
     format = "file"
@@ -90,12 +90,15 @@ environmenet_plan <- list(
       get_file(
         node = "tx9r2",
         file = "FUNDER_raw_climate_TOMST.zip",
-        path = "raw_data",
+        path = here::here("raw_data"),
         remote_path = "6_Environment/Raw_data"
       )
 
-      if (!file.exists("raw_data/FUNDER_raw_climate_TOMST")) {
-        unzip(zipfile = "raw_data/FUNDER_raw_climate_TOMST.zip", exdir = "raw_data")
+      if (!file.exists(here::here("raw_data", "FUNDER_raw_climate_TOMST"))) {
+        unzip(
+          zipfile = here::here("raw_data", "FUNDER_raw_climate_TOMST.zip"),
+          exdir = here::here("raw_data")
+        )
       }
     },
     format = "file"
@@ -105,7 +108,7 @@ environmenet_plan <- list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_raw_TOMST_ID.csv",
-      path = "raw_data",
+      path = here::here("raw_data"),
       remote_path = "6_Environment/Raw_data"
     ),
     format = "file"
@@ -130,12 +133,12 @@ environmenet_plan <- list(
   #
   # tar_target(
   #   name = ngcd_coordinates,
-  #   command = read_csv("raw_data/coordinates.csv")
+  #   command = read_csv(here::here("raw_data", "coordinates.csv"))
   # ),
   # tar_target(
   #   name = ngcd_download,
   #   command = {
-  #     ngcd_path <- "raw_data/NGCD"
+  #     ngcd_path <- here::here("raw_data", "NGCD")
   #     if (!dir.exists(ngcd_path)) {
   #       stop("NGCD data not found. Create 'raw_data/NGCD' and add zip or .nc files.")
   #     }

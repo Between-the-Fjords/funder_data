@@ -437,15 +437,14 @@
         "baRcodeR",
         "dataDownloader (>= 0.0.0.9000)"
       ],
-      "Remotes": "Between-the-Fjords/dataDownloader",
+      "Author": "Aud Helen Halbritter [aut, cre] (ORCID: <https://orcid.org/0000-0003-2597-6328>), Richard James Telford [aut] (ORCID: <https://orcid.org/0000-0001-9826-3076>)",
       "RemoteType": "github",
+      "Remotes": "Between-the-Fjords/dataDownloader",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "PFTCFunctions",
       "RemoteUsername": "Plant-Functional-Trait-Course",
       "RemoteRef": "HEAD",
-      "RemoteSha": "6fbf0cce7cf8a5501c86243cf4f68a6d077349d6",
-      "NeedsCompilation": "no",
-      "Author": "Aud Helen Halbritter [aut, cre] (ORCID: <https://orcid.org/0000-0003-2597-6328>), Richard James Telford [aut] (ORCID: <https://orcid.org/0000-0001-9826-3076>)"
+      "RemoteSha": "6fbf0cce7cf8a5501c86243cf4f68a6d077349d6"
     },
     "R6": {
       "Package": "R6",
@@ -1975,18 +1974,17 @@
         "stringr"
       ],
       "Depends": [
-        "R (>= 4.1.0)"
+        "R (>= 3.5)"
       ],
       "LazyData": "true",
+      "Author": "Aud Halbritter [aut, cre] (ORCID: <https://orcid.org/0000-0003-2597-6328>)",
+      "Maintainer": "Aud Halbritter <aud.halbritter@uib.no>",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "dataDocumentation",
       "RemoteUsername": "audhalbritter",
       "RemoteRef": "HEAD",
-      "RemoteSha": "21e66c9150629c1eb13f9cabca8438ddf17bac07",
-      "NeedsCompilation": "no",
-      "Author": "Aud Halbritter [aut, cre] (ORCID: <https://orcid.org/0000-0003-2597-6328>)",
-      "Maintainer": "Aud Halbritter <aud.halbritter@uib.no>"
+      "RemoteSha": "21e66c9150629c1eb13f9cabca8438ddf17bac07"
     },
     "dataDownloader": {
       "Package": "dataDownloader",
@@ -1997,6 +1995,7 @@
       "Description": "Downloads data if its hash has changed. Currently implementing osf.io and dropbox.com.",
       "License": "GPL-3",
       "Encoding": "UTF-8",
+      "LazyData": "true",
       "URL": "https://github.com/Between-the-Fjords/dataDownloader",
       "Bugs": "https://github.com/Between-the-Fjords/dataDownloader/issues",
       "Imports": [
@@ -2009,15 +2008,14 @@
         "osfr"
       ],
       "RoxygenNote": "7.1.1",
+      "Author": "Richard Telford [aut, cre] (ORCID: <https://orcid.org/0000-0001-9826-3076>)",
+      "Maintainer": "Richard Telford <richard.telford@uib.no>",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "dataDownloader",
       "RemoteUsername": "Between-the-Fjords",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "eb44271efba1ef6063e4904ed03a829c696f65f5",
-      "NeedsCompilation": "no",
-      "Author": "Richard Telford [aut, cre] (ORCID: <https://orcid.org/0000-0001-9826-3076>)",
-      "Maintainer": "Richard Telford <richard.telford@uib.no>"
+      "RemoteRepo": "dataDownloader",
+      "RemoteRef": "eb44271efba1ef6063e4904ed03a829c696f65f5",
+      "RemoteSha": "eb44271efba1ef6063e4904ed03a829c696f65f5"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -2600,7 +2598,7 @@
       "NeedsCompilation": "no",
       "Author": "Richard Iannone [aut, cre] (<https://orcid.org/0000-0003-3925-190X>), Christophe Dervieux [ctb] (<https://orcid.org/0000-0003-4474-2498>), Winston Chang [ctb], Dave Gandy [ctb, cph] (Font-Awesome font), Posit Software, PBC [cph, fnd]",
       "Maintainer": "Richard Iannone <rich@posit.co>",
-      "Repository": "CRAN"
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "forcats": {
       "Package": "forcats",
@@ -3295,7 +3293,7 @@
       "NeedsCompilation": "yes",
       "Author": "Hadley Wickham [aut, cre], Evan Miller [aut, cph] (Author of included ReadStat code), Danny Smith [aut], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
-      "Repository": "CRAN"
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "here": {
       "Package": "here",
@@ -3811,7 +3809,7 @@
       "NeedsCompilation": "no",
       "Author": "Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>), Joe Cheng [aut], RStudio [cph], jQuery Foundation [cph] (jQuery library and jQuery UI library), jQuery contributors [ctb, cph] (jQuery library; authors listed in inst/lib/jquery-AUTHORS.txt)",
       "Maintainer": "Carson Sievert <carson@rstudio.com>",
-      "Repository": "CRAN"
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "jsonlite": {
       "Package": "jsonlite",
@@ -5851,7 +5849,7 @@
       "NeedsCompilation": "yes",
       "Author": "Joe Cheng [aut], Timothy Mastny [aut], Richard Iannone [aut] (<https://orcid.org/0000-0003-3925-190X>), Barret Schloerke [aut] (<https://orcid.org/0000-0001-9986-114X>), Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>), Christophe Dervieux [ctb] (<https://orcid.org/0000-0003-4474-2498>), RStudio [cph, fnd], Sass Open Source Foundation [ctb, cph] (LibSass library), Greter Marcel [ctb, cph] (LibSass library), Mifsud Michael [ctb, cph] (LibSass library), Hampton Catlin [ctb, cph] (LibSass library), Natalie Weizenbaum [ctb, cph] (LibSass library), Chris Eppstein [ctb, cph] (LibSass library), Adams Joseph [ctb, cph] (json.cpp), Trifunovic Nemanja [ctb, cph] (utf8.h)",
       "Maintainer": "Carson Sievert <carson@rstudio.com>",
-      "Repository": "CRAN"
+      "Repository": "https://packagemanager.posit.co/cran/latest"
     },
     "scales": {
       "Package": "scales",
@@ -7288,7 +7286,7 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.59",
+      "Version": "0.60",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Supporting Functions for Packages Maintained by 'Yihui Xie'",

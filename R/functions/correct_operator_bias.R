@@ -4,19 +4,42 @@
 # 1. Reference operator (e.g. Michaela): their values are uncorrected (baseline).
 # 2. For each other operator: estimate their effect only from treatments where both
 #    that operator and the reference measured. Fit model on shared treatments only
-#    to avoid extrapolation and confounding. Correction = raw - estimated_effect.
+#    to avoid extrapolation and confounding.
 # 3. Store in <trait>_corrected. Rows without operator or in exclude_operators get NA.
 #
-# Use *_corrected columns for analyses when operator bias is a concern.
+# By default uses treatment × operator interaction so corrections can vary by treatment.
+# Use operator_model = "additive" for a single offset per operator.
 
-TRAIT_COLS_ROOT <- c(
-  "dry_root_biomass_g",
+# Traits from the 2022 RIC ingrowth workflow (lab + winRhIZO). Operator bias
+# correction applies to these only.
+RIC_TRAIT_COLS <- c(
+  "dry_root_turnover_g",
   "root_length_m",
-  "average_root_diameter_m",
+  "avg_root_diameter_m",
   "specific_root_length_m_per_g",
   "root_tissue_density_g_per_m3",
   "root_dry_matter_content",
   "root_productivity_g_per_m3_per_year"
+)
+
+# Units for exported long-format trait column.
+# root_biomass: 2021 standing biomass from soil cores, normalized to RIC core volume (g/m³).
+ROOT_TRAIT_UNITS <- c(
+  root_biomass = "g/m3",
+  dry_root_turnover_g = "g",
+  root_length_m = "m",
+  avg_root_diameter_m = "m",
+  specific_root_length_m_per_g = "m/g",
+  root_tissue_density_g_per_m3 = "g/m3",
+  root_dry_matter_content = "1",
+  root_productivity_g_per_m3_per_year = "g/m3/year"
+)
+
+# Legacy aliases included for old workflow compatibility.
+TRAIT_COLS_ROOT <- c(
+  RIC_TRAIT_COLS,
+  "dry_root_biomass_g",
+  "average_root_diameter_m"
 )
 
 #' Apply operator bias correction to root traits (subset-based approach)
@@ -27,19 +50,24 @@ TRAIT_COLS_ROOT <- c(
 #' Reference operator's values are unchanged.
 #'
 #' @param data Data frame with root_traits_clean structure (siteID, treatment, operator, trait columns).
-#' @param trait_names Character vector of trait column names; default is TRAIT_COLS_ROOT.
+#' @param trait_names Character vector of trait column names; default is RIC_TRAIT_COLS.
 #' @param reference_operator Operator used as baseline (e.g. "Michaela"). Their values
 #'   are uncorrected. Other operators are corrected by subtracting their estimated effect.
-#' @param exclude_operators Character vector of operator names to exclude from fitting (e.g. "Peter").
+#' @param exclude_operators Character vector of operator names to exclude from fitting.
 #' @param min_subset_n Minimum rows required in shared-treatment subset to estimate effect (default 5).
+#' @param operator_model `"interaction"` fits `trait ~ siteID * treatment + treatment:operator`
+#'   and subtracts the treatment-specific operator offset per row. `"additive"` fits
+#'   `trait ~ siteID * treatment + operator` and subtracts one offset per operator.
 #' @return Data frame with extra columns \code{<trait>_corrected}; attributes
 #'   \code{operator_correction_effects} and \code{reference_operator}.
 #' @export
 apply_operator_correction <- function(data,
-                                     trait_names = TRAIT_COLS_ROOT,
+                                     trait_names = RIC_TRAIT_COLS,
                                      reference_operator = NULL,
-                                     exclude_operators = c("Peter"),
-                                     min_subset_n = 5L) {
+                                     exclude_operators = character(0),
+                                     min_subset_n = 5L,
+                                     operator_model = c("interaction", "additive")) {
+  operator_model <- match.arg(operator_model)
   op_col <- intersect(c("operator", "Operator"), names(data))[1]
   if (is.na(op_col)) return(data)
   if (op_col == "Operator") data$operator <- data$Operator
@@ -86,16 +114,35 @@ apply_operator_correction <- function(data,
 
       if (nrow(subset_data) < min_subset_n) next
 
-      form <- as.formula(paste(tr, "~ siteID * treatment + operator"))
-      m <- tryCatch(lm(form, data = subset_data), error = function(e) NULL)
+      form <- switch(
+        operator_model,
+        interaction = stats::as.formula(paste(tr, "~ siteID * treatment + treatment:operator")),
+        additive = stats::as.formula(paste(tr, "~ siteID * treatment + operator"))
+      )
+      m <- tryCatch(stats::lm(form, data = subset_data), error = function(e) NULL)
       if (is.null(m)) next
 
-      coef_name <- paste0("operator", op)
-      if (!coef_name %in% names(coef(m))) next
-      op_effect <- coef(m)[coef_name]
-
-      out[[corr_name]][op_idx] <- data[[tr]][op_idx] - op_effect
-      trait_effects[[op]] <- op_effect
+      if (operator_model == "additive") {
+        coef_name <- paste0("operator", op)
+        if (!coef_name %in% names(stats::coef(m))) next
+        op_effect <- stats::coef(m)[coef_name]
+        out[[corr_name]][op_idx] <- data[[tr]][op_idx] - op_effect
+        trait_effects[[op]] <- op_effect
+      } else {
+        op_effects_by_treatment <- list()
+        for (idx in op_idx) {
+          row <- out[idx, , drop = FALSE]
+          pred_op <- stats::predict(m, newdata = row)
+          row_ref <- row
+          row_ref$operator <- reference_operator
+          pred_ref <- stats::predict(m, newdata = row_ref)
+          operator_offset <- pred_op - pred_ref
+          out[[corr_name]][idx] <- out[[tr]][idx] - operator_offset
+          trt <- as.character(row$treatment[[1]])
+          op_effects_by_treatment[[trt]] <- operator_offset
+        }
+        trait_effects[[op]] <- op_effects_by_treatment
+      }
     }
 
     all_effects[[tr]] <- trait_effects
@@ -103,5 +150,58 @@ apply_operator_correction <- function(data,
 
   attr(out, "operator_correction_effects") <- all_effects
   attr(out, "reference_operator") <- reference_operator
+  attr(out, "operator_correction_model") <- operator_model
   out
+}
+
+#' Pivot root traits to long format with raw and operator-corrected values
+#'
+#' `root_biomass` (2021 standing biomass, g/m³) is exported with `value` only;
+#' `value_corrected` is NA because that dataset has no operator metadata.
+#'
+#' @param data Wide root traits table with optional `<trait>_corrected` columns.
+#' @param ric_trait_cols Traits that may have corrected columns.
+#' @return Long data frame with `trait`, `year`, `unit`, `value`, and `value_corrected`.
+#' @export
+make_root_traits_long <- function(data, ric_trait_cols = RIC_TRAIT_COLS) {
+  id_cols <- c(
+    "siteID", "blockID", "plotID", "treatment",
+    "burial_date", "retrieval_date", "duration", "operator", "ric_volume_m3"
+  )
+  trait_cols <- intersect(c("root_biomass", ric_trait_cols), names(data))
+  corr_cols <- intersect(paste0(ric_trait_cols, "_corrected"), names(data))
+
+  add_meta_cols <- function(df) {
+    df |>
+      dplyr::mutate(
+        year = dplyr::if_else(.data$trait == "root_biomass", 2021L, 2022L),
+        unit = unname(ROOT_TRAIT_UNITS[.data$trait])
+      )
+  }
+
+  raw_long <- data |>
+    dplyr::select(dplyr::any_of(c(id_cols, trait_cols))) |>
+    tidyr::pivot_longer(
+      dplyr::all_of(trait_cols),
+      names_to = "trait",
+      values_to = "value"
+    ) |>
+    add_meta_cols()
+
+  if (length(corr_cols) == 0) {
+    raw_long$value_corrected <- NA_real_
+    return(dplyr::relocate(raw_long, year, unit, .after = trait))
+  }
+
+  corr_long <- data |>
+    dplyr::select(dplyr::any_of(c(id_cols, corr_cols))) |>
+    tidyr::pivot_longer(
+      dplyr::all_of(corr_cols),
+      names_to = "trait",
+      values_to = "value_corrected",
+      names_pattern = "(.+)_corrected"
+    )
+
+  dplyr::left_join(raw_long, corr_long, by = c(id_cols, "trait")) |>
+    dplyr::relocate(year, unit, .after = trait)
 }
