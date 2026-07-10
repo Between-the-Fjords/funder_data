@@ -1,15 +1,6 @@
 # fungal community plan
 
-library(targets)
-library(tarchetypes)
-
-source("R/functions/fungal_community_functions.R")
-
-tar_option_set(packages = c("dataDownloader", "dataDocumentation",
-                            "tidyverse", "janitor", "readxl",
-                            "phyloseq", "speedyseq"))
-
-list(
+fungal_community_plan <- list(
 
   # 1) get soil and litter fungal OTUs and taxonomy
   tar_target(
@@ -17,9 +8,10 @@ list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_soil_and_litter_OTU_with_taxonomy_ITS2.txt",
-      path = "raw_data/fungal_community",
+      path = here::here("raw_data/fungal_community"),
       remote_path = "xii-xvi_soil_microbes_fungi/"
-    )
+    ),
+    format = "file",
   ),
 
   # 2) format fungal OTU table
@@ -40,9 +32,10 @@ list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_plotIDs.xlsx",
-      path = "raw_data/fungal_community",
+      path = here::here("raw_data/fungal_community"),
       remote_path = "xii-xvi_soil_microbes_fungi/"
-    )
+    ),
+    format = "file",
   ),
 
   # 4) format sample data
@@ -81,9 +74,10 @@ list(
     command = get_file(
       node = "tx9r2",
       file = "FUNDER_fungal_necromass_OTU_with_taxonomy_ITS2.txt",
-      path = "raw_data/fungal_community",
+      path = here::here("raw_data/fungal_community"),
       remote_path = "xii-xvi_soil_microbes_fungi/"
-    )
+    ),
+    format = "file",
   ),
 
   # 9) get fungal OTU table
@@ -104,9 +98,10 @@ list(
     command = get_file(
       node = "tx9r2",
       file = "necromass_sample_data.xlsx",
-      path = "raw_data/fungal_community",
+      path = here::here("raw_data/fungal_community"),
       remote_path = "xii-xvi_soil_microbes_fungi/"
-    )
+    ),
+    format = "file",
   ),
 
   # 12) format necromass sample data
@@ -127,6 +122,34 @@ list(
   tar_target(
     name = necromass_fungi_phyloseq,
     command = subset_phyloseq(ps = necro_phy, to_keep = "necromass")
+  ),
+
+  # 14) save the outputs
+  # soil
+  tar_target(
+    name = soil_fungi_output,
+    command = saveRDS(
+      object = soil_fungi_phyloseq,
+      file = "FUNDER_clean_soil_fungal_community_2022.RDS"),
+    format = "file"
+  ),
+
+  #litter
+  tar_target(
+    name = litter_fungi_output,
+    command = saveRDS(
+      object = litter_fungi_phyloseq,
+      file = "FUNDER_clean_litter_fungal_community_2022.RDS"),
+    format = "file"
+  ),
+
+  # necromass
+  tar_target(
+    name = necromass_fungi_output,
+    command = saveRDS(
+      object = necromass_fungi_phyloseq,
+      file = "FUNDER_clean_necromass_fungal_community_2022.RDS"),
+    format = "file"
   )
 
 )
