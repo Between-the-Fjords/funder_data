@@ -91,7 +91,6 @@ renv/library/
 renv/staging/
 renv/local/
 renv/cellar/
-renv/settings.json
 
 # quarto
 .quarto/
