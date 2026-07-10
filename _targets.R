@@ -25,7 +25,9 @@ tar_option_set(
     "ncdf4",
     "fs",
     "hms",
-    "fluxible"
+    "fluxible",
+    "phyloseq",
+    "speedyseq"
   ) # packages that your targets need to run
 )
 #"TNRS"
@@ -47,5 +49,6 @@ combined_plan <- c(
   nutrient_cycling_plan,
   environmenet_plan,
   flux_plan,
-  data_dic_plan
+  data_dic_plan,
+  fungal_community_plan
 )
