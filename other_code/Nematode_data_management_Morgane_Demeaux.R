@@ -1,5 +1,5 @@
 
-Sum of the 150 nematodes identified per plot depending on their family group
+#Sum of the 150 nematodes identified per plot depending on their family group
 str(nema)
 nema$Unknown=as.numeric(nema$Unknown)
 nema$Unknown_Predator=as.numeric(nema$Unknown_Predator)
@@ -105,7 +105,7 @@ nemaclean<-nemaclean %>% left_join(weight,by=c("plotID"))
 nemaclean<-nemaclean %>% mutate(abundance_per_g=Abundance/dry_soil)
 
 
-Number of nematodes by feeding groups
+#Number of nematodes by feeding groups
 #File containing families group by feeding categories
 feed<-read_csv2(file = "raw_data/FUNDER_raw_Nematode_feeding_group_2023.csv")
 
