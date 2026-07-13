@@ -48,5 +48,6 @@ combined_plan <- c(
   environmenet_plan,
   flux_plan,
   data_dic_plan,
+  fungal_community_plan,
   plant_litter_decomposition_plan
 )
