@@ -1,25 +1,5 @@
 make_cn <- function(cn1, cn2, cn3, cn4) {
 
-  # raw1 <- readxl::read_xlsx(get_soil_cn_sheet_1,
-  #                           sheet = 2) |>
-  #   row_to_names(29) |>
-  #   clean_names()
-  #
-  # raw2 <- readxl::read_xlsx(get_soil_cn_sheet_2,
-  #                           sheet = 2) |>
-  #   row_to_names(29) |>
-  #   clean_names()
-  #
-  # raw3 <- readxl::read_xlsx(get_soil_cn_sheet_3,
-  #                           sheet = 2) |>
-  #   row_to_names(29) |>
-  #   clean_names()
-  #
-  # raw4 <- readxl::read_xlsx(get_soil_cn_sheet_4,
-  #                           sheet = 2) |>
-  #   row_to_names(29) |>
-  #   clean_names()
-
   # clean:
   clean <- rbind(cn1, cn2, cn3, cn4) |>
     filter(!is.na(identifier)) |>
