@@ -338,28 +338,24 @@ get_necromass_fungi_sample_data <- function(file) {
            blockID = substr(sampleID, 1, 4),
            treatment = substr(plotID, 5, 7),
            year = 2022) |>
-    select(sample_no, year, siteID, blockID, plotID, treatment, content, replicate_category) %>%
-    mutate(sample_number = rownames(.), .before = 1,
-           sample_number = sub("S", "", sample_number),
-           sample_number = as.numeric(sample_number),
-           sample_number = paste0("sample_", sample_number),
-           content = ifelse(test = is.na(siteID),
-                            yes = paste0(plotID, "_", content),
-                            no = content),
-           blockID = ifelse(test = is.na(siteID),
-                            yes = NA,
-                            no = blockID),
-           plotID = ifelse(test = is.na(siteID),
-                           yes = NA,
-                           no = plotID),
-           treatment = ifelse(test = is.na(siteID),
-                              yes = NA,
-                              no = treatment)) |>
-    select(-sample_no)
+    select(sample_no, year, siteID, blockID, plotID, treatment, content, replicate_category) |>
+    mutate(
+      content = ifelse(
+        is.na(siteID),
+        paste0(plotID, "_", content),
+        content
+      ),
+      blockID = ifelse(is.na(siteID), NA, blockID),
+      plotID = ifelse(is.na(siteID), NA, plotID),
+      treatment = ifelse(is.na(siteID), NA, treatment),
+      sample_number = sub("^S0*", "", sample_no),
+      sample_number = as.numeric(sample_number),
+      sample_number = paste0("sample_", sample_number)
+    ) |>
+    select(-sample_no) |>
+    column_to_rownames("sample_number")
 
-
-  sam <- phyloseq::sample_data(sam) # format to phyloseq compatability:
-  #sample_names(sam) <- sam$sample_number # fix sample names
+  sam <- phyloseq::sample_data(sam)
 
   return(sam)
 }
