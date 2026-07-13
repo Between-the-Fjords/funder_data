@@ -122,5 +122,95 @@ nutrient_cycling_plan <- list(
   tar_target(
     name = cnp_clean,
     command = clean_cnp(cnp_depht_raw, cnp_ram_depht_raw, funder_meta)
+  ),
+
+  # Soil carbon and nitrogen
+  tar_target(
+    name = get_soil_cn_sheet_1,
+    command = get_file(
+      node = "tx9r2",
+      file = "24256_CN_EA_PeterF_B1_241106_report.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = cn1,
+    command = readxl::read_xlsx(get_soil_cn_sheet_1,
+                                sheet = 2) |>
+      row_to_names(29) |>
+      clean_names()
+  ),
+
+  tar_target(
+    name = get_soil_cn_sheet_2,
+    command = get_file(
+      node = "tx9r2",
+      file = "24256_CN_EA_PeterF_B2_241107_report.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = cn2,
+    command = readxl::read_xlsx(get_soil_cn_sheet_2,
+                                sheet = 2) |>
+      row_to_names(29) |>
+      clean_names()
+  ),
+
+  tar_target(
+    name = get_soil_cn_sheet_3,
+    command = get_file(
+      node = "tx9r2",
+      file = "24256_CN_EA_PeterF_B3_241108_report.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = cn3,
+    command = readxl::read_xlsx(get_soil_cn_sheet_3,
+                                sheet = 2) |>
+      row_to_names(29) |>
+      clean_names()
+  ),
+
+  tar_target(
+    name = get_soil_cn_sheet_4,
+    command = get_file(
+      node = "tx9r2",
+      file = "24256_CN_EA_PeterF_B4_241112_report.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = cn4,
+    command = readxl::read_xlsx(get_soil_cn_sheet_4,
+                                sheet = 2) |>
+      row_to_names(29) |>
+      clean_names()
+  ),
+
+  # clean and assemble soil CN data
+  tar_target(
+    name = clean_soil_cn_data,
+    command = make_cn(cn1, cn2, cn3, cn4)
+  ),
+
+  # write soil CN output
+  tar_target(
+    name = write_soil_cn_output,
+    command = save_csv(file = clean_soil_cn_data,
+                       name = "FUNDER_clean_soil_CN_2022.csv"),
+    format = "file"
   )
+
 )
+
+
