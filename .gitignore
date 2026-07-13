@@ -76,6 +76,7 @@ clean_data/
 #figures & output
 *.png
 *.html
+# docs/ must be tracked for GitHub Pages deployment (contains pre-built HTML and .nojekyll)
 !docs/
 !docs/**
 *.pdf
