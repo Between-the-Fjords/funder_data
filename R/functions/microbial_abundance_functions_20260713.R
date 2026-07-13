@@ -463,6 +463,13 @@ assemble_and_clean_bacteria <- function(map) {
 }
 
 ### correct DNA extrcation batch effect for bacteria
+# The abundance data for both bacteria and fungi had a visible batch effect 
+# resulting from the six DNA extraction batches (see DNA extraction above), 
+# and samples in batches 1 and 2 had on average noticeably lower estimated 
+# starting quantities than samples in the four other batches. Because we 
+# believe this to have been caused by lab procedures, we correct the batch 
+# effects here and provide both corrected and uncorrected data, and leave it
+# to the user to decide which to use. 
 correct_bacteria_batch_effect <- function(data) {
 
   ##### soil samples #####
@@ -526,11 +533,6 @@ correct_bacteria_batch_effect <- function(data) {
     # back-transform abundance
     mutate(corrected_bacterial_abundance = exp(log_ab) - 1,
            corrected_bacterial_abundance = pmax(corrected_bacterial_abundance, 0))
-
-
-
-
-
 
   ##### litter samples #####
   litter <- data |>
@@ -1046,7 +1048,7 @@ combine_bacteria_and_fungi <- function(bac, fun) {
                  names_to = c(".value", "group"),
                  names_pattern = "(uncorrected|corrected)_(bacteria|fungi)") |>
     mutate(
-      # estimate fungal abundance (copy numbers) per gram soil:
+      # estimate abundance (copy numbers) per gram soil:
       # starting_quantity = per uL.
       # Multiply by 10 because DNA extracts were diluted 1:10 before amplification,
       # multiply by 100 because 100 uL was eluted from each sample,
