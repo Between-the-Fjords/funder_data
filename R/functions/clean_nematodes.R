@@ -16,8 +16,12 @@ clean_nematode <- function(nematode_raw, nema_weight_raw, feeder_raw, cnp_depht_
            functional_group = tolower(functional_group)) |>
     # add missing
     bind_rows(
-      tibble(family = c("unknown_preditor", "unknown_bacterial_feeder", "unknown_plant_feeder"),
-             functional_group = c("predator", "bacteria", "plant"))
+      tibble(family = c("unknown_preditor",
+                        "unknown_bacterial_feeder",
+                        "unknown_plant_feeder"),
+             functional_group = c("predator",
+                                  "bacteria",
+                                  "plant"))
     ) |>
     # rename to match microarthropods data
     mutate(functional_group = case_match(functional_group,
@@ -36,10 +40,10 @@ clean_nematode <- function(nematode_raw, nema_weight_raw, feeder_raw, cnp_depht_
            blockID = substr(plot_id, 4, 4),
            treatment = substr(plot_id, 5, 7)) |>
     mutate(treatment = recode(treatment,
-                              'BF'='FB',
-                              'BG'= 'GB',
-                              'FG'='GF',
-                              'BFG'='FGB')) |>
+                              'BF' = 'FB',
+                              'BG' = 'GB',
+                              'FG' = 'GF',
+                              'BFG' = 'FGB')) |>
     mutate(plotID = paste0(siteID, blockID, treatment),
            blockID = paste0(siteID, blockID)) |>
     mutate(siteID = recode(siteID,
