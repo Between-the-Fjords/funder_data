@@ -209,6 +209,52 @@ nutrient_cycling_plan <- list(
     command = save_csv(file = clean_soil_cn_data,
                        name = "FUNDER_clean_soil_CN_2022.csv"),
     format = "file"
+  ),
+
+  # Soil pH and macronutrients
+  tar_target(
+    name = get_bioner_results,
+    command =  get_file(
+      node = "tx9r2",
+      file = "Peter_UiB_FUNDER_prøve_ID.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xx_soil_ph_and_macronutrients"
+    ),
+    format = "file"
+  ),
+
+  tar_target(
+    name = bioner_results,
+    command = readxl::read_xlsx(here::here(get_bioner_results))
+  ),
+
+  tar_target(
+    name = get_uib_ph,
+    command =  get_file(
+      node = "tx9r2",
+      file = "FUNDER_raw_ph_samples.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xx_soil_ph_and_macronutrients"
+    ),
+    format = "file"
+  ),
+
+  tar_target(
+    name = uib_ph_results,
+    command = readxl::read_xlsx(here::here(get_uib_ph))
+  ),
+
+  tar_target(
+    name = ph_and_macronutrients,
+    command = clean_ph_and_macronutrients(bioner = bioner_results,
+                                          uib = uib_ph_results)
+  ),
+
+  # save output
+  tar_target(
+    name = save_ph_and_macronutrients,
+    command = save_csv(file = ph_and_macronutrients,
+                       name = "xx_FUNDER_soil_ph_macronutrients_2022.csv")
   )
 
 )
