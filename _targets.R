@@ -26,6 +26,8 @@ tar_option_set(
     "fs",
     "hms",
     "fluxible",
+    "osfr",
+    "limma"
     "phyloseq",
     "speedyseq"
   ) # packages that your targets need to run
@@ -51,5 +53,6 @@ combined_plan <- c(
   flux_plan,
   data_dic_plan,
   fungal_community_plan,
-  plant_litter_decomposition_plan
+  plant_litter_decomposition_plan,
+  microbial_abundance_plan
 )
