@@ -43,14 +43,14 @@ tar_source()
 
 #Combine target plans
 combined_plan <- c(
-  # vegetation_plan,
-  # root_plan,
-  # mesofauna_plan,
-  # nutrient_cycling_plan,
-  # environmenet_plan,
-  # flux_plan,
-  # data_dic_plan,
-  # fungal_community_plan,
-  # plant_litter_decomposition_plan,
+  vegetation_plan,
+  root_plan,
+  mesofauna_plan,
+  nutrient_cycling_plan,
+  environmenet_plan,
+  flux_plan,
+  data_dic_plan,
+  fungal_community_plan,
+  plant_litter_decomposition_plan,
   microbial_abundance_plan
 )
