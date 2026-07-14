@@ -25,7 +25,9 @@ tar_option_set(
     "ncdf4",
     "fs",
     "hms",
-    "fluxible"
+    "fluxible",
+    "phyloseq",
+    "speedyseq"
   ) # packages that your targets need to run
 )
 #"TNRS"
