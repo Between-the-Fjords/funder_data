@@ -27,7 +27,7 @@ tar_option_set(
     "hms",
     "fluxible",
     "osfr",
-    "limma"
+    "limma",
     "phyloseq",
     "speedyseq"
   ) # packages that your targets need to run
