@@ -28,6 +28,8 @@ tar_option_set(
     "fluxible",
     "osfr",
     "limma"
+    "phyloseq",
+    "speedyseq"
   ) # packages that your targets need to run
 )
 #"TNRS"
