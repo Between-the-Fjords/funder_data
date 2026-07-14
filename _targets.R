@@ -49,7 +49,7 @@ combined_plan <- c(
   root_plan,
   mesofauna_plan,
   nutrient_cycling_plan,
-  environmenet_plan,
+  environment_plan,
   flux_plan,
   data_dic_plan,
   fungal_community_plan,
