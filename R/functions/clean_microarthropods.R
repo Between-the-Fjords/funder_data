@@ -44,7 +44,7 @@ clean_microarthropods <- function(microart_raw, soil_core_dim, bulk_density) {
     pivot_longer(cols = c(Mite_fungivorous:Mite_unknownjuvenile,
                           Collembola_fungivorous,
                           Collembola_predaceous),
-                 names_to = "name", values_to = "abundance") |>
+                 names_to = "name", values_to = "groupwise_abundance") |>
     separate(col = name,
              into = c("microarthropods", "feeding_group"),
              sep = "_") |>
@@ -63,10 +63,15 @@ clean_microarthropods <- function(microart_raw, soil_core_dim, bulk_density) {
     left_join(bulk_density) |>
     # estimate sample weight in grams via sample volume * bulk density
     mutate(sample_weight_g = ((5^2 * pi * core_depth) * mean_bulk_density),
-           # and estiamte abundance per gram
-           abundance_per_g = abundance / sample_weight_g) |>
+           # estiamte abundance per gram for each group per sample
+           groupwise_abundance_per_g = groupwise_abundance / sample_weight_g) |>
+    mutate(total_abundance = sum(groupwise_abundance),
+           total_abundance_per_g = total_abundance / sample_weight_g,
+           .by = plotID) |>
     select(year, sampling_date, siteID, blockID, treatment, plotID,
            extraction_height, extraction_round, microarthropods, feeding_group,
-           abundance, abundance_per_g, observer, comments = Comments)
+           groupwise_abundance, groupwise_abundance_per_g,
+           total_abundance, total_abundance_per_g,
+           observer, comments = Comments)
 }
 

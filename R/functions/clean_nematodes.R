@@ -187,7 +187,7 @@ cleaning_nematodes <- function(families, sample_weights) {
     select(plotID, dry_soil_sample_weight_for_extraction_g)
 
   # this dataframe contains nematode family feeding groups after
-  # Yeates et al. 1993 (PMID: 19279775)
+  # Yeates et al. 1993 (PMID: 19279775) (with noted exceptions)
   feeding_groups <- data.frame(
     family = c(
       "dolichodoridae",
@@ -217,15 +217,15 @@ cleaning_nematodes <- function(families, sample_weights) {
       "odontolaimidae",
       "panagrolaimidae",
       "teratocephalidae",
-      "metateratocephalidae",
+      "metateratocephalidae", # not in Yeates et al. 1993
       "aphelenchidae",
       "diphtherophoridae",
       "tylencholaimidae",
       "anguinidae",
       "tripylidae",
-      "unknown_bacterial_feeder",
-      "unknown_plant_feeder",
-      "unknown_predator"
+      "unknown_bacterial_feeder", # not in Yeates et al. 1993
+      "unknown_plant_feeder", # not in Yeates et al. 1993
+      "unknown_predator" # not in Yeates et al. 1993
     ),
     feeding_group = c(
       "plant_feeder",
@@ -313,12 +313,16 @@ cleaning_nematodes <- function(families, sample_weights) {
     left_join(soil_weights, by = "plotID") |>
     # estimate the total number of nematodes in 100 g dry soil
     mutate(
-      total_nematode_abundance_per_g_dry_soil = round((total_extracted_nematodes / dry_soil_sample_weight_for_extraction_g), digits = 1),
+      total_nematode_abundance_per_g = (total_extracted_nematodes / dry_soil_sample_weight_for_extraction_g),
       .by = plotID
     ) |>
-    # estimate the number of individuals per family in 100 g dry soil by finding the relative abundance of each family of the 150 identified nematodes per plotID, and multiplying that relative abundance with the total nematodes per 100 grams of dry soil
+    # estimate the number of individuals per family in 100 g dry soil by finding
+    # the relative abundance of each family of the 150 identified nematodes per
+    # plotID, and multiplying that relative abundance with the total nematodes
+    # per 100 grams of dry soil
     mutate(
-      per_family_abundance_per_g_dry_soil = round((abundance / sum(abundance)) * total_nematode_abundance_per_g_dry_soil, digits = 1), .by = c(plotID)
+      family_abundance_per_g = (abundance / sum(abundance) * total_nematode_abundance_per_g),
+      .by = c(plotID)
     ) |>
     # remove raw family abundance
     select(-abundance, -total_extracted_nematodes, -dry_soil_sample_weight_for_extraction_g) |>
@@ -361,7 +365,7 @@ cleaning_nematodes <- function(families, sample_weights) {
     # relocate columns
     relocate(
       year, sampling_date, siteID, blockID, plotID, treatment,
-      total_nematode_abundance_per_g_dry_soil, per_family_abundance_per_g_dry_soil,
+      total_nematode_abundance_per_g, family_abundance_per_g,
       family, feeding_group
     ) |>
     funcabization(convert_to = "FunCaB")
