@@ -17,10 +17,56 @@ mesofauna_plan <- list(
     name = microart_raw,
     command = read_csv2(microart_download)
   ),
+
+  # get microarthropod sample dimensions
+  tar_target(
+    name = soil_core_dim_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "FUNDER_raw_microarthropod_core_depths_2022.csv",
+      path = here::here("raw_data"),
+      remote_path = "x-xi_microarthropods_nematodes/x_microarthropods"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = soil_core_dim,
+    command = read_csv2(soil_core_dim_download) |>
+    mutate(core_depth = sub("na", NA, core_depth),
+           core_depth = as.numeric(sub(",", ".", core_depth)),
+           plotID = paste0(str_to_title(Site), Block, treatment),
+           blockID = substr(plotID, 1, 4)) |>
+      select(plotID, blockID, treatment, core_depth) |>
+      funcabization(convert_to = "FunCaB")
+  ),
+
+  # get soil bulk density for each site from VCG OSF repo
+  tar_target(
+    name = bulk_density_download,
+    command = get_file(
+      node = "npfa9",
+      file = "VCG_clean_soil_structure_2013_2014_2018.csv",
+      path = here::here("raw_data"),
+      remote_path = "8_Environmental_data"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = bulk_density,
+    command = read.csv(bulk_density_download) |>
+      dplyr::filter(variable == "bulk_density") |>
+      dplyr::mutate(mean_bulk_density = mean(value), .by = siteID) |>
+      dplyr::select(siteID, mean_bulk_density) |>
+      distinct()
+  ),
+
+  # clean microarthropods
   tar_target(
     name = microart_clean,
-    command = clean_microarthropods(microart_raw)
+    command = clean_microarthropods(microart_raw, soil_core_dim, bulk_density)
   ),
+
+
   tar_target(
     name = microart_output,
     command = save_csv(file = microart_clean,

@@ -1,6 +1,6 @@
 # clean microarthropods data
 
-clean_microarthropods <- function(microart_raw) {
+clean_microarthropods <- function(microart_raw, soil_core_dim, bulk_density) {
 
   microart_raw |>
     mutate(
@@ -58,7 +58,15 @@ clean_microarthropods <- function(microart_raw) {
              "unknownjuveile" ~ "unknown_juvenile")
            ) %>%
     funcabization(dat = ., convert_to = "FunCaB") |>
+    # get sample depth and site level average bulk density
+    left_join(soil_core_dim) |>
+    left_join(bulk_density) |>
+    # estimate sample weight in grams via sample volume * bulk density
+    mutate(sample_weight_g = ((5^2 * pi * core_depth) * mean_bulk_density),
+           # and estiamte abundance per gram
+           abundance_per_g = abundance / sample_weight_g) |>
     select(year, sampling_date, siteID, blockID, treatment, plotID,
            extraction_height, extraction_round, microarthropods, feeding_group,
-           abundance, observer, comments = Comments)
+           abundance, abundance_per_g, observer, comments = Comments)
 }
+
