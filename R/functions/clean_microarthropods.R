@@ -70,8 +70,7 @@ clean_microarthropods <- function(microart_raw, soil_core_dim, bulk_density) {
            .by = plotID) |>
     select(year, sampling_date, siteID, blockID, treatment, plotID,
            extraction_height, extraction_round, microarthropods, feeding_group,
-           groupwise_abundance, groupwise_abundance_per_g,
-           total_abundance, total_abundance_per_g,
+           groupwise_abundance_per_g, total_abundance_per_g,
            observer, comments = Comments)
 }
 
