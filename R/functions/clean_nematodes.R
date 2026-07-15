@@ -325,11 +325,11 @@ cleaning_nematodes <- function(families, sample_weights) {
       .by = c(plotID)
     ) |>
     # remove raw family abundance
-    select(-abundance, -total_extracted_nematodes, -dry_soil_sample_weight_for_extraction_g) |>
+    select(-abundance, -total_extracted_nematodes) |>
     # add feeding groups
     left_join(feeding_groups, by = "family") |>
     mutate(
-      # retrieval date:
+      # sampling date:
       sampling_date = siteID,
       sampling_date = recode_values(
         sampling_date,
@@ -365,8 +365,8 @@ cleaning_nematodes <- function(families, sample_weights) {
     # relocate columns
     relocate(
       year, sampling_date, siteID, blockID, plotID, treatment,
-      total_nematode_abundance_per_g, family_abundance_per_g,
-      family, feeding_group
+      family, feeding_group, total_nematode_abundance_per_g,
+      family_abundance_per_g, sample_weight_g = dry_soil_sample_weight_for_extraction_g
     ) |>
     funcabization(convert_to = "FunCaB")
 
