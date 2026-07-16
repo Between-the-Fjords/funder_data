@@ -355,7 +355,8 @@ vegetation_plan <- list(
 
   tar_target(
     name = save_whc_output,
-    command = save_csv(file = clean_whc, name = "viii_FUNDER_clean_bryophyte_water_holding_capacity_2022.csv")
+    command = save_csv(file = clean_whc, name = "viii_FUNDER_clean_bryophyte_water_holding_capacity_2022.csv"),
+    format = "file"
   )
 
 )
