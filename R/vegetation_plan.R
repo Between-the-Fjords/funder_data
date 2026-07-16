@@ -335,5 +335,27 @@ vegetation_plan <- list(
     name = bryophyte_presence_output,
     command = save_csv(file = bryophyte_presence, name = "FUNDER_clean_bryophyte_presence_2022.csv"),
     format = "file"
+  ),
+
+  # bryophytee water holding capacity
+  tar_target(
+    name = whc_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "FUNDER_raw_WHC_bryophyte_2022_Eline_Taule_Stava.csv",
+      path = here::here("raw_data"),
+      remote_path = "1_Vegetation/Raw_data"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = clean_whc,
+    command = clean_whc_func(read.csv(whc_download))
+  ),
+
+  tar_target(
+    name = save_whc_output,
+    command = save_csv(file = clean_whc, name = "viii_FUNDER_clean_bryophyte_water_holding_capacity_2022.csv")
   )
+
 )
