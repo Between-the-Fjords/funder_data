@@ -54,9 +54,9 @@ mesofauna_plan <- list(
   tar_target(
     name = bulk_density,
     command = read.csv(bulk_density_download) |>
-      dplyr::filter(variable == "bulk_density") |>
-      dplyr::mutate(mean_bulk_density = mean(value), .by = siteID) |>
-      dplyr::select(siteID, mean_bulk_density) |>
+      filter(variable == "bulk_density") |>
+      mutate(mean_bulk_density = mean(value), .by = siteID) |>
+      select(siteID, mean_bulk_density) |>
       distinct()
   ),
 
