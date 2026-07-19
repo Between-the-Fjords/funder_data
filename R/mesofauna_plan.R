@@ -7,9 +7,9 @@ mesofauna_plan <- list(
     name = microart_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_microarthropod_composition_2023.csv",
+      file = "ix_FUNDER_raw_microarthropod_composition_2023.csv",
       path = here::here("raw_data"),
-      remote_path = "x-xi_microarthropods_nematodes/x_microarthropods"
+      remote_path = "ix-xv_soil_biota/ix_microarthropod_community"
     ),
     format = "file"
   ),
@@ -23,9 +23,9 @@ mesofauna_plan <- list(
     name = soil_core_dim_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_microarthropod_core_depths_2022.csv",
+      file = "ix_FUNDER_raw_microarthropod_core_depths_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "x-xi_microarthropods_nematodes/x_microarthropods"
+      remote_path = "ix-xv_soil_biota/ix_microarthropod_community"
     ),
     format = "file"
   ),
@@ -70,7 +70,7 @@ mesofauna_plan <- list(
   tar_target(
     name = microart_output,
     command = save_csv(file = microart_clean,
-                       name = "x_FUNDER_clean_microarthropod_composition_2022.csv"),
+                       name = "ix_FUNDER_clean_microarthropod_composition_2022.csv"),
     format = "file"
   ),
 
@@ -79,9 +79,9 @@ mesofauna_plan <- list(
     name = get_raw_nematode_families,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_Nematodes_families_2023.xlsx",
+      file = "x_FUNDER_raw_Nematodes_families_2023.xlsx",
       path = here::here("raw_data"),
-      remote_path = "x-xi_microarthropods_nematodes/xi_nematodes"
+      remote_path = "ix-xv_soil_biota/x_nematode_community"
     ),
     format = "file"
   ),
@@ -102,9 +102,9 @@ mesofauna_plan <- list(
     name = get_raw_nematode_sample_weights,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_Nematode_sample_weight_2023.csv",
+      file = "x_FUNDER_raw_Nematode_sample_weight_2023.csv",
       path = here::here("raw_data"),
-      remote_path = "x-xi_microarthropods_nematodes/xi_nematodes"
+      remote_path = "ix-xv_soil_biota/x_nematode_community"
     ),
     format = "file"
   ),
@@ -126,7 +126,7 @@ mesofauna_plan <- list(
   tar_target(
     name = save_nematode_output,
     command = save_csv(file = get_clean_nematodes,
-                       name = "xi_FUNDER_clean_nematode_community_2022.csv"),
+                       name = "x_FUNDER_clean_nematode_community_2022.csv"),
     format = "file"
   )
 
