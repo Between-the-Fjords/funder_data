@@ -1,6 +1,6 @@
 # clean environmental data
 
-environmenet_plan <- list(
+environment_plan <- list(
   # slope and aspect
   tar_target(
     name = slope_download,
