@@ -7,9 +7,9 @@ microbial_abundance_plan <- list(
     name = plotIDs_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_plotIDs.xlsx",
-      path = here::here("raw_data/microbial_abundance"),
-      remote_path = "xii-xvi_soil_microbes_fungi/"),
+      file = "xi-xii_FUNDER_plotIDs.xlsx",
+      path = here::here("raw_data/xi-xii_microbial_abundance"),
+      remote_path = "ix-xv_soil_biota/xi-xii_microbial_abundance/"),
     format = "file"
   ),
 
@@ -35,8 +35,8 @@ microbial_abundance_plan <- list(
   tar_target(
     name = get_bac_ab,
     command = get_microbial_abundance_from_osf(
-      remote_path = "xii-xvi_soil_microbes_fungi/FUNDER_raw_microbial_abundance/bacteria",
-      path = here::here("raw_data/microbial_abundance/bacteria/")
+      remote_path = "ix-xv_soil_biota/xi-xii_microbial_abundance/xi-xii_bacteria",
+      path = here::here("raw_data/xi-xii_microbial_abundance/xi-xii_bacteria/")
     )
   ),
 
@@ -56,8 +56,8 @@ microbial_abundance_plan <- list(
   tar_target(
     name = get_fun_ab,
     command = get_microbial_abundance_from_osf(
-      remote_path = "xii-xvi_soil_microbes_fungi/FUNDER_raw_microbial_abundance/fungi",
-      path =  here::here("raw_data/microbial_abundance/fungi/")
+      remote_path = "ix-xv_soil_biota/xi-xii_microbial_abundance/xi-xii_fungi",
+      path =  here::here("raw_data/xi-xii_microbial_abundance/xi-xii_fungi/")
     )
   ),
 
@@ -116,7 +116,7 @@ microbial_abundance_plan <- list(
     name = clean_soil_microbial_abundance,
     command = save_csv(
       file = soil_microbial_abundance,
-      name = "FUNDER_clean_soil_microbial_abundance_2022.csv"),
+      name = "xi_FUNDER_clean_soil_microbial_abundance_2022.csv"),
     format = "file"),
 
   # litter
@@ -124,7 +124,7 @@ microbial_abundance_plan <- list(
     name = clean_litter_microbial_abundance,
     command = save_csv(
       file = litter_microbial_abundance,
-      name = "FUNDER_clean_litter_microbial_abundance_2022.csv"),
+      name = "xii_FUNDER_clean_litter_microbial_abundance_2022.csv"),
     format = "file")
 
 )
