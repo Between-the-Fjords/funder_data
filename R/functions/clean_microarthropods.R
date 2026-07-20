@@ -55,7 +55,7 @@ clean_microarthropods <- function(microart_raw, soil_core_dim, bulk_density) {
              "fungivorous" ~ "fungivore",
              "predaceous" ~ "predator",
              "nematophagous" ~ "nematophage",
-             "unknownjuveile" ~ "unknown_juvenile")
+             "unknownjuvenile" ~ "unknown_juvenile")
            ) %>%
     funcabization(dat = ., convert_to = "FunCaB") |>
     # get sample depth and site level average bulk density
