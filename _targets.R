@@ -54,5 +54,6 @@ combined_plan <- c(
   data_dic_plan,
   fungal_community_plan,
   plant_litter_decomposition_plan,
+  fungal_necromass_decomposition_plan,
   microbial_abundance_plan
 )
