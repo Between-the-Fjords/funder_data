@@ -7,9 +7,9 @@ plant_litter_decomposition_plan <- list(
     name = get_pre_burial_weights,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_beforeburrying_litter_biomass_2021.xlsx",
-      path = here::here("raw_data/soil_carbon_and_nitrogen"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xxi_plant_litter_decomposition/"),
+      file = "xx_FUNDER_raw_beforeburrying_litter_biomass_2021.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xx_plant_litter_decomposition/"),
     format = "file"
   ),
 
@@ -24,9 +24,9 @@ plant_litter_decomposition_plan <- list(
     name = get_post_burial_weights,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_afterburrying_litter_biomass_2022.xlsx",
-      path = here::here("raw_data/soil_carbon_and_nitrogen"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xxi_plant_litter_decomposition/"),
+      file = "xx_FUNDER_raw_afterburrying_litter_biomass_2022.xlsx",
+      path = here::here("raw_data"),
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xx_plant_litter_decomposition/"),
     format = "file"
   ),
 
@@ -56,7 +56,7 @@ plant_litter_decomposition_plan <- list(
     name = plant_litter_decomposition_output,
     command = save_csv(
       file = clean_plant_litter_decomposition,
-      name = "FUNDER_clean_plant_litter_decomposition_2022.csv"
+      name = "xx_FUNDER_clean_plant_litter_decomposition_2022.csv"
     )
   )
 
