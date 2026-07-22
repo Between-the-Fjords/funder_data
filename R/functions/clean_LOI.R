@@ -32,8 +32,9 @@ clean_loi <- function(loi_raw) {
     mutate(inorgC_g = LOI_550_g - LOI_950_g) |>
     mutate(OM_proportion = OM_g / dw_g) |>
     mutate(inorgC_proportion = inorgC_g / dw_g) |>
+    mutate(year = 2022) |>
     # Pick out relevant columns and remove rows with missing values (plots that don't exist)
-    select(siteID, blockID, plotID, treatment, organic_matter = OM_proportion, inorganic_carbon = inorgC_proportion) |>
+    select(year, siteID, blockID, plotID, treatment, organic_matter = OM_proportion, inorganic_carbon = inorgC_proportion) |>
     pivot_longer(cols = c(organic_matter, inorganic_carbon), names_to = "variable", values_to = "value") |>
     mutate(unit = "proportion") |>
     # remove 4 rows that are NA for organic and inorganic C
