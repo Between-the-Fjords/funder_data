@@ -12,9 +12,9 @@ nutrient_cycling_plan <- list(
     name = prs_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_PRS_2021.xlsx",
+      file = "xviii_FUNDER_raw_PRS_2021.xlsx",
       path = here::here("raw_data"),
-      remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xviii_available_nutrients"
     ),
     format = "file"
   ),
@@ -39,7 +39,7 @@ nutrient_cycling_plan <- list(
   ),
   tar_target(
     name = prs_output,
-    command = save_csv(file = prs_clean, name = "FUNDER_clean_available_nutrients_2021.csv"),
+    command = save_csv(file = prs_clean, name = "xviii_FUNDER_clean_available_nutrients_2021.csv"),
     format = "file"
   ),
 
@@ -48,9 +48,9 @@ nutrient_cycling_plan <- list(
     name = loi_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_LOI_2022.csv",
+      file = "xvii_FUNDER_raw_LOI_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xvii_soil_organic_matter"
     ),
     format = "file"
   ),
@@ -64,74 +64,74 @@ nutrient_cycling_plan <- list(
   ),
   tar_target(
     name = loi_output,
-    command = save_csv(file = loi_clean, name = "FUNDER_clean_LOI_2022.csv"),
+    command = save_csv(file = loi_clean, name = "xvii_FUNDER_clean_LOI_2022.csv"),
     format = "file"
   ),
 
-  # CNP
-  tar_target(
-    name = cnp_depth_download,
-    command = get_file(
-      node = "tx9r2",
-      file = "FUNDER_raw_CNP_core_depths_2022.csv",
-      path = here::here("raw_data"),
-      remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
-    ),
-    format = "file"
-  ),
-  tar_target(
-    name = cnp_ram_depth_download,
-    command = get_file(
-      node = "tx9r2",
-      file = "FUNDER_raw_Rambera_CNP_core_depths_2022.csv",
-      path = here::here("raw_data"),
-      remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
-    ),
-    format = "file"
-  ),
-
-  # sample fresh weight
-  tar_target(
-    name = cnp_weight_download,
-    command = get_file(
-      node = "tx9r2",
-      file = "FUNDER_raw_CNP_fresh_sample_weights_2022.xlsx",
-      path = here::here("raw_data"),
-      remote_path = "5_Carbon_and_nutrient_cycle/Raw_data"
-    ),
-    format = "file"
-  ),
-  tar_target(
-    name = cnp_depht_raw,
-    command = read_csv2(cnp_depth_download)
-  ),
-  tar_target(
-    name = cnp_ram_depht_raw,
-    command = read_csv2(cnp_ram_depth_download)
-  ),
-
-  # !!!
-  # not sure if needed. Fresh weight of all soil samples, separate sheet for block 1-3 and 4
+  # # CNP
   # tar_target(
-  #   name = cnp_weight_raw,
-  #   command = read_excel(cnp_weight_download)
+  #   name = cnp_depth_download,
+  #   command = get_file(
+  #     node = "tx9r2",
+  #     file = "FUNDER_raw_CNP_core_depths_2022.csv",
+  #     path = here::here("raw_data"),
+  #     remote_path = "xvi-xxii_carbon_and_nutrient_cycling/Raw_data"
+  #   ),
+  #   format = "file"
   # ),
-
-  # NOT FINISHED YET, NEEDS ALSO CNP DATA!!!
-  # NEED TO DECIDE HOW TO DEAL WITH RAM, WHERE SAMPLES ARE TAKEN DIFFERENTLY
-  tar_target(
-    name = cnp_clean,
-    command = clean_cnp(cnp_depht_raw, cnp_ram_depht_raw, funder_meta)
-  ),
+  # tar_target(
+  #   name = cnp_ram_depth_download,
+  #   command = get_file(
+  #     node = "tx9r2",
+  #     file = "FUNDER_raw_Rambera_CNP_core_depths_2022.csv",
+  #     path = here::here("raw_data"),
+  #     remote_path = "xvi-xxii_carbon_and_nutrient_cycling/Raw_data"
+  #   ),
+  #   format = "file"
+  # ),
+  #
+  # # sample fresh weight
+  # tar_target(
+  #   name = cnp_weight_download,
+  #   command = get_file(
+  #     node = "tx9r2",
+  #     file = "FUNDER_raw_CNP_fresh_sample_weights_2022.xlsx",
+  #     path = here::here("raw_data"),
+  #     remote_path = "xvi-xxii_carbon_and_nutrient_cycling/Raw_data"
+  #   ),
+  #   format = "file"
+  # ),
+  # tar_target(
+  #   name = cnp_depht_raw,
+  #   command = read_csv2(cnp_depth_download)
+  # ),
+  # tar_target(
+  #   name = cnp_ram_depht_raw,
+  #   command = read_csv2(cnp_ram_depth_download)
+  # ),
+  #
+  # # !!!
+  # # not sure if needed. Fresh weight of all soil samples, separate sheet for block 1-3 and 4
+  # # tar_target(
+  # #   name = cnp_weight_raw,
+  # #   command = read_excel(cnp_weight_download)
+  # # ),
+  #
+  # # NOT FINISHED YET, NEEDS ALSO CNP DATA!!!
+  # # NEED TO DECIDE HOW TO DEAL WITH RAM, WHERE SAMPLES ARE TAKEN DIFFERENTLY
+  # tar_target(
+  #   name = cnp_clean,
+  #   command = clean_cnp(cnp_depht_raw, cnp_ram_depht_raw, funder_meta)
+  # ),
 
   # Soil carbon and nitrogen
   tar_target(
     name = get_soil_cn_sheet_1,
     command = get_file(
       node = "tx9r2",
-      file = "24256_CN_EA_PeterF_B1_241106_report.xlsx",
+      file = "xvi_24256_CN_EA_PeterF_B1_241106_report.xlsx",
       path = here::here("raw_data"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xvi_soil_carbon_and_nitrogen"
     ),
     format = "file"
   ),
@@ -147,9 +147,9 @@ nutrient_cycling_plan <- list(
     name = get_soil_cn_sheet_2,
     command = get_file(
       node = "tx9r2",
-      file = "24256_CN_EA_PeterF_B2_241107_report.xlsx",
+      file = "xvi_24256_CN_EA_PeterF_B2_241107_report.xlsx",
       path = here::here("raw_data"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xvi_soil_carbon_and_nitrogen"
     ),
     format = "file"
   ),
@@ -165,9 +165,9 @@ nutrient_cycling_plan <- list(
     name = get_soil_cn_sheet_3,
     command = get_file(
       node = "tx9r2",
-      file = "24256_CN_EA_PeterF_B3_241108_report.xlsx",
+      file = "xvi_24256_CN_EA_PeterF_B3_241108_report.xlsx",
       path = here::here("raw_data"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xvi_soil_carbon_and_nitrogen"
     ),
     format = "file"
   ),
@@ -183,9 +183,9 @@ nutrient_cycling_plan <- list(
     name = get_soil_cn_sheet_4,
     command = get_file(
       node = "tx9r2",
-      file = "24256_CN_EA_PeterF_B4_241112_report.xlsx",
+      file = "xvi_24256_CN_EA_PeterF_B4_241112_report.xlsx",
       path = here::here("raw_data"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xvii_soil_carbon_and_nitrogen"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xvi_soil_carbon_and_nitrogen"
     ),
     format = "file"
   ),
@@ -207,7 +207,7 @@ nutrient_cycling_plan <- list(
   tar_target(
     name = write_soil_cn_output,
     command = save_csv(file = clean_soil_cn_data,
-                       name = "FUNDER_clean_soil_CN_2022.csv"),
+                       name = "xvi_FUNDER_clean_soil_CN_2022.csv"),
     format = "file"
   ),
 
@@ -216,9 +216,9 @@ nutrient_cycling_plan <- list(
     name = get_bioner_results,
     command =  get_file(
       node = "tx9r2",
-      file = "Peter_UiB_FUNDER_prøve_ID.xlsx",
+      file = "xix_Peter_UiB_FUNDER_prøve_ID.xlsx",
       path = here::here("raw_data"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xx_soil_ph_and_macronutrients"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xix_soil_ph_and_macronutrients"
     ),
     format = "file"
   ),
@@ -232,9 +232,9 @@ nutrient_cycling_plan <- list(
     name = get_uib_ph,
     command =  get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_ph_samples.xlsx",
+      file = "xix_FUNDER_raw_ph_samples.xlsx",
       path = here::here("raw_data"),
-      remote_path = "xvii-xxiii_carbon_and_nutrient_cycling/xx_soil_ph_and_macronutrients"
+      remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xix_soil_ph_and_macronutrients"
     ),
     format = "file"
   ),
@@ -254,7 +254,7 @@ nutrient_cycling_plan <- list(
   tar_target(
     name = save_ph_and_macronutrients,
     command = save_csv(file = ph_and_macronutrients,
-                       name = "xx_FUNDER_soil_ph_macronutrients_2022.csv")
+                       name = "xix_FUNDER_clean_soil_ph_macronutrients_2022.csv")
   )
 
 )
