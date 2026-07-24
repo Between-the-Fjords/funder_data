@@ -1,14 +1,21 @@
 ### Clean vegetation data
 
 vegetation_plan <- list(
+
+  # get funder_meta
+  tar_target(
+    name = funder_meta,
+    command = dataDocumentation::create_funder_meta_data()
+  ),
+
   # REFLECTANCE
   tar_target(
     name = ndvi_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_greenseeker_2022.csv",
+      file = "iii_FUNDER_raw_greenseeker_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/iii_reflectance"
     ),
     format = "file"
   ),
@@ -22,7 +29,7 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = ndvi_output,
-    command = save_csv(file = ndvi_clean, name = "FUNDER_clean_reflectance_greenseeker_2022.csv"),
+    command = save_csv(file = ndvi_clean, name = "iii_FUNDER_clean_reflectance_greenseeker_2022.csv"),
     format = "file"
   ),
 
@@ -32,9 +39,9 @@ vegetation_plan <- list(
     name = biomass_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER Forbs_Graminoids_Bryophytes.xlsx",
+      file = "i_FUNDER Forbs_Graminoids_Bryophytes.xlsx",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/i_aboveground_biomass"
     ),
     format = "file"
   ),
@@ -48,7 +55,7 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = biomass_output,
-    command = save_csv(file = biomass_clean, name = "FUNDER_clean_standing_biomass_2022.csv"),
+    command = save_csv(file = biomass_clean, name = "i_FUNDER_clean_standing_biomass_2022.csv"),
     format = "file"
   ),
 
@@ -57,9 +64,9 @@ vegetation_plan <- list(
     name = biomass_22_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_biomass_removal_2022.xlsx",
+      file = "i_FUNDER_biomass_removal_2022.xlsx",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/i_aboveground_biomass"
     ),
     format = "file"
   ),
@@ -102,7 +109,7 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = biomass_removal_output,
-    command = save_csv(file = biomass_removal_clean, name = "FUNDER_clean_biomass_removal_2015-2022.csv"),
+    command = save_csv(file = biomass_removal_clean, name = "i_FUNDER_clean_biomass_removal_2015-2022.csv"),
     format = "file"
   ),
 
@@ -112,9 +119,9 @@ vegetation_plan <- list(
     name = community_2022_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_vascular_community_2022.csv",
+      file = "iv_FUNDER_raw_vascular_community_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/iv_vascular_plant_community_composition"
     ),
     format = "file"
   ),
@@ -180,9 +187,9 @@ vegetation_plan <- list(
     name = turf_map_corrections_download,
     command = get_file(
       node = "tx9r2",
-      file = "Turf mat corrections Funder.xlsx",
+      file = "iv_Turf mat corrections Funder.xlsx",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/iv_vascular_plant_community_composition"
     ),
     format = "file"
   ),
@@ -204,7 +211,7 @@ vegetation_plan <- list(
   # community out
   tar_target(
     name = community_output,
-    command = save_csv(file = community_clean_fixed, name = "FUNDER_clean_community_2015-2022.csv"),
+    command = save_csv(file = community_clean_fixed, name = "iv_FUNDER_clean_community_2015-2022.csv"),
     format = "file"
   ),
 
@@ -214,9 +221,9 @@ vegetation_plan <- list(
     name = bryophyte_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_bryophyte_community_2022.csv",
+      file = "v-vii_FUNDER_raw_bryophyte_community_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/v-vii_bryophyte_community"
     ),
     format = "file"
   ),
@@ -232,9 +239,9 @@ vegetation_plan <- list(
     name = bryophyte_dic_download,
     command = get_file(
       node = "tx9r2",
-      file = "Bryophyte community voucher overview with protocol - FUNDER 2022.xlsx",
+      file = "v-vii_Bryophyte community voucher overview with protocol - FUNDER 2022.xlsx",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/v-vii_bryophyte_community"
     ),
     format = "file"
   ),
@@ -252,7 +259,7 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = bryophyte_structure_output,
-    command = save_csv(file = bryophyte_structure, name = "FUNDER_clean_bryophyte_structure_2022.csv"),
+    command = save_csv(file = bryophyte_structure, name = "vii_FUNDER_clean_bryophyte_structure_2022.csv"),
     format = "file"
   ),
 
@@ -278,9 +285,9 @@ vegetation_plan <- list(
     name = bryophyte_llm_results_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_llm_results.csv",
+      file = "v-vii_FUNDER_llm_results.csv",
       path = here::here("raw_data"),
-      remote_path = "1_Vegetation/Raw_data"
+      remote_path = "i-viii_vegetation/v-vii_bryophyte_community"
     ),
     format = "file"
   ),
@@ -312,7 +319,7 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = bryophyte_cover_output,
-    command = save_csv(file = bryophyte_cover, name = "FUNDER_clean_bryophyte_cover_2022.csv"),
+    command = save_csv(file = bryophyte_cover, name = "vi_FUNDER_clean_bryophyte_cover_2022.csv"),
     format = "file"
   ),
 
@@ -333,7 +340,30 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = bryophyte_presence_output,
-    command = save_csv(file = bryophyte_presence, name = "FUNDER_clean_bryophyte_presence_2022.csv"),
+    command = save_csv(file = bryophyte_presence, name = "v_FUNDER_clean_bryophyte_presence_2022.csv"),
+    format = "file"
+  ),
+
+  # bryophytee water holding capacity
+  tar_target(
+    name = whc_download,
+    command = get_file(
+      node = "tx9r2",
+      file = "viii_FUNDER_raw_WHC_bryophyte_2022_Eline_Taule_Stava.csv",
+      path = here::here("raw_data"),
+      remote_path = "i-viii_vegetation/viii_bryophyte_water_holding_capacity"
+    ),
+    format = "file"
+  ),
+  tar_target(
+    name = clean_whc,
+    command = clean_whc_func(read.csv(whc_download))
+  ),
+
+  tar_target(
+    name = save_whc_output,
+    command = save_csv(file = clean_whc, name = "viii_FUNDER_clean_bryophyte_water_holding_capacity_2022.csv"),
     format = "file"
   )
+
 )
