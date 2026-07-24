@@ -6,9 +6,9 @@ environment_plan <- list(
     name = slope_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_slope_and_aspect_2022.csv",
+      file = "xxvi_FUNDER_raw_slope_and_aspect_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "6_Environment/Raw_data"
+      remote_path = "xxiii-xxvi_environment/xxvi_slope_and_aspect"
     ),
     format = "file"
   ),
@@ -24,7 +24,7 @@ environment_plan <- list(
   # Export cleaned dataset
   tar_target(
     name = slope_output,
-    command = save_csv(file = slope_clean, name = "FUNDER_clean_slope_and_aspect_2022.csv"),
+    command = save_csv(file = slope_clean, name = "xxvi_FUNDER_clean_slope_and_aspect_2022.csv"),
     format = "file"
   ),
 
@@ -33,9 +33,9 @@ environment_plan <- list(
     name = depth_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_soil_depth_measurements_2022.csv",
+      file = "xxv_FUNDER_raw_soil_depth_measurements_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "6_Environment/Raw_data"
+      remote_path = "xxiii-xxvi_environment/xxv_soil_depth"
     ),
     format = "file"
   ),
@@ -51,7 +51,7 @@ environment_plan <- list(
   # Export cleaned dataset
   tar_target(
     name = depth_output,
-    command = save_csv(file = depth_clean, name = "FUNDER_clean_soil_depth_measurements_2022.csv"),
+    command = save_csv(file = depth_clean, name = "xxv_FUNDER_clean_soil_depth_measurements_2022.csv"),
     format = "file"
   ),
 
@@ -61,9 +61,9 @@ environment_plan <- list(
     name = sm_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_soil_moisture_point_measurements_2022.csv",
+      file = "xxiv_FUNDER_raw_soil_moisture_point_measurements_2022.csv",
       path = here::here("raw_data"),
-      remote_path = "6_Environment/Raw_data"
+      remote_path = "xxiii-xxvi_environment/xxiv_soil_moisture"
     ),
     format = "file"
   ),
@@ -79,7 +79,7 @@ environment_plan <- list(
   # Export cleaned dataset
   tar_target(
     name = sm_output,
-    command = save_csv(file = sm_clean, name = "FUNDER_clean_soil_moisture_point_measurements_2022.csv"),
+    command = save_csv(file = sm_clean, name = "xxiv_FUNDER_clean_soil_moisture_point_measurements_2022.csv"),
     format = "file"
   ),
 
@@ -89,14 +89,14 @@ environment_plan <- list(
     command = {
       get_file(
         node = "tx9r2",
-        file = "FUNDER_raw_climate_TOMST.zip",
+        file = "xxiii_FUNDER_raw_climate_TOMST.zip",
         path = here::here("raw_data"),
-        remote_path = "6_Environment/Raw_data"
+        remote_path = "xxiii-xxvi_environment/xxiii_microclimate"
       )
 
-      if (!file.exists(here::here("raw_data", "FUNDER_raw_climate_TOMST"))) {
+      if (!file.exists(here::here("raw_data", "xxiii_FUNDER_raw_climate_TOMST"))) {
         unzip(
-          zipfile = here::here("raw_data", "FUNDER_raw_climate_TOMST.zip"),
+          zipfile = here::here("raw_data", "xxiii_FUNDER_raw_climate_TOMST.zip"),
           exdir = here::here("raw_data")
         )
       }
@@ -107,9 +107,9 @@ environment_plan <- list(
     name = climate_ID_download,
     command = get_file(
       node = "tx9r2",
-      file = "FUNDER_raw_TOMST_ID.csv",
+      file = "xxiii_FUNDER_raw_TOMST_ID.csv",
       path = here::here("raw_data"),
-      remote_path = "6_Environment/Raw_data"
+      remote_path = "xxiii-xxvi_environment/xxiii_microclimate"
     ),
     format = "file"
   ),
@@ -123,7 +123,7 @@ environment_plan <- list(
   ),
   tar_target(
     name = climate_output,
-    command = save_csv(file = climate_clean, name = "FUNDER_clean_microclimate_2022.csv"),
+    command = save_csv(file = climate_clean, name = "xxiii_FUNDER_clean_microclimate_2022.csv"),
     format = "file"
   )
 
