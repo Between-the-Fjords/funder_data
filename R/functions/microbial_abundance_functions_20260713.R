@@ -357,86 +357,86 @@ import_bacteria <- function(path, dna_extraction_batch, run){
 assemble_and_clean_bacteria <- function(map) {
 
   # DNA extraction batch 1
-  q1_1 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_1_col_1-3_2026-02-12.csv"),
+  q1_1 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_1_col_1-3_2026-02-12.csv"),
                           dna_extraction_batch = "1",
                           run = "1_1")
-  q1_2 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_1_col_4-6_2026-02-12.csv"),
+  q1_2 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_1_col_4-6_2026-02-12.csv"),
                           dna_extraction_batch = "1",
                           run = "1_2")
-  q1_3 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_1_col_7-9_2026-02-12.csv"),
+  q1_3 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_1_col_7-9_2026-02-12.csv"),
                           dna_extraction_batch = "1",
                           run = "1_3")
-  q1_4 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_1_col_10-12_2026-02-12.csv"),
+  q1_4 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_1_col_10-12_2026-02-12.csv"),
                           dna_extraction_batch = "1",
                           run = "1_4")
 
   # DNA extraction batch 1
-  q2_1 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_2_col_1-3_2026-02-11.csv"),
+  q2_1 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_2_col_1-3_2026-02-11.csv"),
                           dna_extraction_batch = "2",
                           run = "2_1")
-  q2_2 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_2_col_4-6_2026-02-11.csv"),
+  q2_2 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_2_col_4-6_2026-02-11.csv"),
                           dna_extraction_batch = "2",
                           run = "2_2")
-  q2_3 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_2_col_7-9_2026-02-11.csv"),
+  q2_3 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_2_col_7-9_2026-02-11.csv"),
                           dna_extraction_batch = "2",
                           run = "2_3")
-  q2_4 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_2_col_10-12_2026-02-12.csv"),
+  q2_4 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_2_col_10-12_2026-02-12.csv"),
                           dna_extraction_batch = "2",
                           run = "2_4")
 
   # DNA extraction batch 3
-  q3_1 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_3_col_1-3_2026-02-07.csv"),
+  q3_1 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_3_col_1-3_2026-02-07.csv"),
                           dna_extraction_batch = "3",
                           run = "3_1")
-  q3_2 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_3_col_4-6_2026-02-07.csv"),
+  q3_2 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_3_col_4-6_2026-02-07.csv"),
                           dna_extraction_batch = "3",
                           run = "3_2")
-  q3_3 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_3_col_7-9_2026-02-08.csv"),
+  q3_3 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_3_col_7-9_2026-02-08.csv"),
                           dna_extraction_batch = "3",
                           run = "3_3")
-  q3_4 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_3_col_10-12_2026-02-09.csv"),
+  q3_4 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_3_col_10-12_2026-02-09.csv"),
                           dna_extraction_batch = "3",
                           run = "3_4")
 
   # DNA extraction batch 4
-  q4_1 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_4_col_1-3_2026-02-09.csv"),
+  q4_1 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_4_col_1-3_2026-02-09.csv"),
                           dna_extraction_batch = "4",
                           run = "4_1")
-  q4_2 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_4_col_4-6_2026-02-09.csv"),
+  q4_2 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_4_col_4-6_2026-02-09.csv"),
                           dna_extraction_batch = "4",
                           run = "4_2")
-  q4_3 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_4_col_7-9_2026-02-09.csv"),
+  q4_3 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_4_col_7-9_2026-02-09.csv"),
                           dna_extraction_batch = "4",
                           run = "4_3")
-  q4_4 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_4_col_10-12_2026-02-09.csv"),
+  q4_4 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_4_col_10-12_2026-02-09.csv"),
                           dna_extraction_batch = "4",
                           run = "4_4")
 
   # DNA extraction batch 5
-  q5_1 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_5_col_1-3_2026-02-09.csv"),
+  q5_1 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_5_col_1-3_2026-02-09.csv"),
                           dna_extraction_batch = "5",
                           run = "5_1")
-  q5_2 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_5_col_4-6_2026-02-09.csv"),
+  q5_2 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_5_col_4-6_2026-02-09.csv"),
                           dna_extraction_batch = "5",
                           run = "5_2")
-  q5_3 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_5_col_7-9_2026-02-10.csv"),
+  q5_3 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_5_col_7-9_2026-02-10.csv"),
                           dna_extraction_batch = "5",
                           run = "5_3")
-  q5_4 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_5_col_10-12_2026-02-10.csv"),
+  q5_4 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_5_col_10-12_2026-02-10.csv"),
                           dna_extraction_batch = "5",
                           run = "5_4")
 
   # DNA extraction batch 6
-  q6_1 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_6_col_1-3_2026-02-10.csv"),
+  q6_1 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_6_col_1-3_2026-02-10.csv"),
                           dna_extraction_batch = "6",
                           run = "6_1")
-  q6_2 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_6_col_4-6_2026-02-10.csv"),
+  q6_2 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_6_col_4-6_2026-02-10.csv"),
                           dna_extraction_batch = "6",
                           run = "6_2")
-  q6_3 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_6_col_7-9_2026-02-10.csv"),
+  q6_3 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_6_col_7-9_2026-02-10.csv"),
                           dna_extraction_batch = "6",
                           run = "6_3")
-  q6_4 <- import_bacteria(path = here::here("raw_data", "microbial_abundance", "bacteria", "plate_6_col_10-12_2026-02-11.csv"),
+  q6_4 <- import_bacteria(path = here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_bacteria", "plate_6_col_10-12_2026-02-11.csv"),
                           dna_extraction_batch = "6",
                           run = "6_4")
 
@@ -472,13 +472,13 @@ assemble_and_clean_bacteria <- function(map) {
 }
 
 ### correct DNA extrcation batch effect for bacteria
-# The abundance data for both bacteria and fungi had a visible batch effect 
-# resulting from the six DNA extraction batches (see DNA extraction above), 
-# and samples in batches 1 and 2 had on average noticeably lower estimated 
-# starting quantities than samples in the four other batches. Because we 
-# believe this to have been caused by lab procedures, we correct the batch 
+# The abundance data for both bacteria and fungi had a visible batch effect
+# resulting from the six DNA extraction batches (see DNA extraction above),
+# and samples in batches 1 and 2 had on average noticeably lower estimated
+# starting quantities than samples in the four other batches. Because we
+# believe this to have been caused by lab procedures, we correct the batch
 # effects here and provide both corrected and uncorrected data, and leave it
-# to the user to decide which to use. 
+# to the user to decide which to use.
 correct_bacteria_batch_effect <- function(data) {
 
   ##### soil samples #####
@@ -618,7 +618,7 @@ correct_bacteria_batch_effect <- function(data) {
 assemble_and_clean_fungi <- function(map) {
 
   # plate 1
-  q1_1 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_1_col_1-3_2025-09-30 -  Quantification Cq Results.csv"),
+  q1_1 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_1_col_1-3_2025-09-30 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -628,7 +628,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "1_1", .before = 1)
 
-  q1_2 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_1_col_4-6_2025-09-30 -  Quantification Cq Results.csv"),
+  q1_2 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_1_col_4-6_2025-09-30 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -638,7 +638,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "1_2", .before = 1)
 
-  q1_3 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_1_col_7-9_2025-10-03 -  Quantification Cq Results.csv"),
+  q1_3 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_1_col_7-9_2025-10-03 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -648,7 +648,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "1_3", .before = 1)
 
-  q1_4 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_1_col_10-12_2025-10-04 -  Quantification Cq Results.csv"),
+  q1_4 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_1_col_10-12_2025-10-04 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -659,7 +659,7 @@ assemble_and_clean_fungi <- function(map) {
     mutate(run = "1_4", .before = 1)
 
   # plate 2
-  q2_1 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_2_col_1-3_2025-10-14 -  Quantification Cq Results.csv"),
+  q2_1 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_2_col_1-3_2025-10-14 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -669,7 +669,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "2_1", .before = 1)
 
-  q2_2 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_2_col_4-6_2025-10-14 -  Quantification Cq Results.csv"),
+  q2_2 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_2_col_4-6_2025-10-14 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -679,7 +679,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "2_2", .before = 1)
 
-  q2_3 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_2_col_7-9_2025-10-14 -  Quantification Cq Results.csv"),
+  q2_3 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_2_col_7-9_2025-10-14 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -689,7 +689,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "2_3", .before = 1)
 
-  q2_4 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_2_col_10-12_2025-10-14 -  Quantification Cq Results.csv"),
+  q2_4 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_2_col_10-12_2025-10-14 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -700,7 +700,7 @@ assemble_and_clean_fungi <- function(map) {
     mutate(run = "2_4", .before = 1)
 
   # plate 3
-  q3_1 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_3_col_1-3_2025-10-15 -  Quantification Cq Results.csv"),
+  q3_1 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_3_col_1-3_2025-10-15 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -710,7 +710,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "3_1", .before = 1)
 
-  q3_2 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_3_col_4-6_2025-10-15 -  Quantification Cq Results.csv"),
+  q3_2 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_3_col_4-6_2025-10-15 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -720,7 +720,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "3_2", .before = 1)
 
-  q3_3 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_3_col_7-9_2025-10-15 -  Quantification Cq Results.csv"),
+  q3_3 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_3_col_7-9_2025-10-15 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -730,7 +730,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "3_3", .before = 1)
 
-  q3_4 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_3_col_10-12_2025-10-16 -  Quantification Cq Results.csv"),
+  q3_4 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_3_col_10-12_2025-10-16 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -741,7 +741,7 @@ assemble_and_clean_fungi <- function(map) {
     mutate(run = "3_4", .before = 1)
 
   # plate 4
-  q4_1 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_4_col_1-3_2025-10-16 -  Quantification Cq Results.csv"),
+  q4_1 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_4_col_1-3_2025-10-16 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -751,7 +751,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "4_1", .before = 1)
 
-  q4_2 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_4_col_4-6_2025-10-16 -  Quantification Cq Results.csv"),
+  q4_2 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_4_col_4-6_2025-10-16 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -761,7 +761,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "4_2", .before = 1)
 
-  q4_3 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_4_col_7-9_2025-10-16 -  Quantification Cq Results.csv"),
+  q4_3 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_4_col_7-9_2025-10-16 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -771,7 +771,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "4_3", .before = 1)
 
-  q4_4 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_4_col_10-12_2025-10-16 -  Quantification Cq Results.csv"),
+  q4_4 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_4_col_10-12_2025-10-16 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -782,7 +782,7 @@ assemble_and_clean_fungi <- function(map) {
     mutate(run = "4_4", .before = 1)
 
   # plate 5
-  q5_1 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_5_col_1-3_2025-10-17 -  Quantification Cq Results.csv"),
+  q5_1 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_5_col_1-3_2025-10-17 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -792,7 +792,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "5_1", .before = 1)
 
-  q5_2 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_5_col_4-6_2025-10-17 -  Quantification Cq Results.csv"),
+  q5_2 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_5_col_4-6_2025-10-17 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -802,7 +802,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "5_2", .before = 1)
 
-  q5_3 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_5_col_7-9_2025-10-17 -  Quantification Cq Results.csv"),
+  q5_3 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_5_col_7-9_2025-10-17 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -812,7 +812,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "5_3", .before = 1)
 
-  q5_4 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_5_col_10-12_2025-10-17 -  Quantification Cq Results.csv"),
+  q5_4 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_5_col_10-12_2025-10-17 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -823,7 +823,7 @@ assemble_and_clean_fungi <- function(map) {
     mutate(run = "5_4", .before = 1)
 
   # plate 6
-  q6_1 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_6_col_1-3_2025-09-18 -  Quantification Cq Results.csv"),
+  q6_1 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_6_col_1-3_2025-09-18 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -833,7 +833,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "6_1", .before = 1)
 
-  q6_2 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_6_col_4-6_2025-09-22 -  Quantification Cq Results.csv"),
+  q6_2 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_6_col_4-6_2025-09-22 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -843,7 +843,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "6_2", .before = 1)
 
-  q6_3 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_6_col_7-9_2025-09-22 -  Quantification Cq Results.csv"),
+  q6_3 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_6_col_7-9_2025-09-22 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
@@ -853,7 +853,7 @@ assemble_and_clean_fungi <- function(map) {
            starting_quantity = as.numeric(starting_quantity)) |>
     mutate(run = "6_3", .before = 1)
 
-  q6_4 <- read.csv(here::here("raw_data", "microbial_abundance", "fungi", "plate_6_col_10-12_2025-09-23 -  Quantification Cq Results.csv"),
+  q6_4 <- read.csv(here::here("raw_data", "xi-xii_microbial_abundance", "xi-xii_fungi", "plate_6_col_10-12_2025-09-23 -  Quantification Cq Results.csv"),
                    sep = ";", dec = ",") |>
     select(2, 8, 11) |>
     rename("well_position" = 1,
