@@ -1,11 +1,6 @@
 # clean environmental data
 
 nutrient_cycling_plan <- list(
-  # funder meta data
-  tar_target(
-    name = funder_meta,
-    command = create_funder_meta_data()
-  ),
 
   # prs
   tar_target(
