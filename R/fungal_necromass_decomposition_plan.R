@@ -57,6 +57,7 @@ fungal_necromass_decomposition_plan <- list(
     command = save_csv(
       file = clean_fungal_necromass_decomposition,
       name = "xxi_FUNDER_clean_fungal_necromass_decomposition_2022.csv"
-    )
+    ),
+    format = "file"
   )
 )

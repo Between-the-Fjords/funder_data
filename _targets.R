@@ -51,7 +51,6 @@ combined_plan <- c(
   nutrient_cycling_plan,
   environment_plan,
   flux_plan,
-  data_dic_plan,
   fungal_community_plan,
   plant_litter_decomposition_plan,
   fungal_necromass_decomposition_plan,
