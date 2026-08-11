@@ -249,7 +249,8 @@ nutrient_cycling_plan <- list(
   tar_target(
     name = save_ph_and_macronutrients,
     command = save_csv(file = ph_and_macronutrients,
-                       name = "xix_FUNDER_clean_soil_ph_macronutrients_2022.csv")
+                       name = "xix_FUNDER_clean_soil_ph_macronutrients_2022.csv"),
+    format = "file"
   )
 
 )

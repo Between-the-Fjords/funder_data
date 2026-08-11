@@ -57,6 +57,7 @@ plant_litter_decomposition_plan <- list(
     command = save_csv(
       file = clean_plant_litter_decomposition,
       name = "xx_FUNDER_clean_plant_litter_decomposition_2022.csv"
-    )
+    ),
+    format = "file"
   )
 )

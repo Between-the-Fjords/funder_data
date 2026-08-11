@@ -130,7 +130,7 @@ fungal_community_plan <- list(
     name = soil_fungi_output,
     command = saveRDS(
       object = soil_fungi_phyloseq,
-      file = "clean_data/xiii_FUNDER_clean_soil_fungal_community_2022.RDS"),
+      file = here::here("clean_data/xiii_FUNDER_clean_soil_fungal_community_2022.RDS")),
     format = "file"
   ),
 
@@ -139,7 +139,7 @@ fungal_community_plan <- list(
     name = litter_fungi_output,
     command = saveRDS(
       object = litter_fungi_phyloseq,
-      file = "clean_data/xiv_FUNDER_clean_litter_fungal_community_2022.RDS"),
+      file = here::here("clean_data/xiv_FUNDER_clean_litter_fungal_community_2022.RDS")),
     format = "file"
   ),
 
@@ -148,7 +148,7 @@ fungal_community_plan <- list(
     name = necromass_fungi_output,
     command = saveRDS(
       object = necromass_fungi_phyloseq,
-      file = "clean_data/xv_FUNDER_clean_necromass_fungal_community_2022.RDS"),
+      file = here::here("clean_data/xv_FUNDER_clean_necromass_fungal_community_2022.RDS")),
     format = "file"
   )
 

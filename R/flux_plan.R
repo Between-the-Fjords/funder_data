@@ -7,9 +7,9 @@ flux_plan <- list(
     command = {
       path <- get_file(
         node = "tx9r2",
-        file = "C-flux site metadata.zip",
+        file = "xxii_C-flux site metadata.zip",
         path = here::here("raw_data"),
-        remote_path = "5_Carbon_and_nutrient_cycle/Raw_data/FUNDER_raw_cflux"
+        remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xxii_ecosystem_co2_fluxes"
       )
       if (!dir.exists(here::here("raw_data", "Cflux_site_metadata"))) {
         unzip(zipfile = path, exdir = here::here("raw_data"))
@@ -25,9 +25,9 @@ flux_plan <- list(
     command = {
       path <- get_file(
         node = "tx9r2",
-        file = "CO2_H20_PAR_Squirrel.zip",
+        file = "xxii_CO2_H20_PAR_Squirrel.zip",
         path = here::here("raw_data"),
-        remote_path = "5_Carbon_and_nutrient_cycle/Raw_data/FUNDER_raw_cflux"
+        remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xxii_ecosystem_co2_fluxes"
       )
       if (!dir.exists(here::here("raw_data", "CO2_H20_PAR_Squirrel"))) {
         unzip(zipfile = path, exdir = here::here("raw_data"))
@@ -43,9 +43,9 @@ flux_plan <- list(
     command = {
       path <- get_file(
         node = "tx9r2",
-        file = "Temperature_iButton.zip",
+        file = "xxii_Temperature_iButton.zip",
         path = here::here("raw_data"),
-        remote_path = "5_Carbon_and_nutrient_cycle/Raw_data/FUNDER_raw_cflux"
+        remote_path = "xvi-xxii_carbon_and_nutrient_cycling/xxii_ecosystem_co2_fluxes"
       )
       if (!dir.exists(here::here("raw_data", "Temperature_iButton"))) {
         unzip(zipfile = path, exdir = here::here("raw_data"))
@@ -72,7 +72,7 @@ flux_plan <- list(
     name = cflux_output,
     command = save_csv(
       file = cflux_clean,
-      name = "FUNDER_clean_cfluxes_2022.csv"
+      name = "xxii_FUNDER_clean_cfluxes_2022.csv"
     ),
     format = "file"
   )
