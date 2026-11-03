@@ -422,8 +422,11 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta) {
     )) |>
     # Set vernacular_final to NA for Pohlia sp. (after scientific_final changes)
     mutate(vernacular_final = if_else(scientific_final == "Pohlia sp.", NA_character_, vernacular_final)) |>
-    # remove entries where species_correction_Kristian_Hassel is "Ingen mose!"
-    filter(species_correction_Kristian_Hassel != "Ingen mose!") |>
+    # remove "Ingen mose!" only; keep NA corrections (no note from Kristian)
+    filter(
+      is.na(species_correction_Kristian_Hassel) |
+        species_correction_Kristian_Hassel != "Ingen mose!"
+    ) |>
     # remove rows where scientific_final is NA (no species found)
     filter(!is.na(scientific_final))
 
