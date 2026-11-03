@@ -3,6 +3,21 @@
 clean_bryophyte_structure <- function(bryophyte_raw, funder_meta) {
   bryophyte <- bryophyte_raw |>
     mutate(blockID = paste0(str_sub(siteID, 1, 3), blockID)) |>
+    # Same Ves2 F -> C correction as in clean_bryophyte(): Veskre block 2 has
+    # 2x F and no C in the raw data; reassign the three mislabelled species rows.
+    mutate(
+      cover_percent = if_else(cover_percent == "<1", "0.5", as.character(cover_percent)),
+      cover_percent = as.numeric(cover_percent),
+      treatment = case_when(
+        siteID == "Veskre" & blockID == "Ves2" & treatment == "F" &
+          species == "Etasjemose" & cover_percent == 20 ~ "C",
+        siteID == "Veskre" & blockID == "Ves2" & treatment == "F" &
+          species == "Engkransmose" & cover_percent == 2 ~ "C",
+        siteID == "Veskre" & blockID == "Ves2" & treatment == "F" &
+          species == "Storkransmose" & cover_percent == 2 ~ "C",
+        TRUE ~ treatment
+      )
+    ) |>
     tidylog::left_join(funder_meta, by = c("siteID", "blockID", "treatment")) |>
     rename(date = `date (yyyy-mm-dd)`)
 
