@@ -88,6 +88,9 @@ figs/
 
 *.DS_Store
 
+# editor settings (local only)
+.vscode/
+
 # renv: keep renv.lock and renv/activate.R; ignore local library
 renv/library/
 renv/staging/
