@@ -224,8 +224,15 @@ join_bryophyte_with_llm <- function(bryophyte_dictionary, bryophyte_llm_results)
       voucherID = dplyr::any_of(c("voucher ID", "voucherID"))
     ) |>
     dplyr::mutate(
-      voucherID = stringr::str_replace_all(voucherID, c("<U+00C5>" = "A", "<U+00D8>" = "O", "<U+00C6>" = "AE")),
-      siteID = stringr::str_replace_all(siteID, c("<U+00C5>" = "A", "<U+00D8>" = "O", "<U+00C6>" = "AE")),
+      # Replace real Norwegian characters (not the literal "<U+....>" text)
+      voucherID = stringr::str_replace_all(
+        voucherID,
+        c("Å" = "A", "Ø" = "O", "Æ" = "AE", "å" = "a", "ø" = "o", "æ" = "ae")
+      ),
+      siteID = stringr::str_replace_all(
+        siteID,
+        c("Å" = "A", "Ø" = "O", "Æ" = "AE", "å" = "a", "ø" = "o", "æ" = "ae")
+      ),
       siteID = dplyr::case_when(
         siteID == "ARH" ~ "Arhelleren",
         siteID == "FAU" ~ "Fauske",
@@ -350,7 +357,10 @@ clean_bryophyte <- function(bryophyte_raw, joined_bryophyte, funder_meta) {
     ) |>
     tidylog::left_join(funder_meta, by = c("siteID", "blockID", "treatment")) |>
     rename(date = `date (yyyy-mm-dd)`) |>
-    mutate(voucherID = str_replace_all(voucherID, c("<U+00C5>" = "A", "<U+00D8>" = "O", "<U+00C6>" = "AE"))) |>
+    mutate(voucherID = str_replace_all(
+      voucherID,
+      c("Å" = "A", "Ø" = "O", "Æ" = "AE", "å" = "a", "ø" = "o", "æ" = "ae")
+    )) |>
     # Remove incorrect rows that should not be in the data
     # Handle case-insensitive matching and potential whitespace
     tidylog::filter(!(plotID == "Gud4G" & str_to_lower(str_trim(species)) == "racomitrium ericoides")) |>
