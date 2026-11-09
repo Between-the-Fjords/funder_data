@@ -5,7 +5,7 @@ clean_depth <- function(depth_raw) {
        depth_raw |>
               pivot_longer(!c(siteID, block, treatment, plotID), names_to = "measurement", values_to = "depth") |>
               # fix funder nomenclature
-              mutate(
+              mutate(year = 2022,
                      siteID = str_to_title(siteID),
                      plotID = paste0(siteID, block, treatment),
                      blockID = paste0(siteID, block)
@@ -34,5 +34,5 @@ clean_depth <- function(depth_raw) {
               ) |>
               filter(!is.na(depth)) %>%
               funcabization(dat = ., convert_to = "FunCaB") |>
-              select(siteID, blockID, plotID, treatment, measurement, depth, unit)
+              select(year, siteID, blockID, plotID, treatment, measurement, depth, unit)
 }
