@@ -103,7 +103,7 @@ vegetation_plan <- list(
     name = biomass_removal_clean,
     command = bind_rows(
       biomass_removal_raw |>
-        select(year, date, siteID, blockID, plotID, treatment, removed_fg, round, biomass, temperature_level, precipitation_level, functional_group, name, remark),
+        select(year, date, siteID, blockID, plotID, treatment, removed_fg, round, biomass, temperature_level, precipitation_level, name, remark),
       biomass_22_clean
     )
   ),
