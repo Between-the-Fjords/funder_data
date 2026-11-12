@@ -55,7 +55,7 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = biomass_output,
-    command = save_csv(file = biomass_clean, name = "i_a_FUNDER_clean_standing_biomass_2022.csv"),
+    command = save_csv(file = biomass_clean, name = "i_FUNDER_clean_standing_biomass_2022.csv"),
     format = "file"
   ),
 
@@ -109,7 +109,7 @@ vegetation_plan <- list(
   ),
   tar_target(
     name = biomass_removal_output,
-    command = save_csv(file = biomass_removal_clean, name = "i_b_FUNDER_clean_biomass_removal_2015-2022.csv"),
+    command = save_csv(file = biomass_removal_clean, name = "i_FUNDER_clean_biomass_removal_2015-2022.csv"),
     format = "file"
   ),
 
