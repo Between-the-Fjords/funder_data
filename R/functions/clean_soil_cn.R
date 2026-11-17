@@ -36,7 +36,7 @@ make_cn <- function(cn1, cn2, cn3, cn4) {
     select(year, siteID, blockID, treatment, plotID, C, N, CN_ratio) |>
     pivot_longer(
       cols = c(C, N, CN_ratio),
-      names_to = "name",
+      names_to = "variable",
       values_to = "value"
     ) |>
     mutate(
