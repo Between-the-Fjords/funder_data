@@ -47,7 +47,7 @@ clean_ph_and_macronutrients <- function(bioner, uib) {
     select(year, siteID, blockID, treatment, plotID, pH, Mg, P, K, Ca) |>
     pivot_longer(
       cols = c(pH, Mg, P, K, Ca),
-      names_to = "name",
+      names_to = "variable",
       values_to = "value"
     ) |>
     mutate(
