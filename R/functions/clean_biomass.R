@@ -88,6 +88,8 @@ clean_biomass_22 <- function(biomass_22_raw) {
       )
     ) |>
     mutate(
+      # use GF (not FG) for treatment and plotID
+      treatment = if_else(treatment == "FG", "GF", treatment),
       blockID = paste0(substr(site, 1, 3), block),
       plotID = paste0(blockID, treatment),
       date = as.Date(date),
@@ -142,4 +144,32 @@ clean_biomass_22 <- function(biomass_22_raw) {
     )
 
 
+}
+
+
+# clean biomass removal 2015-2021
+
+clean_biomass_removal <- function(biomass_removal_raw) {
+  # Ovstedalen 2018 was entered twice (48 identical rows)
+  ovs_2018 <- biomass_removal_raw |>
+    filter(siteID == "Ovstedalen", year == 2018) |>
+    distinct()
+
+  biomass_removal_raw |>
+    filter(!(siteID == "Ovstedalen" & year == 2018)) |>
+    bind_rows(ovs_2018) |>
+    # Hog1XC 2016 has two bryophyte rows and no graminoids,
+    # the larger value is relabelled as graminoids
+    mutate(
+      is_hog1xc_g = plotID == "Hog1XC" &
+        year == 2016 &
+        removed_fg == "B" &
+        biomass == max(biomass[plotID == "Hog1XC" & year == 2016 & removed_fg == "B"]),
+      removed_fg = if_else(is_hog1xc_g, "G", removed_fg),
+      functional_group = if_else(is_hog1xc_g, "graminoids", functional_group)
+    ) |>
+    select(-is_hog1xc_g) |>
+    # plotID must match treatment (GF, not FG)
+    mutate(plotID = paste0(blockID, treatment)) |>
+    arrange(year, siteID, plotID, round)
 }
