@@ -98,11 +98,16 @@ vegetation_plan <- list(
     command = read_csv(biomass_removal_download)
   ),
 
+  tar_target(
+    name = biomass_removal_21_clean,
+    command = clean_biomass_removal(biomass_removal_raw)
+  ),
+
   # merge removal biomass 2015-2021 and 2022
   tar_target(
     name = biomass_removal_clean,
     command = bind_rows(
-      biomass_removal_raw |>
+      biomass_removal_21_clean |>
         select(year, date, siteID, blockID, plotID, treatment, removed_fg, round, biomass, temperature_level, precipitation_level, functional_group, name, remark),
       biomass_22_clean
     )
