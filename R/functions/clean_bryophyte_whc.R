@@ -27,9 +27,10 @@ clean_whc_func <- function(whc) {
       plotID = paste0(blockID, treatment),
       saturated_weight = as.numeric(sub(",", ".", saturated_weight)),
       dry_weight = as.numeric(sub(",", ".", dry_weight)),
-      whc = round(c((saturated_weight - dry_weight)) / dry_weight, digits = 2)) |>
+      whc = (saturated_weight - dry_weight) / dry_weight) |>
+    mutate(whc = mean(whc), .by = plotID) |>
     rename(comments = comment) |>
     select(year, siteID, blockID, plotID, treatment, whc, comments) |>
-    funcabization(convert_to = "FunCaB")
+    funcabization(convert_to = "FunCaB") |> distinct()
 
 }
